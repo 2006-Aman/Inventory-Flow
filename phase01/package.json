@@ -1,0 +1,20 @@
+{
+  "name": "inventory-reorder-system-phase01",
+  "version": "1.0.0",
+  "description": "Inventory Reorder Point and Demand Forecasting Tool - Phase 1",
+  "main": "index.html",
+  "scripts": {
+    "server": "json-server --watch data/db.json --port 3000"
+  },
+  "keywords": [
+    "inventory",
+    "forecasting",
+    "reorder-point",
+    "json-server"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^1.0.0-beta.15"
+  }
+}

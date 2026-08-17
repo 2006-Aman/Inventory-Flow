@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inventory API Test</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        #status {
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            min-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Inventory Reorder System</h1>
+
+    <p>API Connection Test</p>
+
+    <div class="buttons">
+
+        <button id="testUsers">
+            Test Users
+        </button>
+
+        <button id="testCategories">
+            Test Categories
+        </button>
+
+        <button id="testProducts">
+            Test Products
+        </button>
+
+        <button id="testSales">
+            Test Sales
+        </button>
+
+        <button id="testAll">
+            Test All
+        </button>
+
+        <button id="syncStorage">
+            Sync Data to LocalStorage
+        </button>
+
+        <button id="testForecast">
+            Test Forecast
+        </button>
+
+    </div>
+
+    <div id="status">
+        Status: Waiting for test...
+    </div>
+
+    <pre id="output">API response will appear here...</pre>
+
+
+    <!-- API FILES -->
+
+    <script src="./js/api/api.js"></script>
+
+    <script src="./js/api/userApi.js"></script>
+
+    <script src="./js/api/categoryApi.js"></script>
+
+    <script src="./js/api/productApi.js"></script>
+
+    <script src="./js/api/salesApi.js"></script>
+
+    <script src="./js/storage/storage.js"></script>
+
+    <script src="./js/forecast/movingAverage.js"></script>
+    <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/forecast/forecast.js"></script>
+
+
+    <!-- TEST CODE -->
+
+    <script>
+
+        const output = document.getElementById("output");
+        const status = document.getElementById("status");
+
+
+        function showResult(title, data) {
+
+            status.textContent = `Status: ${title}`;
+
+            output.textContent =
+                JSON.stringify(data, null, 2);
+        }
+
+
+        function showError(error) {
+
+            status.textContent =
+                "Status: API ERROR";
+
+            status.style.color = "red";
+
+            output.textContent =
+                error.message;
+
+            console.error(error);
+        }
+
+
+        // ==========================
+        // TEST USERS
+        // ==========================
+
+        document
+            .getElementById("testUsers")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Loading users...";
+
+                    const users = await getUsers();
+
+                    status.style.color = "green";
+
+                    showResult(
+                        `Users Loaded: ${users.length}`,
+                        users
+                    );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+
+        // ==========================
+        // TEST CATEGORIES
+        // ==========================
+
+        document
+            .getElementById("testCategories")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Loading categories...";
+
+                    const categories =
+                        await getCategories();
+
+                    status.style.color = "green";
+
+                    showResult(
+                        `Categories Loaded: ${categories.length}`,
+                        categories
+                    );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+
+        // ==========================
+        // TEST PRODUCTS
+        // ==========================
+
+        document
+            .getElementById("testProducts")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Loading products...";
+
+                    const products =
+                        await getProducts();
+
+                    status.style.color = "green";
+
+                    showResult(
+                        `Products Loaded: ${products.length}`,
+                        products
+                    );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+
+        // ==========================
+        // TEST SALES
+        // ==========================
+
+        document
+            .getElementById("testSales")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Loading sales...";
+
+                    const sales =
+                        await getSales();
+
+                    status.style.color = "green";
+
+                    showResult(
+                        `Sales Loaded: ${sales.length}`,
+                        sales
+                    );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+
+        // ==========================
+        // TEST EVERYTHING
+        // ==========================
+
+        document
+            .getElementById("testAll")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Testing all APIs...";
+
+                    const users =
+                        await getUsers();
+
+                    const categories =
+                        await getCategories();
+
+                    const products =
+                        await getProducts();
+
+                    const sales =
+                        await getSales();
+
+                    const result = {
+
+                        users: {
+                            count: users.length,
+                            data: users
+                        },
+
+                        categories: {
+                            count: categories.length,
+                            data: categories
+                        },
+
+                        products: {
+                            count: products.length,
+                            data: products
+                        },
+
+                        sales: {
+                            count: sales.length,
+                            data: sales
+                        }
+
+                    };
+
+                    status.style.color = "green";
+
+                    showResult(
+                        "ALL API TESTS PASSED",
+                        result
+                    );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+        // ==========================
+        // TEST STORAGE SYNC
+        // ==========================
+        document
+            .getElementById("syncStorage")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Syncing data...";
+
+                    status.style.color = "black";
+
+                    const data =
+                        await syncAllDataToStorage();
+
+                    status.textContent =
+                        "Status: LocalStorage Sync Successful";
+
+                    status.style.color = "green";
+
+                    output.textContent =
+                        JSON.stringify(
+                            {
+                                users: data.users.length,
+                                categories: data.categories.length,
+                                products: data.products.length,
+                                sales: data.sales.length
+                            },
+                            null,
+                            2
+                        );
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+
+        // ==========================================
+        // TEST FORECAST (HYBRID)
+        // ==========================================
+
+        document
+            .getElementById("testForecast")
+            .addEventListener("click", async () => {
+
+                try {
+
+                    status.textContent =
+                        "Status: Calculating hybrid forecast...";
+
+                    status.style.color = "black";
+
+
+                    const products =
+                        await getProducts();
+
+                    const sales =
+                        await getSales();
+
+
+                    const forecasts =
+                        calculateAllProductForecasts(
+                            products,
+                            sales,
+                            7
+                        );
+
+
+                    status.textContent =
+                        "Status: Hybrid Forecast Successful";
+
+                    status.style.color = "green";
+
+
+                    output.textContent =
+                        JSON.stringify(
+                            forecasts,
+                            null,
+                            2
+                        );
+
+
+                } catch (error) {
+
+                    showError(error);
+
+                }
+
+            });
+    </script>
+
+</body>
+
+</html>
