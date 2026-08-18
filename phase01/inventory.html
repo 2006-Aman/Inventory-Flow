@@ -164,7 +164,6 @@
             <!-- PAGE HEADER -->
             <div class="page-header">
                 <div>
-                    <h1>Inventory</h1>
                     <p>Manage and monitor your products and stock.</p>
                 </div>
             </div>
@@ -173,23 +172,35 @@
                  SUMMARY CARDS
             ========================================== -->
             <section class="inventory-summary">
-                <div class="summary-card">
-                    <span class="summary-label">Total Products</span>
+                <div class="summary-card card-blue">
+                    <div class="card-head">
+                        <span class="summary-label">Total Products</span>
+                        <div class="card-icon-badge blue"><i class="ph ph-package"></i></div>
+                    </div>
                     <strong id="totalProducts" class="summary-value">0</strong>
                 </div>
 
-                <div class="summary-card">
-                    <span class="summary-label">Total Stock</span>
+                <div class="summary-card card-green">
+                    <div class="card-head">
+                        <span class="summary-label">Total Stock</span>
+                        <div class="card-icon-badge green"><i class="ph ph-stack"></i></div>
+                    </div>
                     <strong id="totalStock" class="summary-value">0</strong>
                 </div>
 
-                <div class="summary-card">
-                    <span class="summary-label">Low Stock</span>
+                <div class="summary-card card-amber">
+                    <div class="card-head">
+                        <span class="summary-label">Low Stock</span>
+                        <div class="card-icon-badge amber"><i class="ph ph-warning-amber"></i></div>
+                    </div>
                     <strong id="lowStockProducts" class="summary-value">0</strong>
                 </div>
 
-                <div class="summary-card">
-                    <span class="summary-label">Reorder Required</span>
+                <div class="summary-card card-red">
+                    <div class="card-head">
+                        <span class="summary-label">Reorder Required</span>
+                        <div class="card-icon-badge red"><i class="ph ph-arrows-clockwise"></i></div>
+                    </div>
                     <strong id="reorderProducts" class="summary-value">0</strong>
                 </div>
             </section>

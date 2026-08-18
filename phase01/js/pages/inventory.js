@@ -17,6 +17,17 @@ async function initInventory() {
         setupActions();
         setupModalEvents();
 
+        // Check if topbar search passed query parameter 'q'
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('q');
+        if (searchQuery) {
+            const searchInput = getDom("searchInput");
+            if (searchInput) {
+                searchInput.value = searchQuery;
+            }
+            applyFilters();
+        }
+
         hideMessage();
     } catch (error) {
         console.error("Inventory initialization error:", error);

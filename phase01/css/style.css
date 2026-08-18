@@ -871,3 +871,255 @@ span.flatpickr-weekday {
     scrollbar-width: thin;
     scrollbar-color: #1c2840 transparent;
 }
+
+/* ==========================================
+   ULTRA-PREMIUM GLOBAL ALERT & MESSAGE BANNERS
+   ========================================== */
+
+.message,
+.sales-message,
+.alert,
+.form-message,
+#salesMessage,
+#formMessage,
+#inventoryMessage,
+#signupError {
+    display: none;
+    margin-bottom: 20px;
+    padding: 13px 22px !important;
+    border-radius: 9999px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.01em !important;
+    align-items: center !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    transition: all 0.25s ease-in-out !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+    width: 100% !important;
+}
+
+/* SUCCESS ALERT BANNER */
+.message.success,
+.sales-message.success,
+.alert-success,
+.alert.success {
+    display: flex !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.22) 100%) !important;
+    color: #6ee7b7 !important;
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    backdrop-filter: blur(10px);
+}
+
+.message.success::before,
+.sales-message.success::before,
+.alert-success::before {
+    content: "✓";
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+}
+
+/* ERROR ALERT BANNER */
+.message.error,
+.sales-message.error,
+.alert-error,
+.alert.error {
+    display: flex !important;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0%, rgba(185, 28, 28, 0.22) 100%) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgba(248, 113, 113, 0.4) !important;
+    backdrop-filter: blur(10px);
+}
+
+.message.error::before,
+.sales-message.error::before,
+.alert-error::before {
+    content: "✕";
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5) !important;
+}
+
+/* LOADING / INFO ALERT BANNER */
+.message.loading,
+.sales-message.loading,
+.alert-info,
+.alert.info {
+    display: flex !important;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.16) 0%, rgba(2, 132, 199, 0.22) 100%) !important;
+    color: #7dd3fc !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    backdrop-filter: blur(10px);
+}
+
+.message.loading::before,
+.sales-message.loading::before,
+.alert-info::before {
+    content: "ℹ";
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.5) !important;
+}
+
+/* ==========================================
+   NOTIFICATION BELL DROPDOWN POPUP
+   ========================================== */
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 320px;
+    background: #0e1422;
+    border: 1px solid #1c2840;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notification-dropdown.show {
+    display: block !important;
+}
+
+.noti-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #1a253a;
+    background: #090d16;
+}
+
+.noti-header strong {
+    font-size: 13.5px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.noti-count-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+.noti-body {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.noti-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid #141c2e;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.noti-item:hover {
+    background: #141d30;
+}
+
+.noti-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.noti-icon.out {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.noti-icon.low {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+
+.noti-details strong {
+    display: block;
+    font-size: 13px;
+    color: #ffffff;
+}
+
+.noti-details span {
+    display: block;
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.noti-empty {
+    padding: 24px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.noti-empty p {
+    margin: 8px 0 0;
+}
+
+.noti-footer {
+    padding: 10px 18px;
+    background: #090d16;
+    border-top: 1px solid #1a253a;
+    text-align: center;
+}
+
+.noti-footer a {
+    color: #38bdf8;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.noti-footer a:hover {
+    text-decoration: underline;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}

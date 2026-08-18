@@ -435,14 +435,172 @@ function checkAuthGuard() {
     return true;
 }
 
-// Synchronous Execution Guard
+// Run auth check immediately
 checkAuthGuard();
 
-// Auto sync UI on load
-if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => updateGlobalUserUI());
-    } else {
+// Update UI elements with active user on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
         updateGlobalUserUI();
+        initGlobalTopbarSearch();
+        updateGlobalAlertBadges();
+    });
+} else {
+    updateGlobalUserUI();
+    initGlobalTopbarSearch();
+    updateGlobalAlertBadges();
+}
+
+// ==========================================
+// SYSTEM-WIDE TOPBAR SEARCH CONTROLLER
+// ==========================================
+
+function initGlobalTopbarSearch() {
+    const searchInputs = document.querySelectorAll('.navbar-search input, .search-box input, #global-search, header input[placeholder*="Search"]');
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('q') || '';
+    
+    searchInputs.forEach(input => {
+        if (searchParam && !input.value) {
+            input.value = searchParam;
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const query = input.value.trim();
+                if (!query) return;
+                
+                const encodedQuery = encodeURIComponent(query);
+                const isInventoryPage = window.location.pathname.endsWith('inventory.html');
+
+                if (isInventoryPage) {
+                    const pageSearchInput = document.getElementById('searchInput');
+                    if (pageSearchInput) {
+                        pageSearchInput.value = query;
+                        pageSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                } else {
+                    window.location.href = `inventory.html?q=${encodedQuery}`;
+                }
+            }
+        });
+    });
+}
+
+// ==========================================
+// SYSTEM-WIDE REORDER & NOTIFICATION CONTROLLER
+// ==========================================
+
+async function updateGlobalAlertBadges() {
+    let products = [];
+    try {
+        if (typeof getProducts === 'function') {
+            products = await getProducts();
+        } else if (typeof getLocalProducts === 'function') {
+            products = getLocalProducts();
+        }
+    } catch(e) {
+        if (typeof getLocalProducts === 'function') {
+            products = getLocalProducts();
+        }
     }
+
+    if (!Array.isArray(products)) products = [];
+
+    // Filter products needing reorder (stock <= reorderPoint or stock <= minimumStock)
+    const reorderItems = products.filter(p => {
+        const stock = Number(p.stock ?? p.currentStock ?? 0);
+        const min = Number(p.minimumStock ?? 5);
+        const rop = Number(p.reorderPoint ?? min);
+        return stock <= rop;
+    });
+
+    const alertCount = reorderItems.length;
+
+    // 1. Update Sidebar Badges
+    const sidebarBadges = document.querySelectorAll('#sidebarAlertCount, #sidebar-reorder-badge, .sidebar-nav a[href*="reorder"] .badge');
+    sidebarBadges.forEach(b => {
+        b.textContent = alertCount;
+        b.style.display = alertCount > 0 ? 'inline-flex' : 'none';
+    });
+
+    // 2. Update Header Bell Badges
+    const bellBadges = document.querySelectorAll('.dot-badge, #bell-badge, .navbar-right .dot-badge');
+    bellBadges.forEach(b => {
+        b.textContent = alertCount;
+        b.style.display = alertCount > 0 ? 'inline-flex' : 'none';
+    });
+
+    // 3. Render Notification Dropdown
+    renderNotificationDropdown(reorderItems);
+}
+
+function renderNotificationDropdown(reorderItems) {
+    const bellBtns = document.querySelectorAll('.icon-btn.has-badge, #bell-btn, button[title*="Notification"]');
+    
+    bellBtns.forEach(btn => {
+        btn.style.position = 'relative';
+        
+        let dropdown = btn.querySelector('.notification-dropdown');
+        if (!dropdown) {
+            dropdown = document.createElement('div');
+            dropdown.className = 'notification-dropdown';
+            btn.appendChild(dropdown);
+        }
+
+        const count = reorderItems.length;
+        let itemsHtml = '';
+
+        if (count === 0) {
+            itemsHtml = `
+                <div class="noti-empty">
+                    <i class="ph ph-check-circle" style="font-size:24px; color:#34d399;"></i>
+                    <p>All stock levels are healthy!</p>
+                </div>`;
+        } else {
+            itemsHtml = reorderItems.map(item => {
+                const stock = Number(item.stock || 0);
+                const rop = Number(item.reorderPoint || item.minimumStock || 5);
+                const isOut = stock === 0;
+                return `
+                    <a href="reorder.html" class="noti-item">
+                        <div class="noti-icon ${isOut ? 'out' : 'low'}">
+                            <i class="ph ${isOut ? 'ph-x-circle' : 'ph-warning-amber'}"></i>
+                        </div>
+                        <div class="noti-details">
+                            <strong>${escapeHtml(item.name || 'Product')}</strong>
+                            <span>${isOut ? 'Out of Stock (0 units)' : `Low Stock: ${stock} units left`} &middot; ROP: ${rop}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        dropdown.innerHTML = `
+            <div class="noti-header">
+                <strong>Reorder Notifications</strong>
+                <span class="noti-count-badge">${count} Alert${count !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="noti-body">
+                ${itemsHtml}
+            </div>
+            <div class="noti-footer">
+                <a href="reorder.html">View Reorder Hub &rarr;</a>
+            </div>
+        `;
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            const isActive = dropdown.classList.contains('show');
+            document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
+            if (!isActive) dropdown.classList.add('show');
+        };
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.notification-dropdown') && !e.target.closest('.icon-btn.has-badge') && !e.target.closest('#bell-btn')) {
+            document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
+        }
+    });
 }
