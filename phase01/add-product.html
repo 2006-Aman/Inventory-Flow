@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>html,body{background-color:#0b0f19!important;color-scheme:dark;}</style>
 
     <title>Add Product | Inventory Reorder System</title>
 
@@ -20,27 +21,143 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
     <link rel="stylesheet" href="./css/addProduct.css">
     <link rel="stylesheet" href="./css/responsive.css">
 </head>
 
 <body>
 
-    <div class="page-wrapper">
+    <div class="app-layout">
 
-        <!-- TOP BAR -->
-        <header class="topbar">
-            <div class="brand">
-                Inventory Reorder System
+        <!-- ===================== Sidebar Navigation ===================== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo-box" style="background: transparent; box-shadow: none; padding: 0;">
+                    <img src="./assets/logo.svg" alt="InventoryIQ Logo" style="width: 42px; height: 42px; display: block;" />
+                </div>
+                <div class="brand-text-group">
+                    <span class="brand-name">Inventory<span class="brand-highlight">IQ</span></span>
+                    <span class="brand-tagline">FORECAST • REORDER • GROW</span>
+                </div>
             </div>
-            <div class="topbar-right">
-                <span id="serverStatus" class="server-status">Checking server...</span>
-                <a href="./inventory.html" class="btn-topbar">Back to Inventory</a>
-            </div>
-        </header>
 
-        <!-- MAIN CONTENT -->
-        <main class="content">
+            <nav class="sidebar-menu">
+                <a href="./dashboard.html" class="nav-item">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="./inventory.html" class="nav-item">
+                    <i class="ph ph-package"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="./add-product.html" class="nav-item active">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Add Product</span>
+                </a>
+                <a href="./sales.html" class="nav-item">
+                    <i class="ph ph-shopping-cart-simple"></i>
+                    <span>Sales</span>
+                </a>
+                <a href="./sales-history.html" class="nav-item">
+                    <i class="ph ph-clock-counter-clockwise"></i>
+                    <span>Sales History</span>
+                </a>
+                <a href="./reorder.html" class="nav-item">
+                    <i class="ph ph-bell-ringing"></i>
+                    <span>Reorder Alerts</span>
+                    <span class="badge-count red" id="sidebarAlertCount">0</span>
+                </a>
+                <a href="./forecast.html" class="nav-item">
+                    <i class="ph ph-trend-up"></i>
+                    <span>Demand Forecast</span>
+                </a>
+                <a href="./analytics.html" class="nav-item">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="./reports.html" class="nav-item">
+                    <i class="ph ph-file-text"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="./settings.html" class="nav-item">
+                    <i class="ph ph-sliders"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer Card -->
+            <div class="sidebar-footer-card">
+                <div class="engine-head">
+                    <span class="engine-status"><span class="status-dot"></span> Running</span>
+                    <a href="forecast.html" class="engine-view-btn">View</a>
+                </div>
+                <div class="engine-body">
+                    <div class="engine-ring" id="engine-ring" style="--pct: 266deg;">
+                        <div class="engine-ring-inner"><span id="engine-ring-value">74%</span></div>
+                    </div>
+                    <div class="engine-info">
+                        <span class="engine-title">Forecast Engine</span>
+                        <span class="engine-desc">Moving Average • 7d</span>
+                        <span class="engine-refresh">Next refresh in <span id="engine-countdown">16:06:29</span></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===================== Main Content Wrapper ===================== -->
+        <div class="main-wrapper">
+
+            <!-- Global Topbar (Search/Profile) -->
+            <header class="navbar">
+                <div class="navbar-left">
+                    <span class="greeting-subtitle">GOOD MORNING • AMAN</span>
+                    <h1 class="navbar-page-title">Add Product</h1>
+                </div>
+
+                <div class="navbar-center">
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search or jump to...">
+                    </div>
+                </div>
+
+                <div class="navbar-right">
+                    <div class="date-badge">
+                        <i class="ph ph-calendar"></i>
+                        <span id="liveDate">--</span>
+                    </div>
+                    <div class="time-badge" id="liveTime">--:--:--</div>
+
+                    <button class="icon-btn" title="Toggle Theme"><i class="ph ph-sun"></i></button>
+                    <button class="icon-btn has-badge" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                        <span class="dot-badge">0</span>
+                    </button>
+
+                    <div class="user-profile" id="userProfileBtn">
+                        <div class="avatar-circle">A</div>
+                        <span class="user-name">Aman</span>
+                        <i class="ph ph-caret-down"></i>
+
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <div class="user-dropdown-header">
+                                <div class="avatar-circle" style="width:32px; height:32px; font-size:13px;">A</div>
+                                <div>
+                                    <strong>Aman Sharma</strong>
+                                    <span>admin@inventoryflow.com</span>
+                                </div>
+                            </div>
+                            <a href="./profile.html" class="user-dropdown-item"><i class="ph ph-user"></i> Profile</a>
+                            <a href="./help.html" class="user-dropdown-item"><i class="ph ph-question"></i> Help & Support</a>
+                            <button type="button" class="user-dropdown-item signout" id="globalSignOutBtn"><i class="ph ph-sign-out"></i> Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content">
+
 
             <p class="page-subtext">
                 Lead time and safety stock feed straight into the reorder point formula, so fill them in carefully.
@@ -67,13 +184,25 @@
                             <!-- SKU -->
                             <div class="form-group">
                                 <label for="sku">SKU</label>
-                                <input type="text" id="sku" placeholder="G-L8FE2R" required>
+                                <input type="text" id="sku" placeholder="SKU Code" required>
                             </div>
 
                             <!-- CATEGORY -->
                             <div class="form-group">
                                 <label for="category">Category</label>
-                                <input type="text" id="category" placeholder="Category" required>
+                                <input type="text" id="category" list="categoryList" placeholder="Category" required autocomplete="off">
+                                <datalist id="categoryList">
+                                    <option value="Electronics">
+                                    <option value="Groceries">
+                                    <option value="Frozen Foods">
+                                    <option value="Personal Care">
+                                    <option value="Accessories">
+                                    <option value="Office Supplies">
+                                    <option value="Dairy">
+                                    <option value="Beverages">
+                                    <option value="Snacks">
+                                    <option value="Home & Kitchen">
+                                </datalist>
                             </div>
 
                             <!-- SUPPLIER -->
@@ -83,40 +212,63 @@
                             </div>
 
                             <!-- COST PRICE -->
-                            <div class="form-group">
-                                <label for="costPrice">Cost price (₹)</label>
+                            <div class="form-group number-group">
+                                <label for="costPrice">Cost price ($)</label>
                                 <input type="number" id="costPrice" min="0" step="0.01" placeholder="Cost price ($)" required>
+                                <div class="spin-arrows">
+                                    <span class="spin-btn spin-up" title="Increase"><i class="ph ph-caret-up"></i></span>
+                                    <span class="spin-btn spin-down" title="Decrease"><i class="ph ph-caret-down"></i></span>
+                                </div>
                             </div>
 
                             <!-- SELLING PRICE -->
-                            <div class="form-group">
-                                <label for="sellingPrice">Selling price (₹)</label>
+                            <div class="form-group number-group">
+                                <label for="sellingPrice">Selling price ($)</label>
                                 <input type="number" id="sellingPrice" min="0" step="0.01" placeholder="Selling price ($)" required>
+                                <div class="spin-arrows">
+                                    <span class="spin-btn spin-up" title="Increase"><i class="ph ph-caret-up"></i></span>
+                                    <span class="spin-btn spin-down" title="Decrease"><i class="ph ph-caret-down"></i></span>
+                                </div>
                             </div>
 
                             <!-- OPENING STOCK -->
-                            <div class="form-group">
+                            <div class="form-group number-group">
                                 <label for="stock">Opening stock</label>
                                 <input type="number" id="stock" min="0" step="1" placeholder="Opening stock" required>
+                                <div class="spin-arrows">
+                                    <span class="spin-btn spin-up" title="Increase"><i class="ph ph-caret-up"></i></span>
+                                    <span class="spin-btn spin-down" title="Decrease"><i class="ph ph-caret-down"></i></span>
+                                </div>
                             </div>
 
                             <!-- SAFETY STOCK -->
-                            <div class="form-group">
-                                <label for="safetyStock">Safety stock</label>
-                                <input type="number" id="safetyStock" min="0" step="1" placeholder="Safety stock" required>
+                            <div class="form-field-wrapper">
+                                <div class="form-group number-group">
+                                    <label for="safetyStock">Safety stock</label>
+                                    <input type="number" id="safetyStock" min="0" step="1" placeholder="Safety stock" required>
+                                    <div class="spin-arrows">
+                                        <span class="spin-btn spin-up" title="Increase"><i class="ph ph-caret-up"></i></span>
+                                        <span class="spin-btn spin-down" title="Decrease"><i class="ph ph-caret-down"></i></span>
+                                    </div>
+                                </div>
                                 <span class="hint-text">Buffer kept for demand spikes</span>
                             </div>
 
                             <!-- LEAD TIME -->
-                            <div class="form-group full">
-                                <label for="leadTime">Lead time (days)</label>
-                                <input type="number" id="leadTime" min="1" step="1" placeholder="Lead time (days)" required>
+                            <div class="form-field-wrapper full">
+                                <div class="form-group number-group">
+                                    <label for="leadTime">Lead time (days)</label>
+                                    <input type="number" id="leadTime" min="1" step="1" placeholder="Lead time (days)" required>
+                                    <div class="spin-arrows">
+                                        <span class="spin-btn spin-up" title="Increase"><i class="ph ph-caret-up"></i></span>
+                                        <span class="spin-btn spin-down" title="Decrease"><i class="ph ph-caret-down"></i></span>
+                                    </div>
+                                </div>
                                 <span class="hint-text">Supplier delivery window</span>
                             </div>
 
                             <!-- DESCRIPTION -->
                             <div class="form-group full">
-                                <label for="description">Description</label>
                                 <textarea id="description" placeholder="Description"></textarea>
                             </div>
 
@@ -204,8 +356,8 @@
 
             </div>
 
-        </main>
-
+            </main>
+        </div>
     </div>
 
     <!-- JAVASCRIPT -->
@@ -213,6 +365,8 @@
     <script src="./js/api/productApi.js"></script>
     <script src="./js/storage/storage.js"></script>
     <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/components/sidebar.js"></script>
+    <script src="./js/components/topbar.js"></script>
     <script src="./js/pages/addProduct.js"></script>
 
 </body>

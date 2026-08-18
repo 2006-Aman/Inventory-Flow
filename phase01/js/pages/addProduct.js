@@ -18,9 +18,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!isEditMode) {
         const skuInput = document.getElementById("sku");
         const barcodeInput = document.getElementById("barcode");
+        const categoryInput = document.getElementById("category");
 
-        if (skuInput && !skuInput.value) skuInput.value = generateRandomSku();
-        if (barcodeInput && !barcodeInput.value) barcodeInput.value = generateRandomBarcode();
+        const updateCategorySku = () => {
+            if (!isEditMode && skuInput) {
+                const catVal = categoryInput?.value.trim();
+                skuInput.value = generateCategorySku(catVal);
+                updateLivePreview();
+            }
+        };
+
+        if (skuInput && (!skuInput.value || skuInput.value.startsWith("G-"))) {
+            skuInput.value = generateCategorySku(categoryInput?.value || "");
+        }
+        if (barcodeInput && !barcodeInput.value) {
+            barcodeInput.value = generateRandomBarcode();
+        }
+
+        if (categoryInput) {
+            categoryInput.addEventListener("input", updateCategorySku);
+            categoryInput.addEventListener("change", updateCategorySku);
+        }
     }
 
     if (isEditMode) {
@@ -73,7 +91,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             validateProduct(product);
 
             // Check duplicate SKU
-            const existingProducts = await getProducts();
+            let existingProducts = [];
+            try {
+                existingProducts = await getProducts();
+            } catch (e) {
+                existingProducts = getLocalProducts() || [];
+            }
+
             const duplicateSKU = existingProducts.some(existing =>
                 String(existing.id) !== String(productId) &&
                 existing.sku?.toLowerCase() === product.sku.toLowerCase()
@@ -94,7 +118,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                         calculateStockStatus(product.stock, product.minimumStock, product.reorderPoint) : "In Stock";
                 }
 
-                const updatedProduct = await updateProduct(productId, product);
+                let updatedProduct = null;
+                try {
+                    updatedProduct = await updateProduct(productId, product);
+                } catch (e) {
+                    updatedProduct = product;
+                }
 
                 // Update LocalStorage
                 const localProducts = getLocalProducts();
@@ -112,7 +141,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }, 1000);
 
             } else {
-                const createdProduct = await createProduct(product);
+                let createdProduct = null;
+                try {
+                    createdProduct = await createProduct(product);
+                } catch (e) {
+                    createdProduct = { ...product, id: String(Date.now()) };
+                }
 
                 // Update LocalStorage
                 const localProducts = getLocalProducts();
@@ -155,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==========================================
 
 function setupLivePreview() {
-    const inputIds = ["productName", "category", "supplier", "costPrice", "sellingPrice", "stock", "safetyStock", "leadTime", "sku", "barcode"];
+    const inputIds = ["productName", "category", "supplier", "costPrice", "sellingPrice", "stock", "safetyStock", "minimumStock", "leadTime", "sku", "barcode"];
     inputIds.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
@@ -205,7 +239,7 @@ function updateLivePreview() {
     const previewStockValue = document.getElementById("previewStockValue");
     if (previewStockValue) previewStockValue.textContent = `₹${stockValue.toFixed(2)}`;
 
-    // 5. ROP Estimate (Lead time * 2 + Safety stock default formula if no sales history)
+    // 5. ROP Estimate (Lead time * 1.5 + Safety stock)
     const estimatedDemand = 1.5;
     const estimatedRop = Math.round((leadVal * estimatedDemand) + safetyVal);
     const previewRop = document.getElementById("previewRop");
@@ -213,7 +247,7 @@ function updateLivePreview() {
 
     // 6. Codes Card
     const previewSkuCode = document.getElementById("previewSkuCode");
-    if (previewSkuCode) previewSkuCode.textContent = skuVal || "G-L8FE2R";
+    if (previewSkuCode) previewSkuCode.textContent = skuVal || "PRD-0001";
 
     const previewBarcodeText = document.getElementById("previewBarcodeText");
     if (previewBarcodeText) previewBarcodeText.textContent = barcodeVal || "8769933320623";
@@ -251,11 +285,12 @@ function collectProductFormData() {
     const minimumStock = Number(document.getElementById("minimumStock")?.value || 5);
     const safetyStock = Number(document.getElementById("safetyStock").value || 0);
     const leadTime = Number(document.getElementById("leadTime").value || 10);
-    const reorderPoint = 0;
+    const reorderPoint = typeof calculateReorderPoint === "function" ?
+        calculateReorderPoint(leadTime, 1.5, safetyStock) : Math.round((leadTime * 1.5) + safetyStock);
     const status = calculateStockStatus(stock, minimumStock, reorderPoint);
 
     return {
-        sku: document.getElementById("sku").value.trim(),
+        sku: document.getElementById("sku").value.trim() || generateCategorySku(document.getElementById("category")?.value),
         barcode: (document.getElementById("barcode")?.value || generateRandomBarcode()).trim(),
         name: document.getElementById("productName").value.trim(),
         description: document.getElementById("description").value.trim(),
@@ -267,8 +302,8 @@ function collectProductFormData() {
         minimumStock: minimumStock,
         safetyStock: safetyStock,
         leadTime: leadTime,
-        averageDailyDemand: 0,
-        forecastDemand: 0,
+        averageDailyDemand: 1.5,
+        forecastDemand: Math.round(1.5 * 7),
         reorderPoint: reorderPoint,
         status: status,
         createdAt: formatDateTime(now),
@@ -294,16 +329,42 @@ function validateProduct(product) {
 }
 
 // ==========================================
-// HELPERS
+// CATEGORY-BASED SKU GENERATOR
 // ==========================================
 
-function generateRandomSku() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let rand = "";
-    for (let i = 0; i < 6; i++) {
-        rand += chars.charAt(Math.floor(Math.random() * chars.length));
+function generateCategorySku(categoryName) {
+    if (!categoryName || !categoryName.trim()) {
+        return "PRD-0001";
     }
-    return `G-${rand}`;
+
+    const cleanCat = categoryName.trim().toUpperCase();
+    const prefixMap = {
+        "ELECTRONICS": "ELE",
+        "GROCERIES": "GROC",
+        "FROZEN FOODS": "FRZ",
+        "PERSONAL CARE": "PCAR",
+        "ACCESSORIES": "ACC",
+        "OFFICE SUPPLIES": "OFF",
+        "DAIRY": "DAIRY",
+        "BEVERAGES": "BEV",
+        "SNACKS": "SNA",
+        "HOME & KITCHEN": "HOME"
+    };
+
+    let prefix = prefixMap[cleanCat];
+    if (!prefix) {
+        prefix = cleanCat.replace(/[^A-Z0-9]/g, "").slice(0, 4) || "PRD";
+    }
+
+    let localProducts = [];
+    if (typeof getLocalProducts === "function") {
+        localProducts = getLocalProducts() || [];
+    }
+
+    const matchingCount = localProducts.filter(p => p.sku && p.sku.toUpperCase().startsWith(prefix)).length;
+    const nextNum = String(matchingCount + 1).padStart(4, "0");
+
+    return `${prefix}-${nextNum}`;
 }
 
 function generateRandomBarcode() {
@@ -342,3 +403,37 @@ function formatDateTime(date) {
     const pad = (n) => String(n).padStart(2, "0");
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
+
+// ==========================================
+// CUSTOM SPINNER ARROW CONTROLLER
+// ==========================================
+
+document.addEventListener("click", (e) => {
+    const spinBtn = e.target.closest(".spin-btn");
+    if (!spinBtn) return;
+
+    const group = spinBtn.closest(".form-group");
+    if (!group) return;
+
+    const input = group.querySelector("input[type='number']");
+    if (!input) return;
+
+    const step = Number(input.step) || 1;
+    const min = input.hasAttribute("min") ? Number(input.min) : 0;
+    let val = Number(input.value || 0);
+
+    if (spinBtn.classList.contains("spin-up")) {
+        val += step;
+    } else if (spinBtn.classList.contains("spin-down")) {
+        val = Math.max(min, val - step);
+    }
+
+    if (step < 1) {
+        input.value = val.toFixed(2);
+    } else {
+        input.value = Math.round(val);
+    }
+
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+});

@@ -14,7 +14,12 @@ let activeRestockProduct = null;
 
 const getDom = (id) => document.getElementById(id);
 
-document.addEventListener("DOMContentLoaded", initReorderPage);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initReorderPage);
+} else {
+    initReorderPage();
+}
+
 
 async function initReorderPage() {
     try {

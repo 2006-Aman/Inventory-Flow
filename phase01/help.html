@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>html,body{background-color:#0b0f19!important;color-scheme:dark;}</style>
+
+    <title>Help & Support | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global & Page CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/settings.css">
+
+    <style>
+        .help-glass-card {
+            background: linear-gradient(135deg, rgba(13, 20, 36, 0.95) 0%, rgba(18, 30, 54, 0.95) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+        }
+        .help-cat-card {
+            background: #0d1424;
+            border: 1px solid #1c2840;
+            border-radius: 18px;
+            padding: 24px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+        .help-cat-card:hover {
+            transform: translateY(-4px);
+            border-color: #0284c7;
+            box-shadow: 0 12px 30px rgba(2, 132, 199, 0.2);
+            background: #111c34;
+        }
+        .tag-pill {
+            background: rgba(7, 11, 20, 0.8);
+            border: 1px solid #1c2840;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 9999px !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tag-pill:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+        .faq-accordion-item {
+            background: #070b14;
+            border: 1px solid #1c2840;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+        .faq-accordion-item:hover {
+            border-color: #38bdf8;
+        }
+        .faq-accordion-head {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+        .faq-accordion-head h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .faq-accordion-head i {
+            font-size: 20px;
+            color: #38bdf8;
+            transition: transform 0.25s ease;
+        }
+        .faq-accordion-item.active .faq-accordion-head i {
+            transform: rotate(180deg);
+        }
+        .faq-accordion-body {
+            display: none;
+            padding: 0 24px 22px;
+            font-size: 13.5px;
+            color: #94a3b8;
+            line-height: 1.65;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 16px;
+        }
+        .faq-accordion-item.active .faq-accordion-body {
+            display: block;
+            animation: faqOpen 0.25s ease;
+        }
+        @keyframes faqOpen {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="dashboard.html" class="sidebar-logo-link" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;">
+                    <div class="logo-icon" title="InventoryIQ" style="width: 42px; height: 42px; flex: 0 0 42px;">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block;">
+                          <defs>
+                            <linearGradient id="iq-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stop-color="#38bdf8"/>
+                              <stop offset="50%" stop-color="#0ea5e9"/>
+                              <stop offset="100%" stop-color="#6366f1"/>
+                            </linearGradient>
+                            <linearGradient id="iq-bar-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+                              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+                              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95"/>
+                            </linearGradient>
+                            <filter id="iq-glow" x="-20%" y="-20%" width="140%" height="140%">
+                              <feGaussianBlur stdDeviation="4" result="blur" />
+                              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                          </defs>
+                          <rect x="6" y="6" width="88" height="88" rx="24" fill="url(#iq-logo-grad)" />
+                          <rect x="7" y="7" width="86" height="86" rx="23" stroke="#ffffff" stroke-opacity="0.35" stroke-width="2" />
+                          <rect x="24" y="52" width="10" height="22" rx="3" fill="url(#iq-bar-grad)" opacity="0.6" />
+                          <rect x="42" y="40" width="10" height="34" rx="3" fill="url(#iq-bar-grad)" opacity="0.8" />
+                          <rect x="60" y="26" width="10" height="48" rx="3" fill="#ffffff" />
+                          <path d="M 20 62 Q 38 48 55 36 T 80 20" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" filter="url(#iq-glow)" />
+                          <circle cx="80" cy="20" r="6" fill="#38bdf8" stroke="#ffffff" stroke-width="2.5" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>Inventory<span>IQ</span></h2>
+                        <p>Forecast &middot; Reorder &middot; Grow</p>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="./dashboard.html" class="nav-item">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="./inventory.html" class="nav-item">
+                    <i class="ph ph-cube"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="./add-product.html" class="nav-item">
+                    <i class="ph ph-package"></i>
+                    <span>Add Product</span>
+                </a>
+                <a href="./sales.html" class="nav-item">
+                    <i class="ph ph-shopping-cart-simple"></i>
+                    <span>Sales Entry</span>
+                </a>
+                <a href="./sales-history.html" class="nav-item">
+                    <i class="ph ph-clock-counter-clockwise"></i>
+                    <span>Sales History</span>
+                </a>
+                <a href="./reorder.html" class="nav-item">
+                    <i class="ph ph-bell-ringing"></i>
+                    <span>Reorder Alerts</span>
+                    <span class="badge-count red" id="sidebarAlertCount">0</span>
+                </a>
+                <a href="./forecast.html" class="nav-item">
+                    <i class="ph ph-trend-up"></i>
+                    <span>Demand Forecast</span>
+                </a>
+                <a href="./analytics.html" class="nav-item">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="./reports.html" class="nav-item">
+                    <i class="ph ph-file-text"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="./settings.html" class="nav-item">
+                    <i class="ph ph-sliders"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer-card">
+                <div class="engine-head">
+                    <span class="engine-status"><span class="status-dot"></span> Running</span>
+                    <a href="forecast.html" class="engine-view-btn">View</a>
+                </div>
+                <div class="engine-body">
+                    <div class="engine-ring" id="engine-ring" style="--pct: 266deg;">
+                        <div class="engine-ring-inner"><span id="engine-ring-value">74%</span></div>
+                    </div>
+                    <div class="engine-info">
+                        <span class="engine-title">Forecast Engine</span>
+                        <span class="engine-desc">Moving Average • 7d</span>
+                        <span class="engine-refresh">Next refresh in <span id="engine-countdown">16:06:29</span></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+
+            <!-- Global Topbar -->
+            <header class="navbar">
+                <div class="navbar-left">
+                    <span class="greeting-subtitle">GOOD MORNING • AMAN</span>
+                    <h1 class="navbar-page-title">Help & Support</h1>
+                </div>
+
+                <div class="navbar-center">
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search or jump to...">
+                    </div>
+                </div>
+
+                <div class="navbar-right">
+                    <div class="date-badge">
+                        <i class="ph ph-calendar"></i>
+                        <span id="liveDate">--</span>
+                    </div>
+                    <div class="time-badge" id="liveTime">--:--:--</div>
+
+                    <button class="icon-btn" title="Toggle Theme"><i class="ph ph-sun"></i></button>
+                    <button class="icon-btn has-badge" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                        <span class="dot-badge">0</span>
+                    </button>
+
+                    <div class="user-profile" id="userProfileBtn">
+                        <div class="avatar-circle">A</div>
+                        <span class="user-name">Aman</span>
+                        <i class="ph ph-caret-down"></i>
+
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <div class="user-dropdown-header">
+                                <div class="avatar-circle" style="width:32px; height:32px; font-size:13px;">A</div>
+                                <div>
+                                    <strong>Aman Sharma</strong>
+                                    <span>admin@inventoryflow.com</span>
+                                </div>
+                            </div>
+                            <a href="./profile.html" class="user-dropdown-item"><i class="ph ph-user"></i> Profile</a>
+                            <a href="./help.html" class="user-dropdown-item"><i class="ph ph-question"></i> Help & Support</a>
+                            <button type="button" class="user-dropdown-item signout" id="globalSignOutBtn"><i class="ph ph-sign-out"></i> Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content">
+
+                <!-- HERO HELP BANNER -->
+                <div class="help-glass-card" style="margin-bottom: 28px; padding: 40px 32px; text-align: center;">
+                    <i class="ph ph-life-buoy" style="font-size: 52px; color: #38bdf8; margin-bottom: 14px; display: inline-block;"></i>
+                    <h2 style="margin: 0 0 8px; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">How can we help you today?</h2>
+                    <p style="margin: 0 auto 24px; font-size: 14.5px; color: #94a3b8; max-width: 600px; line-height: 1.6;">
+                        Search our knowledge base for instant answers on Reorder Point formulas, CSV exports, forecast models, and offline operations.
+                    </p>
+
+                    <!-- LIVE HELP SEARCH INPUT -->
+                    <div style="position: relative; max-width: 560px; margin: 0 auto 18px;">
+                        <i class="ph ph-magnifying-glass" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
+                        <input type="text" id="helpSearchInput" placeholder="Type a keyword (e.g. ROP, CSV, offline, SKU)..." style="width: 100%; background: #070b14; border: 1px solid #1c2840; border-radius: 9999px; padding: 14px 24px 14px 52px; color: #ffffff; font-size: 14.5px; outline: none; box-sizing: border-box; transition: all 0.2s ease;">
+                    </div>
+
+                    <!-- QUICK FILTER TAGS -->
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" class="tag-pill" data-query="rop">ROP Calculation</button>
+                        <button type="button" class="tag-pill" data-query="csv">CSV Export</button>
+                        <button type="button" class="tag-pill" data-query="offline">Offline Mode</button>
+                        <button type="button" class="tag-pill" data-query="sku">Category SKU</button>
+                        <button type="button" class="tag-pill" data-query="forecast">Forecast AI</button>
+                    </div>
+                </div>
+
+                <!-- HELP CATEGORIES GRID -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px;">
+                    
+                    <div class="help-cat-card">
+                        <i class="ph ph-package" style="font-size: 36px; color: #38bdf8; margin-bottom: 16px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px; font-size: 17px; font-weight: 800; color: #ffffff;">Inventory Operations</h3>
+                        <p style="margin: 0; font-size: 13px; color: #8b949e; line-height: 1.55;">
+                            Guides on adding new stock items, editing product details, and setting category SKU prefixes.
+                        </p>
+                    </div>
+
+                    <div class="help-cat-card">
+                        <i class="ph ph-shopping-cart-simple" style="font-size: 36px; color: #34d399; margin-bottom: 16px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px; font-size: 17px; font-weight: 800; color: #ffffff;">Sales & Ledger</h3>
+                        <p style="margin: 0; font-size: 13px; color: #8b949e; line-height: 1.55;">
+                            How to record customer sales, view sales history logs, and generate formatted CSV exports.
+                        </p>
+                    </div>
+
+                    <div class="help-cat-card">
+                        <i class="ph ph-chart-line" style="font-size: 36px; color: #a855f7; margin-bottom: 16px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px; font-size: 17px; font-weight: 800; color: #ffffff;">Forecast AI Engine</h3>
+                        <p style="margin: 0; font-size: 13px; color: #8b949e; line-height: 1.55;">
+                            Learn about Moving Average 7d/14d math, Reorder Point (ROP) triggers, and safety stock buffers.
+                        </p>
+                    </div>
+
+                    <div class="help-cat-card">
+                        <i class="ph ph-database" style="font-size: 36px; color: #f59e0b; margin-bottom: 16px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px; font-size: 17px; font-weight: 800; color: #ffffff;">Data & Backups</h3>
+                        <p style="margin: 0; font-size: 13px; color: #8b949e; line-height: 1.55;">
+                            Exporting JSON database snapshots, restoring backups, and offline LocalStorage fallback.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- INTERACTIVE FAQ ACCORDION SECTION -->
+                <div class="help-glass-card" style="padding: 32px; margin-bottom: 28px;">
+                    <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                        <h3 style="margin: 0; font-size: 18.5px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 10px;">
+                            <i class="ph ph-question" style="color: #38bdf8; font-size: 22px;"></i> Frequently Asked Questions
+                        </h3>
+                        <span id="faqCountBadge" style="font-size: 12.5px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.25); padding: 5px 14px; border-radius: 9999px; font-weight: 700;">Showing All Topics</span>
+                    </div>
+
+                    <div id="faqList" style="display: flex; flex-direction: column; gap: 14px;">
+                        
+                        <div class="faq-accordion-item active" data-keywords="rop reorder point calculation trigger stock alert formula">
+                            <div class="faq-accordion-head">
+                                <h4>How is the Reorder Point (ROP) calculated for inventory items?</h4>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="faq-accordion-body">
+                                Reorder Point is calculated using: <code style="background:#162238; color:#38bdf8; padding:3px 10px; border-radius:6px; font-weight:700;">ROP = (Average Daily Sales × Lead Time Days) + Safety Stock</code>. When an item's current stock falls below this threshold, it automatically triggers a Reorder Alert badge.
+                            </div>
+                        </div>
+
+                        <div class="faq-accordion-item" data-keywords="offline json-server server band storage fallback localstorage">
+                            <div class="faq-accordion-head">
+                                <h4>How does the app handle offline data when json-server is closed?</h4>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="faq-accordion-body">
+                                The system includes a dual storage fallback architecture. If <code style="background:#162238; color:#38bdf8; padding:3px 10px; border-radius:6px; font-weight:700;">json-server</code> is stopped, the application automatically switches to LocalStorage data persistence, allowing you to seamlessly create products, record sales, and view reports without interruption.
+                            </div>
+                        </div>
+
+                        <div class="faq-accordion-item" data-keywords="sku category automatic prefix add product code">
+                            <div class="faq-accordion-head">
+                                <h4>How do automatic Category SKU codes work?</h4>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="faq-accordion-body">
+                                On the Add Product page, selecting or typing a Category (e.g. <em>Electronics</em>, <em>Groceries</em>, <em>Frozen Foods</em>) automatically generates a category-prefixed SKU (such as <code style="background:#162238; color:#38bdf8; padding:3px 10px; border-radius:6px; font-weight:700;">ELE-0001</code> or <code style="background:#162238; color:#38bdf8; padding:3px 10px; border-radius:6px; font-weight:700;">GROC-0002</code>).
+                            </div>
+                        </div>
+
+                        <div class="faq-accordion-item" data-keywords="export csv sales reports download ledger excel">
+                            <div class="faq-accordion-head">
+                                <h4>How do I export my sales and business reports?</h4>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="faq-accordion-body">
+                                Open either the <strong>Sales History</strong> or <strong>Reports</strong> page and click the "Export CSV" button located at the top right. A downloadable CSV file containing your formatted data will be generated instantly.
+                            </div>
+                        </div>
+
+                        <div class="faq-accordion-item" data-keywords="forecast moving average 7d 14d demand prediction engine">
+                            <div class="faq-accordion-head">
+                                <h4>How does the Moving Average Forecast Engine work?</h4>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="faq-accordion-body">
+                                The forecast engine analyzes your recent 7-day or 14-day sales velocity to calculate average daily sales trends and project expected stock depletion dates, helping you restock before running out.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- CONTACT SUPPORT BOX -->
+                <div style="padding: 24px 32px; background: #070b14; border: 1px solid #1c2840; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <h4 style="margin: 0 0 6px; font-size: 16.5px; color: #ffffff; font-weight: 800;">Still need assistance?</h4>
+                        <p style="margin: 0; font-size: 13.5px; color: #8b949e;">Our technical support team is available 24/7 to assist with your inventory setup.</p>
+                    </div>
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                        <a href="mailto:support@inventoryflow.com" class="btn-save" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 11px 26px; font-size: 14px;">
+                            <i class="ph ph-envelope-simple" style="font-size: 18px;"></i> Contact Support
+                        </a>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/components/sidebar.js"></script>
+    <script>
+        // FAQ Accordion Toggle Handler
+        document.querySelectorAll('.faq-accordion-head').forEach(head => {
+            head.addEventListener('click', () => {
+                const item = head.parentElement;
+                const isActive = item.classList.contains('active');
+                if (isActive) {
+                    item.classList.remove('active');
+                } else {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Live Help Search & Tag Filter
+        const searchInput = document.getElementById('helpSearchInput');
+        const faqItems = document.querySelectorAll('.faq-accordion-item');
+        const countBadge = document.getElementById('faqCountBadge');
+
+        const filterFaqs = (query) => {
+            let visibleCount = 0;
+            faqItems.forEach(item => {
+                const text = (item.textContent + ' ' + (item.getAttribute('data-keywords') || '')).toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (query === '') {
+                countBadge.textContent = 'Showing All Topics';
+            } else {
+                countBadge.textContent = `${visibleCount} Topics Found`;
+            }
+        };
+
+        searchInput.addEventListener('input', (e) => {
+            filterFaqs(e.target.value.toLowerCase().trim());
+        });
+
+        document.querySelectorAll('.tag-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const q = pill.getAttribute('data-query');
+                searchInput.value = q;
+                filterFaqs(q);
+            });
+        });
+    </script>
+</body>
+
+</html>

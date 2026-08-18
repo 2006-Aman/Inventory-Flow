@@ -99,9 +99,11 @@ body {
 
 /* CONTENT CONTAINER */
 .content {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 30px 24px 60px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 24px 32px 60px;
+    box-sizing: border-box;
 }
 
 .page-header {

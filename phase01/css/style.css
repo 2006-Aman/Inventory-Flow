@@ -4,10 +4,362 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
+:root {
+    color-scheme: dark;
+}
+
+html, body {
+    background-color: #0b0f19 !important;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+}
+
+/* SIDEBAR & MAIN WRAPPER LAYOUT OVERRIDE */
+.sidebar,
+.sidebar-nav,
+.sidebar-menu,
+.sidebar-footer {
+    overflow-x: hidden !important;
+}
+
+.sidebar {
+    width: 265px !important;
+}
+
+.sidebar-nav,
+.sidebar-menu {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.sidebar::-webkit-scrollbar,
+.sidebar-nav::-webkit-scrollbar,
+.sidebar-menu::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar-horizontal,
+.sidebar-nav::-webkit-scrollbar-horizontal {
+    width: 0px !important;
+    height: 0px !important;
+    display: none !important;
+}
+
+.sidebar-nav a,
+.sidebar .nav-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.main-wrapper,
+.main-content {
+    margin-left: 265px !important;
+    width: calc(100% - 265px) !important;
+}
+
+/* GLOBAL TOPBAR PILL SHAPES & HEIGHT OVERRIDE */
+.navbar {
+    min-height: 72px !important;
+    padding: 12px 32px !important;
+}
+
+.navbar .navbar-center {
+    margin-left: auto !important;
+    margin-right: 20px !important;
+}
+
+.navbar .search-bar,
+.global-topbar .search-box {
+    border-radius: 9999px !important;
+    padding: 10px 22px !important;
+    width: 320px !important;
+}
+
+.navbar .search-bar input,
+.global-topbar .search-box input {
+    font-size: 13.5px !important;
+}
+
+.navbar .search-bar i,
+.global-topbar .search-box i {
+    font-size: 17px !important;
+}
+
+.navbar .date-badge,
+.navbar .time-badge,
+.global-topbar .date-chip,
+.global-topbar .time-display {
+    border-radius: 9999px !important;
+    padding: 9px 18px !important;
+    font-size: 13px !important;
+}
+
+.navbar .icon-btn,
+.global-topbar .icon-btn {
+    border-radius: 9999px !important;
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 18px !important;
+}
+
+.navbar .user-profile,
+.global-topbar .user-trigger {
+    border-radius: 9999px !important;
+    border: 1px solid #1c2840 !important;
+    background: #070b14 !important;
+    padding: 6px 18px 6px 6px !important;
+    font-size: 13.5px !important;
+}
+
+.navbar .avatar-circle {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 14px !important;
+}
+
+/* USER PROFILE DROPDOWN MENU */
+.user-profile {
+    position: relative !important;
+    cursor: pointer;
+}
+
+.user-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: #0d1424;
+    border: 1px solid #1c2840;
+    border-radius: 16px !important;
+    padding: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.user-dropdown-menu.active {
+    display: flex !important;
+    animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 12px;
+    border-bottom: 1px solid #1c2840;
+    margin-bottom: 6px;
+}
+
+.user-dropdown-header strong {
+    display: block;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.user-dropdown-header span {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 9999px !important;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.user-dropdown-item i {
+    font-size: 16px;
+    color: #38bdf8;
+}
+
+.user-dropdown-item:hover {
+    background: #162238;
+    color: #ffffff;
+}
+
+.user-dropdown-item.signout:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.user-dropdown-item.signout:hover i {
+    color: #ef4444;
+}
+
+/* GLOBAL FORM CONTROL & INPUT STYLING */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 2px;
+}
+
+.form-control,
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    background: #070b14;
+    border: 1px solid #1c2840;
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    background: #0d1424;
+}
+
+.form-control::placeholder,
+.form-group input::placeholder {
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* GLOBAL ALL BUTTONS ROUNDED PILL SHAPE OVERRIDE */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-primary-blue,
+.btn-secondary-dark,
+.btn-gradient,
+.btn-outline,
+.btn-save,
+.btn-cancel,
+.btn-save-sale,
+.btn-new-sale,
+.btn-csv,
+.btn-export-report,
+.btn-forecast-engine,
+.btn-restock,
+.btn-history,
+.btn-topbar,
+.btn-save-settings,
+.btn-data-action,
+.settings-tab-btn,
+.pill-btn,
+.engine-view-btn,
+.engine-link,
+.action-btn,
+.table-action-btn,
+.pagination-btn,
+.filter-btn,
+.tab-btn,
+a.btn,
+a.btn-primary,
+a.btn-secondary,
+a.btn-save,
+a.btn-primary-blue,
+a.btn-secondary-dark {
+    border-radius: 9999px !important;
+}
+
 body {
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================
+   SMOOTH PAGE LOAD FADE-IN & TRANSITIONS
+========================================== */
+@keyframes smoothPageFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content {
+    animation: smoothPageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: opacity, transform;
+}
+
+/* GLOBAL INTERACTIVE TRANSITIONS */
+a, button, .btn, .nav-item, input, select, textarea, .kpi-card, .form-card, .preview-card {
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar .nav-item:hover {
+    transform: translateX(3px);
+}
+
+button:active, .btn:active, .nav-item:active {
+    transform: scale(0.98);
+}
+
+/* HIDE DEFAULT BROWSER NUMBER SPINNERS GLOBALLY */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 
 /* ==========================================

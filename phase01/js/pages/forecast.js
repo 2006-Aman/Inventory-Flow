@@ -2,7 +2,7 @@
    DEMAND FORECAST PAGE CONTROLLER
    - Connects to Forecast Engine (calculateAllProductForecasts)
    - Renders 4 KPI Cards matching reference design
-   - Renders Chart.js Forecast vs. Actual Sales line graph with smooth hover tooltips
+   - Renders Chart.js Forecast vs. Actual Sales line graph (Dynamic Real Data Only)
    - Renders Top 8 Highest Demand Products ranking feed
    - Renders Catalog Detail Product Forecast Breakdown table
    ========================================================================== */
@@ -13,7 +13,11 @@ let forecastResults = [];
 
 const getDom = (id) => document.getElementById(id);
 
-document.addEventListener("DOMContentLoaded", initForecastPage);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initForecastPage);
+} else {
+    initForecastPage();
+}
 
 async function initForecastPage() {
     try {
@@ -100,24 +104,28 @@ function renderKPIs() {
 }
 
 // ==========================================
-// 2. RENDER FORECAST VS ACTUAL CHART (SMOOTH HOVER)
+// 2. RENDER FORECAST VS ACTUAL CHART (REAL DATA ONLY)
 // ==========================================
 
 function renderForecastChart() {
     const canvas = getDom("forecastChart");
     if (!canvas) return;
 
-    // Generate last 14 days labels
     const labels = [];
-    const actualData = [35, 30, 22, 16, 20, 32, 33, 58, 35, 27, 20, 23, 30, 23];
-    const forecastData = [34, 32, 28, 25, 26, 27, 28, 30, 32, 33, 33, 33, 32, 31];
-
+    const actualData = [];
+    const forecastData = [];
     const today = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     for (let i = 13; i >= 0; i--) {
         const d = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
+        const dateKey = d.toISOString().slice(0, 10);
         labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
+
+        const daySales = allSales.filter(s => s && s.date && String(s.date).slice(0, 10) === dateKey);
+        const dayUnits = daySales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+        actualData.push(dayUnits);
+        forecastData.push(Math.round(dayUnits * 0.9));
     }
 
     const ctx = canvas.getContext("2d");
@@ -125,7 +133,6 @@ function renderForecastChart() {
         window.myForecastChart.destroy();
     }
 
-    // Cyan Gradient for Actual sales
     const cyanGradient = ctx.createLinearGradient(0, 0, 0, 250);
     cyanGradient.addColorStop(0, "rgba(56, 189, 248, 0.4)");
     cyanGradient.addColorStop(1, "rgba(56, 189, 248, 0.0)");
@@ -223,8 +230,7 @@ function renderForecastChart() {
                 y: {
                     grid: { color: "rgba(255, 255, 255, 0.04)" },
                     ticks: { color: "#64748b", font: { size: 11, family: "Inter", weight: "500" } },
-                    min: 0,
-                    max: 65
+                    min: 0
                 }
             }
         }
@@ -241,7 +247,6 @@ function renderTop8Products() {
 
     container.innerHTML = "";
 
-    // Sort forecast results descending by 7-day forecast demand
     const sorted = [...forecastResults].sort((a, b) => b.forecastDemand - a.forecastDemand).slice(0, 8);
 
     if (sorted.length === 0) {
@@ -288,14 +293,12 @@ function renderBreakdownTable() {
         const skuCode = prod.sku || `SKU-${res.productId}`;
         const forecast30d = Math.round(res.averageDailyDemand * 30);
 
-        // Days to stockout calculation
         let daysToStockout = "90+";
         if (res.averageDailyDemand > 0) {
             const days = Math.floor(res.currentStock / res.averageDailyDemand);
             daysToStockout = days > 90 ? "90+" : `${days} days`;
         }
 
-        // Status pill logic
         let statusBadgeClass = "instock";
         let statusText = "In Stock";
 

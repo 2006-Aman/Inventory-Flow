@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>html,body{background-color:#0b0f19!important;color-scheme:dark;}</style>
 
     <title>Inventory Analytics | Inventory Reorder System</title>
 
@@ -18,46 +19,148 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Global CSS -->
+    <!-- Global & Page CSS -->
     <link rel="stylesheet" href="./css/variables.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
     <link rel="stylesheet" href="./css/analytics.css">
     <link rel="stylesheet" href="./css/responsive.css">
 </head>
 
 <body>
 
-    <div class="page-wrapper">
+    <div class="app-layout">
 
-        <!-- TOP BAR -->
-        <header class="topbar">
-            <div class="brand">
-                Inventory Reorder System
-            </div>
-
-            <div class="topbar-right">
-                <span id="serverStatus" class="server-status">Checking server...</span>
-                <a href="./inventory.html" class="btn-topbar">Inventory</a>
-                <a href="./sales.html" class="btn-topbar">Record Sale</a>
-            </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main class="content">
-
-            <!-- PAGE SUBHEADER ROW -->
-            <div class="analytics-subheader">
-                <p class="analytics-subtext">
-                    Real-time inventory valuation, stock turnover velocity, day-of-week sales patterns, and health metrics.
-                </p>
-                <div class="header-actions">
-                    <span class="pulse-badge">
-                        <span class="pulse-dot"></span> Real-Time Analytics
-                    </span>
+        <!-- ===================== Sidebar Navigation ===================== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo-box" style="background: transparent; box-shadow: none; padding: 0;">
+                    <img src="./assets/logo.svg" alt="InventoryIQ Logo" style="width: 42px; height: 42px; display: block;" />
+                </div>
+                <div class="brand-text-group">
+                    <span class="brand-name">Inventory<span class="brand-highlight">IQ</span></span>
+                    <span class="brand-tagline">FORECAST • REORDER • GROW</span>
                 </div>
             </div>
+
+            <nav class="sidebar-menu">
+                <a href="./dashboard.html" class="nav-item">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="./inventory.html" class="nav-item">
+                    <i class="ph ph-package"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="./add-product.html" class="nav-item">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Add Product</span>
+                </a>
+                <a href="./sales.html" class="nav-item">
+                    <i class="ph ph-shopping-cart-simple"></i>
+                    <span>Sales</span>
+                </a>
+                <a href="./sales-history.html" class="nav-item">
+                    <i class="ph ph-clock-counter-clockwise"></i>
+                    <span>Sales History</span>
+                </a>
+                <a href="./reorder.html" class="nav-item">
+                    <i class="ph ph-bell-ringing"></i>
+                    <span>Reorder Alerts</span>
+                    <span class="badge-count red" id="sidebarAlertCount">0</span>
+                </a>
+                <a href="./forecast.html" class="nav-item">
+                    <i class="ph ph-trend-up"></i>
+                    <span>Demand Forecast</span>
+                </a>
+                <a href="./analytics.html" class="nav-item active">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="./reports.html" class="nav-item">
+                    <i class="ph ph-file-text"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="./settings.html" class="nav-item">
+                    <i class="ph ph-sliders"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer Card -->
+            <div class="sidebar-footer-card">
+                <div class="engine-head">
+                    <span class="engine-status"><span class="status-dot"></span> Running</span>
+                    <a href="forecast.html" class="engine-view-btn">View</a>
+                </div>
+                <div class="engine-body">
+                    <div class="engine-ring" id="engine-ring" style="--pct: 266deg;">
+                        <div class="engine-ring-inner"><span id="engine-ring-value">74%</span></div>
+                    </div>
+                    <div class="engine-info">
+                        <span class="engine-title">Forecast Engine</span>
+                        <span class="engine-desc">Moving Average • 7d</span>
+                        <span class="engine-refresh">Next refresh in <span id="engine-countdown">16:06:29</span></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===================== Main Content Wrapper ===================== -->
+        <div class="main-wrapper">
+
+            <!-- Global Topbar (Search/Profile) -->
+            <header class="navbar">
+                <div class="navbar-left">
+                    <span class="greeting-subtitle">GOOD MORNING • AMAN</span>
+                    <h1 class="navbar-page-title">Analytics</h1>
+                </div>
+
+                <div class="navbar-center">
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search or jump to...">
+                    </div>
+                </div>
+
+                <div class="navbar-right">
+                    <div class="date-badge">
+                        <i class="ph ph-calendar"></i>
+                        <span id="liveDate">--</span>
+                    </div>
+                    <div class="time-badge" id="liveTime">--:--:--</div>
+
+                    <button class="icon-btn" title="Toggle Theme"><i class="ph ph-sun"></i></button>
+                    <button class="icon-btn has-badge" title="Notifications">
+                        <i class="ph ph-bell"></i>
+                        <span class="dot-badge">0</span>
+                    </button>
+
+                    <div class="user-profile" id="userProfileBtn">
+                        <div class="avatar-circle">A</div>
+                        <span class="user-name">Aman</span>
+                        <i class="ph ph-caret-down"></i>
+
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <div class="user-dropdown-header">
+                                <div class="avatar-circle" style="width:32px; height:32px; font-size:13px;">A</div>
+                                <div>
+                                    <strong>Aman Sharma</strong>
+                                    <span>admin@inventoryflow.com</span>
+                                </div>
+                            </div>
+                            <a href="./profile.html" class="user-dropdown-item"><i class="ph ph-user"></i> Profile</a>
+                            <a href="./help.html" class="user-dropdown-item"><i class="ph ph-question"></i> Help & Support</a>
+                            <button type="button" class="user-dropdown-item signout" id="globalSignOutBtn"><i class="ph ph-sign-out"></i> Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content">
+
 
             <!-- TOP 4 KPI CARDS GRID -->
             <div class="kpi-grid-4">
@@ -193,21 +296,25 @@
             </div>
 
         </main>
-
     </div>
+</div>
 
-    <!-- JAVASCRIPT -->
-    <script src="./js/config.js"></script>
-    <script src="./js/api/api.js"></script>
-    <script src="./js/api/productApi.js"></script>
-    <script src="./js/api/salesApi.js"></script>
-    <script src="./js/storage/storage.js"></script>
-    <script src="./js/utils/helpers.js"></script>
-    <script src="./js/forecast/movingAverage.js"></script>
-    <script src="./js/forecast/reorderPoint.js"></script>
-    <script src="./js/forecast/forecast.js"></script>
-    <script src="./js/pages/analytics.js"></script>
+<!-- JAVASCRIPT -->
+<script src="./js/config.js"></script>
+<script src="./js/api/api.js"></script>
+<script src="./js/api/productApi.js"></script>
+<script src="./js/api/salesApi.js"></script>
+<script src="./js/storage/storage.js"></script>
+<script src="./js/utils/helpers.js"></script>
+<script src="./js/forecast/movingAverage.js"></script>
+<script src="./js/forecast/reorderPoint.js"></script>
+<script src="./js/forecast/forecast.js"></script>
+<script src="./js/components/sidebar.js"></script>
+<script src="./js/components/topbar.js"></script>
+<script src="./js/pages/analytics.js"></script>
 
 </body>
 
 </html>
+
+

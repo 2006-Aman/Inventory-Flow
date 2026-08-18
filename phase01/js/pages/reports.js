@@ -2,8 +2,8 @@
    BUSINESS REPORTS & PERFORMANCE CONTROLLER
    - Custom Date Range & Preset Filters (30 Days, 90 Days, All Time)
    - Compute 5 KPI Cards: Total Revenue, Net Profit, Total Orders, Units Sold, Avg Order Value
-   - Render Chart.js Daily Revenue Trend Vertical Bar Chart
-   - Render Chart.js Revenue by Category Ring/Doughnut Chart
+   - Render Chart.js Daily Revenue Trend Vertical Bar Chart (Real Data Only)
+   - Render Chart.js Revenue by Category Ring/Doughnut Chart (Real Data Only)
    - Render Monthly Breakdown Table (Month, Orders, Units, Revenue, Net Profit)
    - Render Top Products Ranking Table (Product, Units, Revenue, Net Profit)
    - Export CSV Performance Report
@@ -141,8 +141,6 @@ function setupFilterListeners() {
         if (toInput) toInput.addEventListener("change", applyFiltersAndRender);
     }
 
-
-    // Make whole date group container and labels open calendar picker on click
     document.querySelectorAll(".date-input-group").forEach(group => {
         group.addEventListener("click", (e) => {
             const input = group.querySelector("input[type='date']");
@@ -151,7 +149,6 @@ function setupFilterListeners() {
             }
         });
     });
-
 
     document.querySelectorAll(".pill-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -190,7 +187,6 @@ function setupFilterListeners() {
         });
     });
 }
-
 
 function applyFiltersAndRender() {
     const fromVal = getDom("fromDate")?.value;
@@ -236,17 +232,14 @@ function renderKPIs() {
     if (getDom("kpi-aov")) getDom("kpi-aov").textContent = fmt(avgOrderValue);
 }
 
-
-
 // ==========================================
-// 2. CHART 1: DAILY REVENUE TREND
+// 2. CHART 1: DAILY REVENUE TREND (REAL DATA ONLY)
 // ==========================================
 
 function renderDailyRevenueChart() {
     const canvas = getDom("dailyRevenueChart");
     if (!canvas) return;
 
-    // Group sales by day in selected range
     const dailyMap = {};
     filteredSales.forEach(s => {
         if (!s.date) return;
@@ -262,21 +255,12 @@ function renderDailyRevenueChart() {
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    if (sortedDates.length > 0) {
-        sortedDates.forEach(key => {
-            const parts = key.split("-");
-            const d = new Date(parts[0], parts[1] - 1, parts[2]);
-            labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
-            dataValues.push(dailyMap[key]);
-        });
-    } else {
-        // Sample timeline data matching screenshot
-        for (let i = 14; i >= 0; i--) {
-            const d = new Date(new Date().getTime() - (i * 24 * 60 * 60 * 1000));
-            labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
-            dataValues.push(Math.floor(Math.random() * 5000) + 1500);
-        }
-    }
+    sortedDates.forEach(key => {
+        const parts = key.split("-");
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
+        dataValues.push(dailyMap[key]);
+    });
 
     const ctx = canvas.getContext("2d");
     if (window.myDailyChart) window.myDailyChart.destroy();
@@ -330,7 +314,7 @@ function renderDailyRevenueChart() {
 }
 
 // ==========================================
-// 3. CHART 2: REVENUE BY CATEGORY
+// 3. CHART 2: REVENUE BY CATEGORY (REAL DATA ONLY)
 // ==========================================
 
 function renderCategoryRevenueChart() {
@@ -339,7 +323,7 @@ function renderCategoryRevenueChart() {
     if (!canvas) return;
 
     const catRevMap = {};
-    const catColors = ["#38bdf8", "#c084fc", "#34d399", "#fbbf24", "#f472b6", "#60a5fa", "#fb923c", "#a855f7", "#38bdf8", "#34d399"];
+    const catColors = ["#38bdf8", "#c084fc", "#34d399", "#fbbf24", "#f472b6", "#60a5fa", "#fb923c", "#a855f7"];
 
     filteredSales.forEach(s => {
         const prod = allProducts.find(p => String(p.id) === String(s.productId));
@@ -350,19 +334,16 @@ function renderCategoryRevenueChart() {
     const labels = Object.keys(catRevMap);
     const dataValues = Object.values(catRevMap);
 
-    const displayLabels = labels.length > 0 ? labels : ["Home & Kitchen", "Dairy", "Frozen Foods", "Beverages", "Personal Care", "Stationery", "Groceries"];
-    const displayData = dataValues.length > 0 ? dataValues : [30661, 7956, 7270, 7082, 6985, 5775, 4811];
-
     const ctx = canvas.getContext("2d");
     if (window.myCategoryChart) window.myCategoryChart.destroy();
 
     window.myCategoryChart = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: displayLabels,
+            labels: labels,
             datasets: [{
-                data: displayData,
-                backgroundColor: catColors.slice(0, displayLabels.length),
+                data: dataValues,
+                backgroundColor: catColors.slice(0, labels.length),
                 borderWidth: 0,
                 hoverOffset: 6
             }]
@@ -386,7 +367,7 @@ function renderCategoryRevenueChart() {
     // Render legend
     if (legendBox) {
         legendBox.innerHTML = "";
-        displayLabels.forEach((catName, idx) => {
+        labels.forEach((catName, idx) => {
             const color = catColors[idx % catColors.length];
             const div = document.createElement("div");
             div.className = "legend-item";
@@ -488,8 +469,6 @@ function renderTopProductsTable() {
         tbody.appendChild(tr);
     });
 }
-
-
 
 // ==========================================
 // CSV EXPORT
