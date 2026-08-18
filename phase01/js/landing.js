@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initScrollRotationCards();
     initParallaxOrbs();
     initScrollDeliveryTruck();
+    initRopCalculator();
+    initDemandSimulator();
 });
 
 /* 1. ZOOM SCROLL EFFECT & 3D MOCKUP TILT */
@@ -147,4 +149,60 @@ function updateNodesActive(activeIndex, nodes) {
             node.classList.remove("node-active");
         }
     });
+}
+
+/* 6. INTERACTIVE ROP FORMULA CALCULATOR CONTROLLER */
+function initRopCalculator() {
+    const leadInput = document.getElementById("calcLeadTime");
+    const demandInput = document.getElementById("calcDailyDemand");
+    const safetyInput = document.getElementById("calcSafetyStock");
+    const resVal = document.getElementById("calcRopResult");
+
+    if (!leadInput || !demandInput || !safetyInput || !resVal) return;
+
+    function calculate() {
+        const lead = parseFloat(leadInput.value) || 0;
+        const demand = parseFloat(demandInput.value) || 0;
+        const safety = parseFloat(safetyInput.value) || 0;
+
+        const rop = Math.round((lead * demand) + safety);
+        resVal.textContent = `${rop} Units`;
+    }
+
+    [leadInput, demandInput, safetyInput].forEach(inp => {
+        inp.addEventListener("input", calculate);
+    });
+
+    calculate();
+}
+
+/* 7. INTERACTIVE DEMAND SIMULATOR WIDGET CONTROLLER */
+function initDemandSimulator() {
+    const slider = document.getElementById("simDemandSlider");
+    const labelVal = document.getElementById("simDemandVal");
+    const revVal = document.getElementById("simRevVal");
+    const safetyVal = document.getElementById("simSafetyVal");
+    const freqVal = document.getElementById("simFreqVal");
+
+    if (!slider || !labelVal || !revVal || !safetyVal || !freqVal) return;
+
+    function update() {
+        const units = parseInt(slider.value) || 25;
+        labelVal.textContent = `${units} Units / Day`;
+
+        // Monthly Revenue ($45 avg item price)
+        const revenue = Math.round(units * 30 * 45);
+        revVal.textContent = `$${revenue.toLocaleString()}`;
+
+        // Safety Stock (Lead Time 5 days * 0.35 buffer)
+        const safety = Math.round(units * 5 * 0.35);
+        safetyVal.textContent = `${safety} Units`;
+
+        // Reorder Frequency
+        const days = Math.max(2, Math.round(180 / units));
+        freqVal.textContent = `Every ${days} Days`;
+    }
+
+    slider.addEventListener("input", update);
+    update();
 }

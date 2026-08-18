@@ -416,18 +416,19 @@ function logoutUser() {
 // ==========================================
 
 function checkAuthGuard() {
-    const currentPath = window.location.pathname.split("/").pop() || "dashboard.html";
-    const isPublicPage = currentPath === "login.html" || currentPath === "signup.html";
+    const currentPath = window.location.pathname.split("/").pop() || "index.html";
+    const isPublicPage = currentPath === "login.html" || currentPath === "signup.html" || currentPath === "index.html" || currentPath === "";
     const user = getCurrentUser();
 
-    // Rule 1: Redirect unauthenticated users to login.html
+    // Rule 1: Redirect unauthenticated users to login.html ONLY if accessing protected app pages (dashboard, inventory, sales, etc.)
     if (!user && !isPublicPage) {
         window.location.href = "login.html";
         return false;
     }
 
-    // Rule 2: Redirect logged in users away from login/signup to dashboard.html
-    if (user && isPublicPage) {
+    // Rule 2: Redirect logged in users away from auth forms (login/signup) to dashboard.html
+    const isAuthForm = currentPath === "login.html" || currentPath === "signup.html";
+    if (user && isAuthForm) {
         window.location.href = "dashboard.html";
         return false;
     }
