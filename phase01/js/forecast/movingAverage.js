@@ -1,318 +1,223 @@
 // ==========================================
-// DEMAND DATA UTILITIES
+// DEMAND DATA & FORECAST MATHEMATICS UTILITIES
+// Pure business logic & reusable math functions
+// No DOM manipulation or API calls
 // ==========================================
 
-
 /**
- * Format Date as YYYY-MM-DD
+ * Format a Date object into YYYY-MM-DD string.
+ * @param {Date} date 
+ * @returns {string} YYYY-MM-DD
  */
 function formatDateKey(date) {
     const year = date.getFullYear();
-
     const month = String(date.getMonth() + 1).padStart(2, "0");
-
     const day = String(date.getDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
 }
 
-
 /**
- * Get valid sales dates.
+ * Extract valid Date objects from a list of sales transactions.
+ * @param {Array} sales 
+ * @returns {Array<Date>}
  */
 function getValidSalesDates(sales) {
-
+    if (!Array.isArray(sales)) return [];
     return sales
-        .filter(sale => sale.date)
+        .filter(sale => sale && sale.date)
         .map(sale => new Date(sale.date))
         .filter(date => !isNaN(date.getTime()));
 }
 
-
 /**
- * Get first recorded sale date.
+ * Find the earliest recorded sale date.
+ * @param {Array} sales 
+ * @returns {Date|null}
  */
 function getFirstSalesDate(sales) {
-
     const dates = getValidSalesDates(sales);
-
-    if (!dates.length) {
-        return null;
-    }
-
-    return new Date(
-        Math.min(
-            ...dates.map(
-                date => date.getTime()
-            )
-        )
-    );
+    if (!dates.length) return null;
+    return new Date(Math.min(...dates.map(d => d.getTime())));
 }
 
-
 /**
- * Get latest recorded sale date.
+ * Find the latest recorded sale date.
+ * @param {Array} sales 
+ * @returns {Date|null}
  */
 function getLatestSalesDate(sales) {
-
     const dates = getValidSalesDates(sales);
-
-    if (!dates.length) {
-        return null;
-    }
-
-    return new Date(
-        Math.max(
-            ...dates.map(
-                date => date.getTime()
-            )
-        )
-    );
+    if (!dates.length) return null;
+    return new Date(Math.max(...dates.map(d => d.getTime())));
 }
 
-
 /**
- * Build daily demand ONLY between
- * first recorded sale and latest recorded sale.
- *
- * Important:
- *
- * Before first sale = UNKNOWN
- * After latest sale  = UNKNOWN
- *
- * Missing days INSIDE observed period = 0
+ * Build a daily demand series ONLY for the observed period
+ * (from the first recorded sale to the latest recorded sale).
+ * 
+ * Rules:
+ * - Days before the first sale are NOT treated as zero.
+ * - Days after the latest sale are NOT included.
+ * - Missing days INSIDE the observed period are assigned 0 demand.
+ * - Multiple sales on the same day are aggregated into a single total.
+ * 
+ * @param {Array} sales 
+ * @returns {Array<{date: string, quantity: number}>}
  */
 function buildObservedDailyDemand(sales) {
-
     if (!Array.isArray(sales) || !sales.length) {
         return [];
     }
 
-
     const firstDate = getFirstSalesDate(sales);
-
     const latestDate = getLatestSalesDate(sales);
-
 
     if (!firstDate || !latestDate) {
         return [];
     }
 
+    // Initialize daily map for all dates in the observed range
+    const dailyMap = {};
+    const current = new Date(firstDate);
+    // Reset time components to compare calendar days cleanly
+    current.setHours(0, 0, 0, 0);
 
-    const dailyDemand = {};
+    const end = new Date(latestDate);
+    end.setHours(0, 0, 0, 0);
 
-
-    // Create every day in observed period
-
-    for (let current = new Date(firstDate); current <= latestDate; current.setDate(current.getDate() + 1)) {
-
-        const dateKey = formatDateKey(current);
-
-        // Missing day = zero demand
-        dailyDemand[dateKey] = 0;
+    while (current <= end) {
+        const key = formatDateKey(current);
+        dailyMap[key] = 0;
+        current.setDate(current.getDate() + 1);
     }
 
-
-    // --------------------------------------
-    // Add actual sales
-    // --------------------------------------
-
+    // Aggregate quantities for each day
     sales.forEach(sale => {
+        if (!sale || !sale.date) return;
+        const sDate = new Date(sale.date);
+        if (isNaN(sDate.getTime())) return;
 
-        if (!sale.date) {
-            return;
-        }
-
-
-        const saleDate = new Date(sale.date);
-
-        if (isNaN(saleDate.getTime())) {
-            return;
-        }
-
-
-        const dateKey = formatDateKey(saleDate);
-
-
-        if (Object.prototype.hasOwnProperty.call(dailyDemand, dateKey)) {
-
-            const quantity = Number(sale.quantity);
-
-
-            if (Number.isFinite(quantity)) {
-
-                dailyDemand[dateKey] += quantity;
+        const key = formatDateKey(sDate);
+        if (Object.prototype.hasOwnProperty.call(dailyMap, key)) {
+            const qty = Number(sale.quantity || 0);
+            if (Number.isFinite(qty) && qty > 0) {
+                dailyMap[key] += qty;
             }
         }
-
     });
 
-
-    return Object.entries(dailyDemand)
-        .map(
-            ([date, quantity]) => ({
-                date,
-                quantity
-            })
-        )
-        .sort(
-            (a, b) =>
-                a.date.localeCompare(b.date)
-        );
+    // Convert map to sorted array
+    return Object.entries(dailyMap)
+        .map(([date, quantity]) => ({ date, quantity }))
+        .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-
 /**
- * Simple Moving Average
+ * Simple Moving Average (SMA)
+ * @param {Array<number>} values 
+ * @returns {number}
  */
 function calculateSMA(values) {
-
-    if (!values.length) {
-        return 0;
-    }
-
-
-    const validValues = values
-        .map(Number)
-        .filter(value => Number.isFinite(value));
-
-
-    if (!validValues.length) {
-        return 0;
-    }
-
-
-    const total = validValues.reduce((sum, value) => sum + value, 0);
-
-
-    return total / validValues.length;
+    if (!Array.isArray(values) || !values.length) return 0;
+    const valid = values.map(Number).filter(Number.isFinite);
+    if (!valid.length) return 0;
+    const sum = valid.reduce((acc, v) => acc + v, 0);
+    return sum / valid.length;
 }
 
-
 /**
- * Exponentially Weighted Moving Average
- *
- * Recent observations get more weight.
+ * Exponentially Weighted Moving Average (EWMA)
+ * S_t = alpha * Y_t + (1 - alpha) * S_{t-1}
+ * @param {Array<number>} values 
+ * @param {number} alpha Smoothing factor (0 < alpha <= 1), default 0.3
+ * @returns {number}
  */
-function calculateEWMA(
-    values,
-    alpha = 0.3
-) {
+function calculateEWMA(values, alpha = 0.3) {
+    if (!Array.isArray(values) || !values.length) return 0;
+    const valid = values.map(Number).filter(Number.isFinite);
+    if (!valid.length) return 0;
 
-    if (!values.length) {
-        return 0;
+    let forecast = valid[0];
+    for (let i = 1; i < valid.length; i++) {
+        forecast = (alpha * valid[i]) + ((1 - alpha) * forecast);
     }
-
-
-    const validValues = values.map(Number).filter(value => Number.isFinite(value));
-
-
-    if (!validValues.length) {
-        return 0;
-    }
-
-
-    let forecast = validValues[0];
-
-
-    for (let i = 1; i < validValues.length; i++) {
-
-        forecast = alpha * validValues[i] + (1 - alpha) * forecast;
-    }
-
-
     return forecast;
 }
 
-
 /**
- * Calculate mean
+ * Calculate arithmetic mean.
+ * @param {Array<number>} values 
+ * @returns {number}
  */
 function calculateMean(values) {
-
-    if (!values.length) {
-        return 0;
-    }
-
-
-    return values.reduce(
-        (sum, value) =>
-            sum + value,
-        0
-    ) / values.length;
+    if (!Array.isArray(values) || !values.length) return 0;
+    const valid = values.map(Number).filter(Number.isFinite);
+    if (!valid.length) return 0;
+    return valid.reduce((a, b) => a + b, 0) / valid.length;
 }
 
-
 /**
- * Calculate standard deviation
+ * Calculate standard deviation.
+ * @param {Array<number>} values 
+ * @returns {number}
  */
-function calculateStandardDeviation(
-    values
-) {
+function calculateStandardDeviation(values) {
+    if (!Array.isArray(values) || values.length < 2) return 0;
+    const valid = values.map(Number).filter(Number.isFinite);
+    if (valid.length < 2) return 0;
 
-    if (values.length < 2) {
-        return 0;
-    }
-
-
-    const mean = calculateMean(values);
-
-
-    const variance = values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / values.length;
-
-
+    const mean = calculateMean(valid);
+    const variance = valid.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / valid.length;
     return Math.sqrt(variance);
 }
 
-
 /**
- * Calculate coefficient of variation
+ * Calculate Coefficient of Variation (CV = StdDev / Mean)
+ * @param {Array<number>} values 
+ * @returns {number}
  */
-function calculateCoefficientOfVariation(
-    values
-) {
-
+function calculateCoefficientOfVariation(values) {
     const mean = calculateMean(values);
-
-    if (mean === 0) {
-        return 0;
-    }
-
-    const standardDeviation = calculateStandardDeviation(values);
-
-    return standardDeviation / mean;
+    if (mean === 0) return 0;
+    const stdDev = calculateStandardDeviation(values);
+    return stdDev / mean;
 }
 
-
 /**
- * Percentage of zero-demand days
+ * Calculate proportion of zero-demand days in a series.
+ * @param {Array<number>} values 
+ * @returns {number} Ratio between 0 and 1
  */
-function calculateZeroDemandRatio(
-    values
-) {
-
-    if (!values.length) {
-        return 1;
-    }
-
-
-    const zeroDays = values.filter(value => Number(value) === 0).length;
-
-
+function calculateZeroDemandRatio(values) {
+    if (!Array.isArray(values) || !values.length) return 1;
+    const zeroDays = values.filter(v => Number(v) === 0).length;
     return zeroDays / values.length;
 }
 
-
 /**
- * Get only non-zero demand
+ * Filter and return non-zero demand values.
+ * @param {Array<number>} values 
+ * @returns {Array<number>}
  */
 function getNonZeroDemand(values) {
+    if (!Array.isArray(values)) return [];
+    return values.map(Number).filter(v => Number.isFinite(v) && v > 0);
+}
 
-    return values
-        .map(Number)
-        .filter(
-            value =>
-                Number.isFinite(value) &&
-                value > 0
-        );
+// Support Node.js export for automated testing
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        formatDateKey,
+        getValidSalesDates,
+        getFirstSalesDate,
+        getLatestSalesDate,
+        buildObservedDailyDemand,
+        calculateSMA,
+        calculateEWMA,
+        calculateMean,
+        calculateStandardDeviation,
+        calculateCoefficientOfVariation,
+        calculateZeroDemandRatio,
+        getNonZeroDemand
+    };
 }
