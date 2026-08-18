@@ -109,16 +109,16 @@
       "supplier": "Global Accessories",
       "costPrice": 3,
       "sellingPrice": 7,
-      "stock": 6,
+      "stock": 1,
       "minimumStock": 5,
       "safetyStock": 6,
       "leadTime": 5,
       "averageDailyDemand": 1.2,
       "reorderPoint": 12,
       "forecastDemand": 8,
-      "status": "Low Stock",
+      "status": "Reorder",
       "createdAt": "2026-04-03 09:00",
-      "updatedAt": "2026-08-10 09:00"
+      "updatedAt": "2026-08-18 06:13"
     },
     {
       "id": "4",
@@ -237,6 +237,17 @@
       "profit": 39,
       "customer": "Customer 1",
       "date": "2026-08-12 09:30"
+    },
+    {
+      "productId": "3",
+      "productName": "USB-C Cable",
+      "quantity": 5,
+      "sellingPrice": 7,
+      "costPrice": 3,
+      "profit": 20,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-18 06:13",
+      "id": "6fMaZXtoqoo"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

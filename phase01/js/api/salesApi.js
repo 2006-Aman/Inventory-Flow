@@ -1,35 +1,74 @@
+// ==========================================
+// SALES API
+// ==========================================
+
+
+// GET ALL SALES
 async function getSales() {
-    return await apiGet("/sales");
+
+    return apiRequest(
+        "/sales"
+    );
 }
 
 
-async function getSaleById(id) {
-    return await apiGet(`/sales/${id}`);
+// GET SINGLE SALE
+async function getSaleById(
+    saleId
+) {
+
+    return apiRequest(
+        `/sales/${saleId}`
+    );
 }
 
 
-async function addSale(sale) {
-    return await apiPost("/sales", sale);
+// CREATE SALE
+async function createSale(
+    saleData
+) {
+
+    return apiRequest(
+        "/sales",
+        {
+            method: "POST",
+
+            body: JSON.stringify(
+                saleData
+            )
+        }
+    );
 }
 
 
-async function updateSale(id, sale) {
-    return await apiPut(`/sales/${id}`, sale);
+// UPDATE SALE
+async function updateSale(
+    saleId,
+    saleData
+) {
+
+    return apiRequest(
+        `/sales/${saleId}`,
+        {
+            method: "PUT",
+
+            body: JSON.stringify(
+                saleData
+            )
+        }
+    );
 }
 
 
-async function deleteSale(id) {
-    return await apiDelete(`/sales/${id}`);
-}
+// DELETE SALE
+async function deleteSale(
+    saleId
+) {
 
-
-/**
- * Get sales for a specific product
- */
-async function getSalesByProductId(productId) {
-    const sales = await getSales();
-
-    return sales.filter(
-        sale => Number(sale.productId) === Number(productId)
+    return apiRequest(
+        `/sales/${saleId}`,
+        {
+            method: "DELETE"
+        }
     );
 }

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sales Entry | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global & Page CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/sales.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+                <span id="serverStatus" class="server-status">
+                    Checking server...
+                </span>
+
+                <a href="./inventory.html" class="btn-topbar">
+                    Back to Inventory
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+            <!-- PAGE SUBHEADER ROW -->
+            <div class="sales-subheader">
+                <p class="sales-subtext">
+                    Select a product and quantity to log a transaction. Stock levels, analytics, and forecasts update automatically.
+                </p>
+                <a href="sales-history.html" class="btn-history">
+                    <i class="ph ph-clock-counter-clockwise"></i> Sales History
+                </a>
+            </div>
+
+            <div id="salesMessage" class="sales-message"></div>
+
+            <!-- SALES LAYOUT GRID -->
+            <div class="sales-layout">
+
+                <!-- LEFT FORM PANEL -->
+                <div class="sales-form-panel">
+                    <h3 class="panel-title">
+                        <i class="ph ph-plus-circle"></i> Transaction Details
+                    </h3>
+
+                    <form id="salesForm" novalidate>
+
+                        <!-- PRODUCT -->
+                        <div class="form-group">
+                            <label for="sale-product">PRODUCT</label>
+                            <select id="sale-product">
+                                <option value="">-- Select a product --</option>
+                            </select>
+                            <div class="field-error" id="error-product"></div>
+                        </div>
+
+                        <!-- LIVE PRODUCT INFO CARD (when selected) -->
+                        <div class="product-info-card" id="product-info-card" style="display: none;">
+                            <div class="info-grid">
+                                <div><span>Price</span><strong id="info-price">₹0.00</strong></div>
+                                <div><span>Stock</span><strong id="info-stock">0</strong></div>
+                                <div><span>Unit profit</span><strong id="info-profit">₹0.00</strong></div>
+                                <div><span>Status</span><strong id="info-status">—</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- QUANTITY -->
+                        <div class="form-group">
+                            <label for="sale-quantity">QUANTITY</label>
+                            <input id="sale-quantity" type="number" min="1" value="1" placeholder="1">
+                            <div class="field-error" id="error-quantity"></div>
+                        </div>
+
+                        <!-- CUSTOMER NAME / REF -->
+                        <div class="form-group">
+                            <label for="sale-customer">CUSTOMER NAME / REF</label>
+                            <input id="sale-customer" type="text" placeholder="Walk-in Customer">
+                        </div>
+
+                        <!-- DATE & TIME -->
+                        <div class="form-group">
+                            <label for="sale-date">DATE &amp; TIME</label>
+                            <input id="sale-date" type="datetime-local">
+                        </div>
+
+                        <!-- LIVE SALE TOTAL (when selected) -->
+                        <div class="sale-total" id="sale-total" style="display: none;">
+                            <span>TOTAL AMOUNT</span>
+                            <strong id="sale-total-amount">₹0.00</strong>
+                            <small id="sale-total-profit">Profit ₹0.00</small>
+                        </div>
+
+                        <!-- SUBMIT BUTTON -->
+                        <button type="submit" class="btn-save-sale" id="sale-save">
+                            <i class="ph ph-check"></i> Complete &amp; Save Sale
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- RIGHT SUMMARY PANEL -->
+                <div class="sales-summary-panel">
+
+                    <!-- TODAY'S PERFORMANCE -->
+                    <h3 class="panel-title">
+                        <i class="ph ph-calendar-check"></i> Today's Performance
+                    </h3>
+
+                    <div class="today-stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">ORDERS</span>
+                            <strong id="today-orders" class="stat-val">0</strong>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">REVENUE</span>
+                            <strong id="today-revenue" class="stat-val">₹0.00</strong>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">PROFIT</span>
+                            <strong id="today-profit" class="stat-val">₹0.00</strong>
+                        </div>
+                    </div>
+
+                    <!-- RECENT ACTIVITY -->
+                    <h3 class="panel-title activity-title">
+                        <i class="ph ph-clock"></i> Recent Activity
+                    </h3>
+
+                    <div id="recent-sales-list" class="recent-sales-feed">
+                        <!-- Activity feed inserted by JS -->
+                    </div>
+
+                    <a href="sales-history.html" class="ledger-link">
+                        View full sales ledger <i class="ph ph-arrow-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/api/salesApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/utils/helpers.js"></script>
+    <script src="./js/utils/formatters.js"></script>
+    <script src="./js/components/toast.js"></script>
+    <script src="./js/pages/sales.js"></script>
+
+</body>
+
+</html>
