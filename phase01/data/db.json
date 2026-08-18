@@ -58,48 +58,6 @@
   ],
   "products": [
     {
-      "id": "1",
-      "sku": "STAT-0010",
-      "barcode": "8901234560100",
-      "name": "Ball Pen (Pack of 10)",
-      "description": "Smooth writing ballpoint pens in blue ink.",
-      "category": "Office Supplies",
-      "supplier": "Stationery Hub",
-      "costPrice": 12,
-      "sellingPrice": 25,
-      "stock": 48,
-      "minimumStock": 10,
-      "safetyStock": 8,
-      "leadTime": 5,
-      "averageDailyDemand": 1.2,
-      "reorderPoint": 14,
-      "forecastDemand": 12,
-      "status": "In Stock",
-      "createdAt": "2026-04-01 09:00",
-      "updatedAt": "2026-08-18 05:50"
-    },
-    {
-      "id": "2",
-      "sku": "COMP-0001",
-      "barcode": "8901234560024",
-      "name": "Mechanical Keyboard",
-      "description": "RGB mechanical keyboard with blue switches.",
-      "category": "Computer Accessories",
-      "supplier": "TechMart Supplies",
-      "costPrice": 35,
-      "sellingPrice": 59,
-      "stock": 18,
-      "minimumStock": 5,
-      "safetyStock": 8,
-      "leadTime": 7,
-      "averageDailyDemand": 0.8,
-      "reorderPoint": 14,
-      "forecastDemand": 6,
-      "status": "In Stock",
-      "createdAt": "2026-04-02 09:00",
-      "updatedAt": "2026-08-10 09:00"
-    },
-    {
       "id": "3",
       "sku": "ACC-0001",
       "barcode": "8901234560031",
@@ -193,16 +151,16 @@
       "supplier": "Snack Hub",
       "costPrice": 30,
       "sellingPrice": 45,
-      "stock": 22,
+      "stock": 2,
       "minimumStock": 5,
       "safetyStock": 6,
       "leadTime": 5,
       "averageDailyDemand": 1,
       "reorderPoint": 11,
       "forecastDemand": 7,
-      "status": "In Stock",
+      "status": "Reorder",
       "createdAt": "2026-04-07 09:00",
-      "updatedAt": "2026-08-10 09:00"
+      "updatedAt": "2026-08-18 06:54"
     },
     {
       "id": "8",
@@ -259,6 +217,17 @@
       "customer": "Walk-in Customer",
       "date": "2026-08-18 06:41",
       "id": "vraOj2HU1xo"
+    },
+    {
+      "productId": "7",
+      "productName": "Chocolate Bar",
+      "quantity": 20,
+      "sellingPrice": 45,
+      "costPrice": 30,
+      "profit": 300,
+      "customer": "hr",
+      "date": "2026-08-18 06:54",
+      "id": "v5hBkDcVk4A"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

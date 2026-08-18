@@ -2,7 +2,7 @@
    INVENTORY ANALYTICS PAGE CONTROLLER
    - Load products & sales from API / LocalStorage
    - Compute 4 KPI Cards: Inventory Valuation, Stock Turnover, Top Category, Avg Units/Order
-   - Render Chart.js Sales by Day of Week Bar Chart
+   - Render Chart.js Sales by Day of Week Bar Chart (Wider Bars)
    - Render Chart.js Revenue vs Orders Combo Chart (Monthly)
    - Render Chart.js Stock Health Distribution Ring/Doughnut Chart
    - Render Top Categories Ranking Table
@@ -89,37 +89,51 @@ function renderKPIs() {
         return sum + (cost * stock);
     }, 0);
 
-    // Card 2: Stock Turnover (Units Sold in 30d / Total Current Stock)
+    // Card 2: Stock Turnover (Units Sold / Total Current Stock)
     const totalCurrentStock = allProducts.reduce((sum, p) => sum + Number(p.stock || 0), 0);
     const totalUnitsSold = allSales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
     const turnover = totalCurrentStock > 0 ? (totalUnitsSold / totalCurrentStock).toFixed(1) : "0.0";
 
-    // Card 3: Top Category by Revenue
-    const catRevenueMap = {};
+    // Card 3: Top Category (Highest Sales Revenue / Units Sold)
+    const catSalesMap = {};
     allSales.forEach(s => {
         const prod = allProducts.find(p => String(p.id) === String(s.productId));
         const category = (prod && prod.category) ? prod.category : (s.category || "General");
         const rev = getSaleRevenue(s);
-        catRevenueMap[category] = (catRevenueMap[category] || 0) + rev;
+        const qty = Number(s.quantity || 0);
+
+        if (!catSalesMap[category]) {
+            catSalesMap[category] = { revenue: 0, units: 0 };
+        }
+        catSalesMap[category].revenue += rev;
+        catSalesMap[category].units += qty;
     });
 
-    // If no sales yet, estimate from products inventory potential value
-    if (Object.keys(catRevenueMap).length === 0) {
+    let topCategory = "—";
+    let maxUnits = -1;
+
+    if (Object.keys(catSalesMap).length > 0) {
+        Object.entries(catSalesMap).forEach(([cat, data]) => {
+            if (data.units > maxUnits) {
+                maxUnits = data.units;
+                topCategory = cat;
+            }
+        });
+    } else {
+        // Fallback if zero sales exist
+        const catInventoryMap = {};
         allProducts.forEach(p => {
             const cat = p.category || "General";
             const val = Number(p.sellingPrice || 0) * Number(p.stock || 0);
-            catRevenueMap[cat] = (catRevenueMap[cat] || 0) + val;
+            catInventoryMap[cat] = (catInventoryMap[cat] || 0) + val;
+        });
+        Object.entries(catInventoryMap).forEach(([cat, val]) => {
+            if (val > maxUnits) {
+                maxUnits = val;
+                topCategory = cat;
+            }
         });
     }
-
-    let topCategory = "—";
-    let maxRev = -1;
-    Object.entries(catRevenueMap).forEach(([cat, rev]) => {
-        if (rev > maxRev) {
-            maxRev = rev;
-            topCategory = cat;
-        }
-    });
 
     // Card 4: Avg Units / Order
     const totalTransactions = allSales.length;
@@ -132,7 +146,7 @@ function renderKPIs() {
 }
 
 // ==========================================
-// 2. CHART 1: SALES BY DAY OF WEEK
+// 2. CHART 1: SALES BY DAY OF WEEK (WIDER BARS)
 // ==========================================
 
 function renderDayOfWeekChart() {
@@ -173,8 +187,9 @@ function renderDayOfWeekChart() {
             datasets: [{
                 data: chartValues,
                 backgroundColor: barColors,
-                borderRadius: 8,
-                barThickness: 28
+                borderRadius: 10,
+                barThickness: 48,
+                maxBarThickness: 56
             }]
         },
         options: {
@@ -196,7 +211,7 @@ function renderDayOfWeekChart() {
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter", weight: "600" } }
+                    ticks: { color: "#64748b", font: { size: 12, family: "Inter", weight: "600" } }
                 },
                 y: {
                     grid: { color: "rgba(255, 255, 255, 0.05)" },
@@ -260,6 +275,7 @@ function renderRevenueOrdersChart() {
                     data: revenueData,
                     backgroundColor: "rgba(56, 189, 248, 0.8)",
                     borderRadius: 6,
+                    barThickness: 36,
                     yAxisID: "y"
                 },
                 {
@@ -384,14 +400,13 @@ function renderTopCategoriesTable() {
     const catMap = {};
     const catColors = ["#38bdf8", "#34d399", "#c084fc", "#fbbf24", "#f472b6", "#60a5fa", "#fb923c", "#a855f7"];
 
-    // 1. Aggregate Products count & potential inventory value
+    // 1. Aggregate Products count
     allProducts.forEach(p => {
         const cat = p.category || "General";
         if (!catMap[cat]) {
-            catMap[cat] = { name: cat, products: 0, unitsSold: 0, revenue: 0, potentialRev: 0 };
+            catMap[cat] = { name: cat, products: 0, unitsSold: 0, revenue: 0 };
         }
         catMap[cat].products++;
-        catMap[cat].potentialRev += Number(p.sellingPrice || 0) * Number(p.stock || 0);
     });
 
     // 2. Aggregate Sales revenue and units sold
@@ -399,7 +414,7 @@ function renderTopCategoriesTable() {
         const prod = allProducts.find(p => String(p.id) === String(s.productId));
         const cat = (prod && prod.category) ? prod.category : (s.category || "General");
         if (!catMap[cat]) {
-            catMap[cat] = { name: cat, products: 1, unitsSold: 0, revenue: 0, potentialRev: 0 };
+            catMap[cat] = { name: cat, products: 1, unitsSold: 0, revenue: 0 };
         }
         const qty = Number(s.quantity || 0);
         const rev = getSaleRevenue(s);
@@ -407,14 +422,13 @@ function renderTopCategoriesTable() {
         catMap[cat].revenue += rev;
     });
 
-    // Fallback revenue calculation if sales revenue is 0
-    Object.values(catMap).forEach(item => {
-        if (item.revenue === 0 && item.potentialRev > 0) {
-            item.revenue = item.potentialRev;
+    // Sort strictly by unitsSold descending, then revenue descending
+    const sortedCats = Object.values(catMap).sort((a, b) => {
+        if (b.unitsSold !== a.unitsSold) {
+            return b.unitsSold - a.unitsSold; // Highest units sold first!
         }
+        return b.revenue - a.revenue;
     });
-
-    const sortedCats = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
 
     if (sortedCats.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">No category data recorded.</td></tr>`;
@@ -432,7 +446,7 @@ function renderTopCategoriesTable() {
                 </div>
             </td>
             <td class="text-center">${item.products}</td>
-            <td class="text-center">${item.unitsSold}</td>
+            <td class="text-center"><strong>${item.unitsSold}</strong></td>
             <td class="text-right cat-revenue-text">₹${item.revenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
         `;
         tbody.appendChild(tr);
