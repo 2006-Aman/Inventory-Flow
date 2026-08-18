@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Business Reports & Performance | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/reports.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+                <span id="serverStatus" class="server-status">Checking server...</span>
+                <a href="./inventory.html" class="btn-topbar">Inventory</a>
+                <a href="./sales.html" class="btn-topbar">Record Sale</a>
+                <a href="./analytics.html" class="btn-topbar">Analytics</a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+            <!-- PAGE SUBHEADER -->
+            <div class="reports-subheader">
+                <p class="reports-subtext">
+                    Track business performance, profit margins, and sales trends over custom date ranges.
+                </p>
+                <div class="header-actions">
+                    <button id="exportCsvBtn" class="btn-export-report">
+                        <i class="ph ph-download-simple"></i> Export CSV Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- DATE FILTER BAR -->
+            <div class="filter-card">
+                <div class="date-pickers">
+                    <div class="date-input-group">
+                        <label for="fromDate"><i class="ph ph-calendar"></i> FROM</label>
+                        <input type="date" id="fromDate">
+                    </div>
+                    <span class="to-text">TO</span>
+                    <div class="date-input-group">
+                        <label for="toDate"><i class="ph ph-calendar"></i> TO</label>
+                        <input type="date" id="toDate">
+                    </div>
+                </div>
+
+                <div class="preset-pills">
+                    <button type="button" class="pill-btn active" data-range="30">30 Days</button>
+                    <button type="button" class="pill-btn" data-range="90">90 Days</button>
+                    <button type="button" class="pill-btn" data-range="all">All Time</button>
+                </div>
+            </div>
+
+            <!-- TOP 5 KPI CARDS GRID -->
+            <div class="kpi-grid-5">
+
+                <!-- CARD 1: TOTAL REVENUE -->
+                <div class="kpi-card border-cyan">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Total Revenue</span>
+                        <div class="kpi-icon-box cyan"><i class="ph ph-currency-dollar"></i></div>
+                    </div>
+                    <strong id="kpi-revenue" class="kpi-value">₹0.00</strong>
+                    <span class="kpi-sub"><i class="ph ph-info"></i> Gross sales in selected range</span>
+                </div>
+
+                <!-- CARD 2: NET PROFIT -->
+                <div class="kpi-card border-green">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Net Profit</span>
+                        <div class="kpi-icon-box green"><i class="ph ph-trend-up"></i></div>
+                    </div>
+                    <strong id="kpi-profit" class="kpi-value text-green">₹0.00</strong>
+                    <span class="kpi-sub"><i class="ph ph-arrow-up-right"></i> Revenue minus product cost</span>
+                </div>
+
+                <!-- CARD 3: TOTAL ORDERS -->
+                <div class="kpi-card border-purple">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Total Orders</span>
+                        <div class="kpi-icon-box purple"><i class="ph ph-chat-centered-text"></i></div>
+                    </div>
+                    <strong id="kpi-orders" class="kpi-value">0</strong>
+                    <span class="kpi-sub"><i class="ph ph-receipt"></i> Sales transactions</span>
+                </div>
+
+                <!-- CARD 4: UNITS SOLD -->
+                <div class="kpi-card border-darkpurple">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Units Sold</span>
+                        <div class="kpi-icon-box darkpurple"><i class="ph ph-package"></i></div>
+                    </div>
+                    <strong id="kpi-units" class="kpi-value">0</strong>
+                    <span class="kpi-sub"><i class="ph ph-cube"></i> Total item quantity</span>
+                </div>
+
+                <!-- CARD 5: AVG ORDER VALUE -->
+                <div class="kpi-card border-yellow">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Avg Order Value</span>
+                        <div class="kpi-icon-box yellow"><i class="ph ph-scales"></i></div>
+                    </div>
+                    <strong id="kpi-aov" class="kpi-value">₹0.00</strong>
+                    <span class="kpi-sub"><i class="ph ph-shopping-cart"></i> Revenue / Orders</span>
+                </div>
+
+            </div>
+
+            <!-- MIDDLE ROW: 2 CHARTS -->
+            <div class="middle-grid">
+
+                <!-- LEFT CHART: DAILY REVENUE TREND -->
+                <div class="panel-card chart-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-trend-up"></i> Daily Revenue Trend</h3>
+                        </div>
+                        <span class="tag-badge">TIMELINE</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dailyRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- RIGHT CHART: REVENUE BY CATEGORY -->
+                <div class="panel-card doughnut-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-chart-pie-slice"></i> Revenue by Category</h3>
+                        </div>
+                        <span class="tag-badge">SHARE</span>
+                    </div>
+
+                    <div class="doughnut-content">
+                        <div class="doughnut-chart-box">
+                            <canvas id="categoryRevenueChart"></canvas>
+                        </div>
+                        <div class="legend-box" id="categoryLegend">
+                            <!-- Category legend items inserted by JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BOTTOM ROW: MONTHLY BREAKDOWN + TOP PRODUCTS -->
+            <div class="bottom-grid">
+
+                <!-- LEFT PANEL: MONTHLY BREAKDOWN TABLE -->
+                <div class="panel-card">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-calendar-blank"></i> Monthly Breakdown</h3>
+                        </div>
+                        <span class="tag-badge">SUMMARY</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>MONTH</th>
+                                    <th class="text-center">ORDERS</th>
+                                    <th class="text-center">UNITS</th>
+                                    <th class="text-right">REVENUE</th>
+                                    <th class="text-right">PROFIT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyBreakdownBody">
+                                <!-- Rendered dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: TOP PRODUCTS TABLE -->
+                <div class="panel-card">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-trophy"></i> Top Products</h3>
+                        </div>
+                        <span class="tag-badge">RANKING</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>PRODUCT</th>
+                                    <th class="text-center">UNITS</th>
+                                    <th class="text-right">REVENUE</th>
+                                    <th class="text-right">PROFIT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsBody">
+                                <!-- Rendered dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/api/salesApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/pages/reports.js"></script>
+
+</body>
+
+</html>
