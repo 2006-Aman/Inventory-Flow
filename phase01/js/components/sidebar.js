@@ -275,29 +275,34 @@ function initGlobalClock() {
 // ==========================================
 function setupUserProfileDropdown() {
     document.addEventListener("click", (e) => {
+        const signOutBtn = e.target.closest("#globalSignOutBtn") || e.target.closest(".user-dropdown-item.signout");
+        
+        if (signOutBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof logoutUser === "function") {
+                logoutUser();
+            } else {
+                localStorage.removeItem("inventory_current_user");
+                window.location.href = "login.html";
+            }
+            return;
+        }
+
         const profileBtn = e.target.closest(".user-profile");
         const allDropdowns = document.querySelectorAll(".user-dropdown-menu");
 
         if (profileBtn) {
-            e.stopPropagation();
             const dropdown = profileBtn.querySelector(".user-dropdown-menu");
             if (dropdown) {
+                if (e.target.closest(".user-dropdown-item")) return;
+
                 const isActive = dropdown.classList.contains("active");
                 allDropdowns.forEach(d => d.classList.remove("active"));
                 if (!isActive) dropdown.classList.add("active");
             }
         } else {
             allDropdowns.forEach(d => d.classList.remove("active"));
-        }
-
-        const signOutBtn = e.target.closest("#globalSignOutBtn") || e.target.closest(".user-dropdown-item.signout");
-        if (signOutBtn) {
-            if (typeof clearCurrentUser === "function") {
-                clearCurrentUser();
-            } else {
-                localStorage.removeItem("currentUser");
-            }
-            window.location.href = "login.html";
         }
     });
 }

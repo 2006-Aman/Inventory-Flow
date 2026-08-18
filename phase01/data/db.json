@@ -2,21 +2,16 @@
   "users": [
     {
       "id": "1",
-      "name": "Admin User",
-      "email": "admin@example.com",
+      "firstName": "Aman",
+      "lastName": "Sharma",
+      "name": "Aman Sharma",
+      "email": "admin@inventoryflow.com",
       "password": "admin123",
-      "role": "admin",
+      "role": "System Administrator",
+      "organization": "InventoryIQ Systems",
+      "phone": "+91 98765 43210",
       "status": "Active",
       "createdAt": "2026-04-01 09:00"
-    },
-    {
-      "id": "2",
-      "name": "Staff User",
-      "email": "staff@example.com",
-      "password": "staff123",
-      "role": "staff",
-      "status": "Active",
-      "createdAt": "2026-04-05 10:00"
     }
   ],
   "categories": [

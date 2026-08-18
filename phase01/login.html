@@ -196,30 +196,25 @@
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errorAlert = document.getElementById('loginError');
+            const errorMsg = document.getElementById('loginErrorMsg');
 
             if (!email || !password) {
+                if (errorMsg) errorMsg.textContent = "Please enter both email and password!";
                 errorAlert.style.display = 'flex';
                 return;
             }
 
-            // Derive Name from Email if new user
-            const namePart = email.split('@')[0] || "Aman";
-            const firstName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            // Real authentication check against registered users database
+            const authResult = authenticateUser(email, password);
 
-            const user = {
-                id: "usr_" + Date.now(),
-                firstName: firstName,
-                lastName: "Sharma",
-                email: email,
-                phone: "+91 98765 43210",
-                organization: "InventoryIQ Systems",
-                role: "System Administrator",
-                avatar: firstName[0].toUpperCase(),
-                createdAt: new Date().toISOString()
-            };
+            if (!authResult.success) {
+                if (errorMsg) errorMsg.textContent = authResult.message;
+                errorAlert.style.display = 'flex';
+                return;
+            }
 
-            // Save user session
-            saveCurrentUser(user);
+            // Save active session
+            saveCurrentUser(authResult.user);
 
             // Redirect to dashboard
             window.location.href = "dashboard.html";

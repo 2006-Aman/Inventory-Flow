@@ -197,6 +197,7 @@
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
+                password: pass,
                 phone: "+91 98765 43210",
                 organization: org,
                 role: "System Administrator",
@@ -204,10 +205,15 @@
                 createdAt: new Date().toISOString()
             };
 
-            // Save user to users list & current active user
-            const users = getLocalUsers();
-            users.push(newUser);
-            saveUsers(users);
+            // Register new user in database
+            const regResult = registerNewUser(newUser);
+            if (!regResult.success) {
+                errorMsg.textContent = regResult.message;
+                errorAlert.style.display = 'flex';
+                return;
+            }
+
+            // Save active user session
             saveCurrentUser(newUser);
 
             // Redirect to dashboard
