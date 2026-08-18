@@ -5,21 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>html,body{background-color:#0b0f19!important;color-scheme:dark;}</style>
-
-    <title>Sales Ledger | Inventory Reorder System</title>
+    <title>Invoices & Billing | InventoryIQ</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- Flatpickr Dark Theme Datepicker CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <!-- Global & Page CSS -->
     <link rel="stylesheet" href="./css/variables.css">
@@ -31,7 +25,6 @@
     <link rel="stylesheet" href="./css/invoice.css">
     <link rel="stylesheet" href="./css/responsive.css">
 </head>
-
 
 <body>
 
@@ -66,9 +59,13 @@
                     <i class="ph ph-shopping-cart-simple"></i>
                     <span>Sales</span>
                 </a>
-                <a href="./sales-history.html" class="nav-item active">
+                <a href="./sales-history.html" class="nav-item">
                     <i class="ph ph-clock-counter-clockwise"></i>
                     <span>Sales History</span>
+                </a>
+                <a href="./invoices.html" class="nav-item active">
+                    <i class="ph ph-receipt"></i>
+                    <span>Invoices</span>
                 </a>
                 <a href="./reorder.html" class="nav-item">
                     <i class="ph ph-bell-ringing"></i>
@@ -119,13 +116,13 @@
             <header class="navbar">
                 <div class="navbar-left">
                     <span class="greeting-subtitle">GOOD MORNING • AMAN</span>
-                    <h1 class="navbar-page-title">Sales History</h1>
+                    <h1 class="navbar-page-title">Invoices & Billing</h1>
                 </div>
 
                 <div class="navbar-center">
                     <div class="search-bar">
                         <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search or jump to...">
+                        <input type="text" placeholder="Search invoices or customer...">
                     </div>
                 </div>
 
@@ -165,94 +162,89 @@
 
             <main class="content">
 
-            <!-- PAGE SUBHEADER -->
-            <div class="ledger-subheader">
-                <p class="ledger-subtext">
-                    Complete ledger of recorded sales. Search, filter by product/date range, and export to CSV.
-                </p>
-                <div class="header-actions">
-                    <button id="exportCsvBtn" class="btn-csv">
-                        <i class="ph ph-download-simple"></i> Export CSV
-                    </button>
-                    <a href="sales.html" class="btn-new-sale">
-                        <i class="ph ph-plus"></i> New Sale Entry
-                    </a>
-                </div>
-            </div>
-
-            <!-- FILTER TOOLBAR CARD -->
-            <div class="filter-card">
-                <div class="filter-group search-group">
-                    <i class="ph ph-magnifying-glass search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search product, customer, or transaction ID...">
+                <!-- SUBHEADER -->
+                <div class="invoice-subheader">
+                    <p class="invoice-subtext">
+                        Generate, search, preview, and print official itemized tax invoices for your sales ledger.
+                    </p>
+                    <div class="header-actions">
+                        <button id="exportCsvBtn" class="btn-csv">
+                            <i class="ph ph-download-simple"></i> Export CSV
+                        </button>
+                    </div>
                 </div>
 
-                <div class="filter-group">
-                    <label for="productFilter">PRODUCT</label>
-                    <select id="productFilter">
-                        <option value="">All Products</option>
-                    </select>
+                <!-- FILTER TOOLBAR CARD -->
+                <div class="invoice-filter-card">
+                    <div class="search-group">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search invoice ID, customer name, or item...">
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="productFilter">PRODUCT</label>
+                        <select id="productFilter">
+                            <option value="">All Products</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="fromDateFilter">FROM</label>
+                        <input type="date" id="fromDateFilter">
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="toDateFilter">TO</label>
+                        <input type="date" id="toDateFilter">
+                    </div>
                 </div>
 
-                <div class="filter-group">
-                    <label for="fromDateFilter">FROM</label>
-                    <input type="date" id="fromDateFilter">
+                <!-- INVOICE LEDGER TABLE CARD -->
+                <div class="table-card">
+                    <table class="sales-table" id="invoiceTable">
+                        <thead>
+                            <tr>
+                                <th>INVOICE #</th>
+                                <th>DATE</th>
+                                <th>CUSTOMER</th>
+                                <th>PRIMARY PRODUCT</th>
+                                <th class="text-center">QTY</th>
+                                <th class="text-right">TOTAL AMOUNT</th>
+                                <th class="text-center">STATUS</th>
+                                <th class="text-right">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                            <!-- Invoices rendered by JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- EMPTY STATE -->
+                    <div id="emptyInvoiceState" class="empty-state" style="display: none;">
+                        <i class="ph ph-receipt empty-icon"></i>
+                        <h3>No invoices found</h3>
+                        <p>No sales transactions matching your search criteria were found.</p>
+                    </div>
+
+                    <!-- TABLE FOOTER / PAGINATION -->
+                    <div class="table-footer">
+                        <span id="invoiceCount" class="sales-count">0 invoice(s)</span>
+                        <div id="paginationControls" class="pagination-controls">
+                            <!-- Page buttons rendered by JS -->
+                        </div>
+                    </div>
                 </div>
 
-                <div class="filter-group">
-                    <label for="toDateFilter">TO</label>
-                    <input type="date" id="toDateFilter">
-                </div>
-            </div>
-
-            <!-- MESSAGE NOTIFICATION -->
-            <div id="ledgerMessage" class="ledger-message"></div>
-
-            <!-- SALES LEDGER TABLE CARD -->
-            <div class="table-card">
-                <table class="sales-table" id="salesTable">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>PRODUCT</th>
-                            <th>CUSTOMER</th>
-                            <th class="text-center">QTY</th>
-                            <th class="text-right">PRICE</th>
-                            <th class="text-right">PROFIT</th>
-                            <th class="text-right">TOTAL</th>
-                            <th class="text-right">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody id="salesTableBody">
-                        <!-- Table rows generated by JS -->
-                    </tbody>
-                </table>
-
-                <!-- EMPTY STATE -->
-                <div id="emptySalesState" class="empty-state" style="display: none;">
-                    <i class="ph ph-receipt empty-icon"></i>
-                    <h3>No sales transactions found</h3>
-                    <p>Try adjusting your search criteria or date filters.</p>
-                </div>
-
-                <!-- TABLE FOOTER / PAGINATION -->
-                <div class="table-footer">
-                    <span id="salesCount" class="sales-count">0 sale(s)</span>
-                    <div id="paginationControls" class="pagination-controls">
-                        <!-- Page buttons generated by JS -->
-                </div>
-            </div>
-
-        </main>
+            </main>
+        </div>
     </div>
-</div>
 
-<!-- INVOICE PREVIEW MODAL POPUP -->
+    <!-- INVOICE PREVIEW MODAL POPUP -->
     <div id="invoiceModal" class="invoice-modal-overlay" style="display: none;">
         <div class="invoice-modal-card">
             
             <div class="invoice-modal-header">
-                <h3 class="invoice-modal-title"><i class="ph ph-receipt"></i> Official Tax Invoice (<span id="invModalNum">INV-000</span>)</h3>
+                <h3 class="invoice-modal-title"><i class="ph ph-file-text"></i> Invoice Preview (<span id="invModalNum">INV-000</span>)</h3>
                 <div class="invoice-modal-actions">
                     <button type="button" class="btn-print" id="printInvoiceBtn">
                         <i class="ph ph-printer"></i> Print / Save PDF
@@ -270,27 +262,26 @@
                             <img src="./assets/logo.svg" alt="Logo" class="inv-logo-img">
                             <div>
                                 <h2 class="inv-company-name">InventoryIQ</h2>
-                                <span class="inv-company-tag">OFFICIAL TAX RECEIPT</span>
+                                <span class="inv-company-tag">OFFICIAL TAX INVOICE</span>
                             </div>
                         </div>
                         <div class="inv-meta-box">
                             <h3 class="inv-number-title" id="sheetInvNum">INV-2026-0001</h3>
-                            <p class="inv-txn-id" style="font-family: var(--font-mono, 'IBM Plex Mono', monospace); font-size: 12px; color: #94a3b8; margin: 0 0 4px 0;">Txn ID: <strong id="sheetTxnId" style="color: #cbd5e1;">#000000</strong></p>
                             <p class="inv-date-text" id="sheetInvDate">Issued: Aug 19, 2026</p>
-                            <span class="status-badge paid"><i class="ph-bold ph-check-circle"></i> PAID &bull; COMPLETED</span>
+                            <span class="status-badge paid">PAID &bull; COMPLETED</span>
                         </div>
                     </div>
 
                     <!-- Party Grid (Billed To / From) -->
                     <div class="inv-details-grid">
                         <div class="inv-party-col">
-                            <h5>CUSTOMER DETAILS</h5>
+                            <h5>BILLED TO</h5>
                             <p id="sheetCustomerName">Walk-in Customer</p>
                             <span id="sheetCustomerContact">customer@inventoryflow.com</span>
-                            <span style="margin-top:4px; font-size:11px; color:#38bdf8;">Payment Status: Verified</span>
+                            <span>Payment Method: Cash / Card</span>
                         </div>
                         <div class="inv-party-col">
-                            <h5>MERCHANT / ISSUED BY</h5>
+                            <h5>ISSUED BY</h5>
                             <p>InventoryIQ Systems</p>
                             <span>Aman Sharma (Store Admin)</span>
                             <span>admin@inventoryflow.com</span>
@@ -310,7 +301,7 @@
                             </tr>
                         </thead>
                         <tbody id="sheetItemsBody">
-                            <!-- Injected dynamically -->
+                            <!-- Injected by JS -->
                         </tbody>
                     </table>
 
@@ -318,21 +309,21 @@
                     <div class="inv-summary-box">
                         <div class="inv-sum-row">
                             <span>Subtotal</span>
-                            <span id="sheetSubtotal">₹0.00</span>
+                            <span id="sheetSubtotal">$0.00</span>
                         </div>
                         <div class="inv-sum-row">
-                            <span>Estimated GST / Tax (18%)</span>
-                            <span id="sheetTax">₹0.00</span>
+                            <span>Estimated Tax / GST (18%)</span>
+                            <span id="sheetTax">$0.00</span>
                         </div>
                         <div class="inv-sum-row total">
-                            <span>Total Amount</span>
-                            <span id="sheetGrandTotal">₹0.00</span>
+                            <span>Total Payable</span>
+                            <span id="sheetGrandTotal">$0.00</span>
                         </div>
                     </div>
 
                     <!-- Footer Note -->
                     <div class="inv-footer-note">
-                        <p>Thank you for shopping with InventoryIQ! For support or inquiries, contact admin@inventoryflow.com.</p>
+                        <p>Thank you for doing business with InventoryIQ! For questions or support, email admin@inventoryflow.com.</p>
                     </div>
 
                 </div>
@@ -343,17 +334,15 @@
 
     <!-- JAVASCRIPT -->
     <script src="./js/config.js"></script>
-    <script src="./js/utils/helpers.js"></script>
     <script src="./js/api/api.js"></script>
     <script src="./js/api/productApi.js"></script>
     <script src="./js/api/salesApi.js"></script>
     <script src="./js/storage/storage.js"></script>
+    <script src="./js/utils/helpers.js"></script>
     <script src="./js/components/sidebar.js"></script>
     <script src="./js/components/topbar.js"></script>
-    <script src="./js/pages/salesHistory.js"></script>
+    <script src="./js/pages/invoices.js"></script>
 
 </body>
 
 </html>
-
-

@@ -28,21 +28,23 @@ async function initDashboardPage() {
     try {
         setupLiveClock();
         await loadDashboardData();
-        render12KPIs();
-        render12Sparklines();
-        renderRevenueDemandChart();
-        renderTopSellingProductsList();
-        renderSpeedometerGauge();
-        renderMonthlySalesBarChart();
-        renderLowStockTable();
-        renderCategoryRadarChart();
-        renderCategoryBubbleOrbit();
-        renderForecastVsActualChart();
-        renderRecentSalesTimeline();
-        setupRestockModalEvents();
     } catch (error) {
-        console.error("Dashboard Controller Init Error:", error);
+        console.error("Dashboard Data Load Error:", error);
     }
+
+    try { render12KPIs(); } catch (e) { console.warn("KPIs error:", e); }
+    try { render12Sparklines(); } catch (e) { console.warn("Sparklines error:", e); }
+    try { renderRevenueDemandChart(); } catch (e) { console.warn("Revenue chart error:", e); }
+    try { renderTopSellingProductsList(); } catch (e) { console.warn("Top products error:", e); }
+    try { renderSpeedometerGauge(); } catch (e) { console.warn("Gauge error:", e); }
+    try { renderMonthlySalesBarChart(); } catch (e) { console.warn("Bar chart error:", e); }
+    try { renderLowStockTable(); } catch (e) { console.warn("Low stock error:", e); }
+    try { renderCategoryRadarChart(); } catch (e) { console.warn("Radar error:", e); }
+    try { renderCategoryBubbleOrbit(); } catch (e) { console.warn("Bubble error:", e); }
+    try { renderForecastVsActualChart(); } catch (e) { console.warn("Forecast chart error:", e); }
+    try { renderRecentSalesTimeline(); } catch (e) { console.warn("Timeline error:", e); }
+    try { setupRestockModalEvents(); } catch (e) { console.warn("Restock modal error:", e); }
+    try { setupDropdownListeners(); } catch (e) { console.warn("Dropdown error:", e); }
 }
 
 function setupLiveClock() {
@@ -124,8 +126,15 @@ function render12KPIs() {
     const avgDailyDemand = (totalUnits / 30).toFixed(1);
 
     // Calculate today's sales
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const todaysSalesList = allSales.filter(s => s.date && String(s.date).slice(0, 10) === todayStr);
+    const _now = new Date();
+    const todayStr = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+    const todaysSalesList = allSales.filter(s => {
+        if (!s.date) return false;
+        const sd = new Date(s.date);
+        if (isNaN(sd.getTime())) return false;
+        const sKey = `${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}-${String(sd.getDate()).padStart(2,'0')}`;
+        return sKey === todayStr;
+    });
     const todaysSalesRev = todaysSalesList.reduce((sum, s) => sum + getSaleRevenue(s), 0);
 
     let lowCount = 0;
@@ -265,7 +274,7 @@ function render12Sparklines() {
 // 3. CHART 1: DYNAMIC REVENUE & DEMAND TREND
 // ==========================================
 
-function renderRevenueDemandChart() {
+function renderRevenueDemandChart(rangeDays = 14) {
     const canvas = getDom("chart-revenue-trend");
     if (!canvas) return;
 
@@ -275,21 +284,43 @@ function renderRevenueDemandChart() {
     const today = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    for (let i = 9; i >= 0; i--) {
-        const d = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
-        const dateKey = d.toISOString().slice(0, 10);
+    // Helper: local YYYY-MM-DD (avoids UTC timezone mismatch from toISOString)
+    function _toLocalKey(dt) {
+        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    }
+
+    // Pre-build daily sales maps keyed by local date
+    const _dailyRevMap = {};
+    const _dailyUnitMap = {};
+    allSales.forEach(s => {
+        if (!s || !s.date) return;
+        const sd = new Date(s.date);
+        if (isNaN(sd.getTime())) return;
+        const k = _toLocalKey(sd);
+        _dailyRevMap[k] = (_dailyRevMap[k] || 0) + getSaleRevenue(s);
+        _dailyUnitMap[k] = (_dailyUnitMap[k] || 0) + Number(s.quantity || 0);
+    });
+
+    for (let i = rangeDays - 1; i >= 0; i--) {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+        const dateKey = _toLocalKey(d);
         labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
 
-        const daySales = allSales.filter(s => s.date && String(s.date).slice(0, 10) === dateKey);
-        const dayRev = daySales.reduce((sum, s) => sum + getSaleRevenue(s), 0);
-        const dayUnits = daySales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
-
-        revData.push(dayRev);
-        demandData.push(dayUnits);
+        revData.push(_dailyRevMap[dateKey] || 0);
+        demandData.push(_dailyUnitMap[dateKey] || 0);
     }
 
     const ctx = canvas.getContext("2d");
     if (window.myRevenueDemandChart) window.myRevenueDemandChart.destroy();
+
+    // Canvas Linear Gradients for fill
+    const revGrad = ctx.createLinearGradient(0, 0, 0, 220);
+    revGrad.addColorStop(0, "rgba(56, 189, 248, 0.30)");
+    revGrad.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+
+    const demandGrad = ctx.createLinearGradient(0, 0, 0, 220);
+    demandGrad.addColorStop(0, "rgba(52, 211, 153, 0.20)");
+    demandGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
     window.myRevenueDemandChart = new Chart(ctx, {
         type: "line",
@@ -297,25 +328,39 @@ function renderRevenueDemandChart() {
             labels: labels,
             datasets: [
                 {
-                    label: "Revenue",
+                    label: "Revenue ($)",
                     data: revData,
                     borderColor: "#38bdf8",
                     borderWidth: 3,
-                    fill: false,
-                    tension: 0.45,
-                    pointBackgroundColor: "#ffffff",
-                    pointRadius: 4
+                    fill: true,
+                    backgroundColor: revGrad,
+                    tension: 0.42,
+                    pointBackgroundColor: "#38bdf8",
+                    pointBorderColor: "#0b1019",
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: "#ffffff",
+                    pointHoverBorderColor: "#38bdf8",
+                    pointHoverBorderWidth: 3
                 },
                 {
                     label: "Demand (Units)",
                     data: demandData,
                     borderColor: "#34d399",
-                    borderWidth: 2,
-                    borderDash: [4, 4],
-                    fill: false,
+                    borderWidth: 2.5,
+                    borderDash: [6, 5],
+                    fill: true,
+                    backgroundColor: demandGrad,
                     tension: 0.4,
                     pointBackgroundColor: "#34d399",
+                    pointBorderColor: "#0b1019",
+                    pointBorderWidth: 2,
                     pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: "#ffffff",
+                    pointHoverBorderColor: "#34d399",
+                    pointHoverBorderWidth: 3,
                     yAxisID: "y1"
                 }
             ]
@@ -326,12 +371,67 @@ function renderRevenueDemandChart() {
             interaction: { mode: "index", intersect: false },
             plugins: {
                 legend: { display: false },
-                tooltip: { backgroundColor: "#0d1424", titleColor: "#ffffff", borderColor: "#1a273e", borderWidth: 1 }
+                tooltip: {
+                    backgroundColor: "rgba(9, 14, 26, 0.96)",
+                    titleColor: "#ffffff",
+                    titleFont: { size: 13, weight: "700", family: "Plus Jakarta Sans" },
+                    titleMarginBottom: 8,
+                    bodyColor: "#cbd5e1",
+                    bodyFont: { size: 12, weight: "600", family: "Plus Jakarta Sans" },
+                    bodySpacing: 7,
+                    borderColor: "#223049",
+                    borderWidth: 1.5,
+                    cornerRadius: 10,
+                    padding: 14,
+                    boxPadding: 6,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(items) {
+                            if (!items.length) return "";
+                            return `📅 ${items[0].label}`;
+                        },
+                        label: function(context) {
+                            const val = context.parsed.y || 0;
+                            const label = context.dataset.label || '';
+                            if (label.includes("Revenue")) {
+                                const fmt = typeof formatCurrency === "function" ? formatCurrency(val) : `$${val.toFixed(2)}`;
+                                return ` Revenue: ${fmt}`;
+                            }
+                            return ` Demand: ${val} units`;
+                        },
+                        afterBody: function(items) {
+                            if (items.length >= 2) {
+                                const rev = items[0].parsed.y || 0;
+                                const units = items[1].parsed.y || 0;
+                                if (units > 0 && rev > 0) {
+                                    const avgPrice = (rev / units).toFixed(2);
+                                    const fmtAvg = typeof formatCurrency === "function" ? formatCurrency(Number(avgPrice)) : `$${avgPrice}`;
+                                    return [
+                                        "─────────────────",
+                                        `💰 Avg Unit Price: ${fmtAvg}`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#64748b", font: { size: 11 } } },
-                y: { grid: { color: "rgba(255, 255, 255, 0.05)" }, ticks: { color: "#64748b", font: { size: 11 } } },
-                y1: { position: "right", grid: { display: false }, ticks: { color: "#34d399", font: { size: 11 } } }
+                x: {
+                    grid: { color: "rgba(255, 255, 255, 0.03)", drawBorder: false },
+                    ticks: { color: "#64748b", font: { size: 11, family: "Plus Jakarta Sans" } }
+                },
+                y: {
+                    grid: { color: "rgba(255, 255, 255, 0.05)", drawBorder: false },
+                    ticks: { color: "#64748b", font: { size: 11, family: "IBM Plex Mono" } },
+                    beginAtZero: true
+                },
+                y1: {
+                    position: "right",
+                    grid: { display: false },
+                    ticks: { color: "#34d399", font: { size: 11, family: "IBM Plex Mono" } },
+                    beginAtZero: true
+                }
             }
         }
     });
@@ -638,10 +738,10 @@ function renderCategoryBubbleOrbit() {
 }
 
 // ==========================================
-// 10. DEMAND FORECAST VS ACTUAL SALES (DYNAMIC)
+// 10. DEMAND FORECAST VS ACTUAL SALES (DYNAMIC & ENHANCED)
 // ==========================================
 
-function renderForecastVsActualChart() {
+function renderForecastVsActualChart(rangeDays = 14) {
     const canvas = getDom("chart-forecast-actual");
     if (!canvas) return;
 
@@ -651,19 +751,66 @@ function renderForecastVsActualChart() {
     const today = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    for (let i = 9; i >= 0; i--) {
+    // Build timeline dates array for past N days
+    const datesList = [];
+    for (let i = rangeDays - 1; i >= 0; i--) {
         const d = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
-        const dateKey = d.toISOString().slice(0, 10);
-        labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
-
-        const daySales = allSales.filter(s => s.date && String(s.date).slice(0, 10) === dateKey);
-        const dayUnits = daySales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
-        actualData.push(dayUnits);
-        forecastData.push(Math.round(dayUnits * 0.9 + 1));
+        datesList.push(d);
     }
+
+    // Map actual sales quantities to each date
+    // Helper: local YYYY-MM-DD (avoids UTC timezone mismatch)
+    function _toLocalKey2(dt) {
+        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    }
+    // Pre-build daily units map
+    const _dailyUnitsMap2 = {};
+    allSales.forEach(s => {
+        if (!s || !s.date) return;
+        const sd = new Date(s.date);
+        if (isNaN(sd.getTime())) return;
+        const k = _toLocalKey2(sd);
+        _dailyUnitsMap2[k] = (_dailyUnitsMap2[k] || 0) + Number(s.quantity || 0);
+    });
+    const dailyActuals = datesList.map(d => {
+        return _dailyUnitsMap2[_toLocalKey2(d)] || 0;
+    });
+
+    // Calculate baseline/average demand for forecast smoothing
+    const totalSalesUnits = allSales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+    const catalogCount = allProducts.length || 1;
+    const baseDailyDemand = totalSalesUnits > 0 ? (totalSalesUnits / 30) : (catalogCount * 1.2);
+
+    // Build forecast values using 3-day Moving Average curve
+    datesList.forEach((d, idx) => {
+        labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
+        const actual = dailyActuals[idx];
+        actualData.push(actual);
+
+        // 3-day window average of preceding observed days
+        const prevWindow = dailyActuals.slice(Math.max(0, idx - 3), idx);
+        let forecastVal = 0;
+
+        if (prevWindow.length > 0) {
+            forecastVal = Math.round(prevWindow.reduce((a, b) => a + b, 0) / prevWindow.length);
+        } else {
+            forecastVal = Math.round(baseDailyDemand);
+        }
+
+        forecastData.push(Math.max(1, forecastVal));
+    });
 
     const ctx = canvas.getContext("2d");
     if (window.myForecastvsActualChart) window.myForecastvsActualChart.destroy();
+
+    // Soft glassmorphism gradients for dataset fills
+    const actualGrad = ctx.createLinearGradient(0, 0, 0, 220);
+    actualGrad.addColorStop(0, "rgba(56, 189, 248, 0.30)");
+    actualGrad.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+
+    const forecastGrad = ctx.createLinearGradient(0, 0, 0, 220);
+    forecastGrad.addColorStop(0, "rgba(52, 211, 153, 0.22)");
+    forecastGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
     window.myForecastvsActualChart = new Chart(ctx, {
         type: "line",
@@ -675,31 +822,95 @@ function renderForecastVsActualChart() {
                     data: actualData,
                     borderColor: "#38bdf8",
                     borderWidth: 3,
-                    fill: false,
-                    tension: 0.45,
+                    fill: true,
+                    backgroundColor: actualGrad,
+                    tension: 0.42,
                     pointBackgroundColor: "#38bdf8",
-                    pointRadius: 4
+                    pointBorderColor: "#0b1019",
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: "#ffffff",
+                    pointHoverBorderColor: "#38bdf8",
+                    pointHoverBorderWidth: 3
                 },
                 {
                     label: "Forecast (Moving Avg)",
                     data: forecastData,
                     borderColor: "#34d399",
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
+                    borderWidth: 2.5,
+                    borderDash: [6, 5],
+                    fill: true,
+                    backgroundColor: forecastGrad,
                     tension: 0.4,
                     pointBackgroundColor: "#34d399",
-                    pointRadius: 4
+                    pointBorderColor: "#0b1019",
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: "#ffffff",
+                    pointHoverBorderColor: "#34d399",
+                    pointHoverBorderWidth: 3
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "rgba(9, 14, 26, 0.96)",
+                    titleColor: "#ffffff",
+                    titleFont: { size: 13, weight: "700", family: "Plus Jakarta Sans" },
+                    titleMarginBottom: 8,
+                    bodyColor: "#cbd5e1",
+                    bodyFont: { size: 12, weight: "600", family: "Plus Jakarta Sans" },
+                    bodySpacing: 7,
+                    borderColor: "#223049",
+                    borderWidth: 1.5,
+                    cornerRadius: 10,
+                    padding: 14,
+                    boxPadding: 6,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(items) {
+                            if (!items.length) return "";
+                            return `📅 ${items[0].label}`;
+                        },
+                        label: function(context) {
+                            const val = context.parsed.y || 0;
+                            const label = context.dataset.label || '';
+                            return ` ${label}: ${val} units`;
+                        },
+                        afterBody: function(items) {
+                            if (items.length >= 2) {
+                                const actual = items[0].parsed.y || 0;
+                                const forecast = items[1].parsed.y || 0;
+                                const diff = actual - forecast;
+                                const pct = forecast > 0 ? Math.round((diff / forecast) * 100) : 0;
+                                const sign = diff > 0 ? "+" : "";
+                                const icon = diff === 0 ? "🎯" : diff > 0 ? "📈" : "📉";
+                                return [
+                                    "─────────────────",
+                                    `${icon} Variance: ${sign}${diff} units (${sign}${pct}%)`
+                                ];
+                            }
+                        }
+                    }
+                }
+            },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#64748b", font: { size: 11 } } },
-                y: { grid: { color: "rgba(255, 255, 255, 0.05)" }, ticks: { color: "#64748b", font: { size: 11 } } }
+                x: {
+                    grid: { color: "rgba(255, 255, 255, 0.03)", drawBorder: false },
+                    ticks: { color: "#64748b", font: { size: 11, family: "Plus Jakarta Sans" } }
+                },
+                y: {
+                    grid: { color: "rgba(255, 255, 255, 0.05)", drawBorder: false },
+                    ticks: { color: "#64748b", font: { size: 11, family: "IBM Plex Mono" } },
+                    beginAtZero: true
+                }
             }
         }
     });
@@ -814,11 +1025,23 @@ function setupRestockModalEvents() {
     }
 }
 
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+
+function setupDropdownListeners() {
+    document.querySelectorAll(".dash-dropdown").forEach(select => {
+        select.addEventListener("change", (e) => {
+            const target = e.target.getAttribute("data-target");
+            const val = e.target.value;
+            let days = 14;
+            if (val === "30") days = 30;
+            else if (val === "this_month") days = 30;
+            else if (val === "all") days = 90;
+
+            if (target === "forecastActual") {
+                renderForecastVsActualChart(days);
+            } else if (target === "salesTrend") {
+                renderRevenueDemandChart(days);
+            }
+        });
+    });
 }

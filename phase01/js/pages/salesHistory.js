@@ -26,6 +26,7 @@ async function initSalesHistoryPage() {
 
         setupFilterListeners();
         setupCsvExport();
+        setupInvoiceModalEvents();
         hideMessage();
     } catch (error) {
         console.error("Sales History Init Error:", error);
@@ -129,12 +130,14 @@ function applyFilters() {
     const fromVal = getDom("fromDateFilter")?.value || "";
     const toVal = getDom("toDateFilter")?.value || "";
 
-    filteredSales = allSales.filter(sale => {
-        // Search filter (Product name, Customer name, ID)
+    filteredSales = allSales.filter((sale, idx) => {
+        // Search filter (Product name, Customer name, Txn ID, Invoice Number)
+        const invNumStr = generateInvoiceNumber(sale, idx).toLowerCase();
         const nameMatch = (sale.productName || "").toLowerCase().includes(searchVal);
         const custMatch = (sale.customer || "").toLowerCase().includes(searchVal);
         const idMatch = String(sale.id || "").toLowerCase().includes(searchVal);
-        const matchesSearch = !searchVal || nameMatch || custMatch || idMatch;
+        const invMatch = invNumStr.includes(searchVal);
+        const matchesSearch = !searchVal || nameMatch || custMatch || idMatch || invMatch;
 
         // Product filter
         const matchesProduct = !productVal || String(sale.productId) === String(productVal);
@@ -222,6 +225,11 @@ function renderSalesTable() {
             <td class="text-right">
                 <span class="total-text">${formatCurrency(total)}</span>
             </td>
+            <td class="text-right">
+                <button type="button" onclick="openInvoiceModal('${sale.id}')" class="btn-invoice-action" title="View & Print Official Invoice">
+                    <i class="ph ph-receipt"></i> Invoice
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -283,35 +291,46 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+
         if (filteredSales.length === 0) {
             alert("No sales transactions to export.");
             return;
         }
 
-        const headers = ["Transaction ID", "Date", "Product Name", "Customer", "Quantity", "Selling Price", "Profit", "Total Amount"];
-        const rows = filteredSales.map(s => [
-            s.id || "",
-            s.date || "",
-            `"${(s.productName || "").replace(/"/g, '""')}"`,
-            `"${(s.customer || "").replace(/"/g, '""')}"`,
-            s.quantity || 0,
-            s.sellingPrice || 0,
-            s.profit || 0,
-            (Number(s.sellingPrice || 0) * Number(s.quantity || 0))
-        ]);
+        try {
+            const headers = ["Transaction ID", "Date", "Product Name", "Customer", "Quantity", "Selling Price", "Profit", "Total Amount"];
+            const rows = filteredSales.map(s => [
+                s.id || "",
+                s.date || "",
+                `"${(s.productName || "").replace(/"/g, '""')}"`,
+                `"${(s.customer || "").replace(/"/g, '""')}"`,
+                s.quantity || 0,
+                s.sellingPrice || 0,
+                s.profit || 0,
+                (Number(s.sellingPrice || 0) * Number(s.quantity || 0))
+            ]);
 
-        const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
+            const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Sales_Ledger_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = "Sales_Ledger_" + new Date().toISOString().slice(0, 10) + ".csv";
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        } catch (err) {
+            console.error("CSV Export Error:", err);
+            alert("Failed to export CSV. Please try again.");
+        }
     });
 }
 
@@ -358,14 +377,7 @@ function formatCurrency(value) {
 
 
 
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+
 
 function showMessage(msg, type) {
     const box = getDom("ledgerMessage");
@@ -380,3 +392,92 @@ function hideMessage() {
     box.textContent = "";
     box.className = "ledger-message";
 }
+
+// ==========================================
+// INVOICE MODAL HANDLERS FOR SALES HISTORY
+// ==========================================
+
+function generateInvoiceNumber(sale, index) {
+    if (!sale) return "INV-2026-0001";
+    const seq = String((index !== undefined && index >= 0) ? (index + 1) : 1).padStart(4, "0");
+    const year = sale.date ? sale.date.slice(0, 4) : "2026";
+    return `INV-${year}-${seq}`;
+}
+
+function openInvoiceModal(saleId) {
+    const sale = allSales.find(s => String(s.id) === String(saleId)) || allSales[0];
+    if (!sale) return;
+
+    const index = allSales.indexOf(sale);
+    const invNum = generateInvoiceNumber(sale, index >= 0 ? index : 0);
+    const txnId = sale.id || "TXN-000000";
+
+    const prod = allProducts.find(p => String(p.id) === String(sale.productId));
+    const qty = Number(sale.quantity || 1);
+    const price = Number(sale.sellingPrice || sale.price || (prod ? prod.sellingPrice : 0) || 0);
+    const subtotal = qty * price;
+    const tax = Number((subtotal * 0.18).toFixed(2));
+    const grandTotal = subtotal + tax;
+
+    const dateStr = sale.date ? new Date(sale.date.replace(/-/g, "/")).toLocaleDateString([], { dateStyle: 'full' }) : new Date().toLocaleDateString([], { dateStyle: 'full' });
+
+    if (getDom("invModalNum")) getDom("invModalNum").textContent = invNum;
+    if (getDom("sheetInvNum")) getDom("sheetInvNum").textContent = invNum;
+    if (getDom("sheetTxnId")) getDom("sheetTxnId").textContent = `#${txnId}`;
+    if (getDom("sheetInvDate")) getDom("sheetInvDate").textContent = `Issued: ${dateStr}`;
+
+    if (getDom("sheetCustomerName")) getDom("sheetCustomerName").textContent = sale.customer || "Walk-in Customer";
+    if (getDom("sheetCustomerContact")) getDom("sheetCustomerContact").textContent = sale.userEmail || "customer@inventoryflow.com";
+
+    // Itemized table row
+    const itemsTbody = getDom("sheetItemsBody");
+    if (itemsTbody) {
+        itemsTbody.innerHTML = `
+            <tr>
+                <td>1</td>
+                <td>
+                    <strong style="color:#ffffff; font-size:13.5px;">${escapeHtml(sale.productName || (prod ? prod.name : "Product"))}</strong>
+                    <span style="display:block; font-size:11px; color:#64748b; margin-top:2px;">SKU/Ref: ${escapeHtml(String(sale.productId || sale.id))}</span>
+                </td>
+                <td>${escapeHtml(prod ? (prod.category || "General") : "General")}</td>
+                <td class="text-center"><strong>${qty}</strong></td>
+                <td class="text-right">${formatCurrency(price)}</td>
+                <td class="text-right"><strong>${formatCurrency(subtotal)}</strong></td>
+            </tr>
+        `;
+    }
+
+    if (getDom("sheetSubtotal")) getDom("sheetSubtotal").textContent = formatCurrency(subtotal);
+    if (getDom("sheetTax")) getDom("sheetTax").textContent = formatCurrency(tax);
+    if (getDom("sheetGrandTotal")) getDom("sheetGrandTotal").textContent = formatCurrency(grandTotal);
+
+    const modal = getDom("invoiceModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function setupInvoiceModalEvents() {
+    const modal = getDom("invoiceModal");
+    const closeBtn = getDom("closeInvoiceModal");
+    const printBtn = getDom("printInvoiceBtn");
+
+    const closeModal = () => {
+        if (modal) modal.style.display = "none";
+    };
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+
+    if (printBtn) {
+        printBtn.addEventListener("click", () => {
+            window.print();
+        });
+    }
+}
+
+window.openInvoiceModal = openInvoiceModal;
+window.setupInvoiceModalEvents = setupInvoiceModalEvents;

@@ -1,0 +1,86 @@
+/* ==========================================
+   PAGE TRANSITION OVERLAY
+   ========================================== */
+
+#page-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    background: #020409;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+#page-transition.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#page-transition.exit {
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+/* Transition Logo */
+#page-transition .t-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 0 rgba(56,189,248,0.4);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#page-transition.active .t-logo {
+    opacity: 1;
+    transform: scale(1);
+    animation: tLogoPulse 1s 0.3s ease-in-out infinite;
+}
+
+@keyframes tLogoPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.4), 0 4px 20px rgba(56,189,248,0.25); }
+    50% { box-shadow: 0 0 0 8px rgba(56,189,248,0), 0 4px 30px rgba(56,189,248,0.4); }
+}
+
+#page-transition .t-logo svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* Transition bar */
+#page-transition .t-bar {
+    width: 120px;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s 0.15s ease;
+}
+
+#page-transition.active .t-bar {
+    opacity: 1;
+}
+
+#page-transition .t-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#page-transition.active .t-bar-fill {
+    width: 100%;
+}

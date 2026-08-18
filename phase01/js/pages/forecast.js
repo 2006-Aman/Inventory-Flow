@@ -23,10 +23,11 @@ async function initForecastPage() {
     try {
         await checkServerStatus();
         await loadDataAndRunEngine();
-        setupCsvExport();
     } catch (error) {
         console.error("Forecast Page Init Error:", error);
     }
+
+    try { setupCsvExport(); } catch (e) { console.warn("Forecast CSV error:", e); }
 }
 
 async function checkServerStatus() {
@@ -71,10 +72,10 @@ async function loadDataAndRunEngine() {
     }
 
     // 4. Render All UI Sections
-    renderKPIs();
-    renderForecastChart();
-    renderTop8Products();
-    renderBreakdownTable();
+    try { renderKPIs(); } catch (e) { console.warn("Forecast KPIs error:", e); }
+    try { renderForecastChart(); } catch (e) { console.warn("Forecast chart error:", e); }
+    try { renderTop8Products(); } catch (e) { console.warn("Forecast top products error:", e); }
+    try { renderBreakdownTable(); } catch (e) { console.warn("Forecast table error:", e); }
 }
 
 // ==========================================
@@ -133,15 +134,48 @@ function renderForecastChart() {
     const today = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+    // Helper: format a local date as YYYY-MM-DD (avoids UTC timezone mismatch from toISOString)
+    function toLocalDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
+
+    // Build a map of daily sales quantities for fast lookup (using local dates)
+    const dailySalesMap = {};
+    allSales.forEach(s => {
+        if (!s || !s.date) return;
+        const saleDate = new Date(s.date);
+        if (isNaN(saleDate.getTime())) return;
+        const key = toLocalDateKey(saleDate);
+        dailySalesMap[key] = (dailySalesMap[key] || 0) + Number(s.quantity || 0);
+    });
+
+    // Collect last 14 days of actual data
     for (let i = 13; i >= 0; i--) {
-        const d = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
-        const dateKey = d.toISOString().slice(0, 10);
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+        const dateKey = toLocalDateKey(d);
         labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
 
-        const daySales = allSales.filter(s => s && s.date && String(s.date).slice(0, 10) === dateKey);
-        const dayUnits = daySales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+        const dayUnits = dailySalesMap[dateKey] || 0;
         actualData.push(dayUnits);
-        forecastData.push(Math.round(dayUnits * 0.9));
+    }
+
+    // Compute 7-day Simple Moving Average forecast for each day
+    // For each day, the forecast is the average of the previous 7 days' actual sales
+    for (let i = 0; i < actualData.length; i++) {
+        // Gather up to 7 previous days (from dailySalesMap including days before chart range)
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (13 - i));
+        let sum = 0;
+        let count = 0;
+        for (let j = 1; j <= 7; j++) {
+            const prevDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() - j);
+            const prevKey = toLocalDateKey(prevDate);
+            sum += (dailySalesMap[prevKey] || 0);
+            count++;
+        }
+        forecastData.push(count > 0 ? Math.round(sum / count) : 0);
     }
 
     const ctx = canvas.getContext("2d");

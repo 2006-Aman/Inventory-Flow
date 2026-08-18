@@ -64,11 +64,11 @@ function formatDate(dateString) {
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function escapeHtmlStr(str) {
+var escapeHtml = function(str) {
     return String(str ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-}
+};
