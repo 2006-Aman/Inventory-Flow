@@ -64,6 +64,20 @@ async function loadData() {
 }
 
 // ==========================================
+// Helper: Calculate Revenue for a Sale Item
+// ==========================================
+function getSaleRevenue(sale) {
+    if (!sale) return 0;
+    if (Number.isFinite(Number(sale.totalAmount)) && Number(sale.totalAmount) > 0) {
+        return Number(sale.totalAmount);
+    }
+    const qty = Number(sale.quantity || 0);
+    const prod = allProducts.find(p => String(p.id) === String(sale.productId));
+    const price = Number(sale.sellingPrice || sale.price || (prod ? prod.sellingPrice : 0) || 0);
+    return qty * price;
+}
+
+// ==========================================
 // 1. RENDER 4 KPI CARDS
 // ==========================================
 
@@ -85,9 +99,18 @@ function renderKPIs() {
     allSales.forEach(s => {
         const prod = allProducts.find(p => String(p.id) === String(s.productId));
         const category = (prod && prod.category) ? prod.category : (s.category || "General");
-        const rev = Number(s.totalAmount || (s.price * s.quantity) || 0);
+        const rev = getSaleRevenue(s);
         catRevenueMap[category] = (catRevenueMap[category] || 0) + rev;
     });
+
+    // If no sales yet, estimate from products inventory potential value
+    if (Object.keys(catRevenueMap).length === 0) {
+        allProducts.forEach(p => {
+            const cat = p.category || "General";
+            const val = Number(p.sellingPrice || 0) * Number(p.stock || 0);
+            catRevenueMap[cat] = (catRevenueMap[cat] || 0) + val;
+        });
+    }
 
     let topCategory = "—";
     let maxRev = -1;
@@ -123,11 +146,10 @@ function renderDayOfWeekChart() {
         const d = new Date(s.date);
         if (isNaN(d.getTime())) return;
         const dayIdx = d.getDay(); // 0 = Sun, 1 = Mon, ...
-        const rev = Number(s.totalAmount || (s.price * s.quantity) || 0);
+        const rev = getSaleRevenue(s);
         dayTotals[dayIdx] += rev;
     });
 
-    // If no sales data, put sample data for visual match
     const hasData = dayTotals.some(v => v > 0);
     const chartValues = hasData ? dayTotals : [9000, 15200, 15000, 12800, 11400, 8400, 11100];
 
@@ -167,7 +189,7 @@ function renderDayOfWeekChart() {
                     borderColor: "#1a273e",
                     borderWidth: 1,
                     callbacks: {
-                        label: (ctx) => `Revenue: ₹${ctx.parsed.y.toLocaleString()}`
+                        label: (ctx) => `Revenue: ₹${ctx.parsed.y.toLocaleString('en-IN')}`
                     }
                 }
             },
@@ -204,8 +226,25 @@ function renderRevenueOrdersChart() {
         labels.push(`${months[d.getMonth()]} ${d.getDate()}`);
     }
 
-    const revenueData = [0, 0, 0, 0, 38000, 47000];
-    const ordersData = [0, 0, 0, 0, 115, 192];
+    // Compute actual monthly revenue and order counts
+    const monthlyRev = [0, 0, 0, 0, 0, 0];
+    const monthlyOrders = [0, 0, 0, 0, 0, 0];
+
+    allSales.forEach(s => {
+        if (!s.date) return;
+        const d = new Date(s.date);
+        if (isNaN(d.getTime())) return;
+        const monthDiff = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+        if (monthDiff >= 0 && monthDiff < 6) {
+            const idx = 5 - monthDiff;
+            monthlyRev[idx] += getSaleRevenue(s);
+            monthlyOrders[idx] += 1;
+        }
+    });
+
+    const hasMonthlyData = monthlyRev.some(v => v > 0);
+    const revenueData = hasMonthlyData ? monthlyRev : [0, 0, 0, 0, 38000, 47000];
+    const ordersData = hasMonthlyData ? monthlyOrders : [0, 0, 0, 0, 115, 192];
 
     const ctx = canvas.getContext("2d");
     if (window.myComboChart) window.myComboChart.destroy();
@@ -217,7 +256,7 @@ function renderRevenueOrdersChart() {
             datasets: [
                 {
                     type: "bar",
-                    label: "Revenue ($)",
+                    label: "Revenue (₹)",
                     data: revenueData,
                     backgroundColor: "rgba(56, 189, 248, 0.8)",
                     borderRadius: 6,
@@ -264,16 +303,14 @@ function renderRevenueOrdersChart() {
                     position: "left",
                     grid: { color: "rgba(255, 255, 255, 0.04)" },
                     ticks: { color: "#64748b", font: { size: 11, family: "Inter" } },
-                    min: 0,
-                    max: 55000
+                    min: 0
                 },
                 y1: {
                     type: "linear",
                     position: "right",
                     grid: { display: false },
                     ticks: { color: "#c084fc", font: { size: 11, family: "Inter" } },
-                    min: 0,
-                    max: 220
+                    min: 0
                 }
             }
         }
@@ -301,7 +338,6 @@ function renderStockHealthChart() {
         else inStock++;
     });
 
-    const total = allProducts.length || 1;
     const dataValues = [inStock, lowStock, critical, outOfStock];
 
     const ctx = canvas.getContext("2d");
@@ -348,25 +384,34 @@ function renderTopCategoriesTable() {
     const catMap = {};
     const catColors = ["#38bdf8", "#34d399", "#c084fc", "#fbbf24", "#f472b6", "#60a5fa", "#fb923c", "#a855f7"];
 
-    // Aggregate by category
+    // 1. Aggregate Products count & potential inventory value
     allProducts.forEach(p => {
         const cat = p.category || "General";
         if (!catMap[cat]) {
-            catMap[cat] = { name: cat, products: 0, unitsSold: 0, revenue: 0 };
+            catMap[cat] = { name: cat, products: 0, unitsSold: 0, revenue: 0, potentialRev: 0 };
         }
         catMap[cat].products++;
+        catMap[cat].potentialRev += Number(p.sellingPrice || 0) * Number(p.stock || 0);
     });
 
+    // 2. Aggregate Sales revenue and units sold
     allSales.forEach(s => {
         const prod = allProducts.find(p => String(p.id) === String(s.productId));
         const cat = (prod && prod.category) ? prod.category : (s.category || "General");
         if (!catMap[cat]) {
-            catMap[cat] = { name: cat, products: 1, unitsSold: 0, revenue: 0 };
+            catMap[cat] = { name: cat, products: 1, unitsSold: 0, revenue: 0, potentialRev: 0 };
         }
         const qty = Number(s.quantity || 0);
-        const rev = Number(s.totalAmount || (s.price * qty) || 0);
+        const rev = getSaleRevenue(s);
         catMap[cat].unitsSold += qty;
         catMap[cat].revenue += rev;
+    });
+
+    // Fallback revenue calculation if sales revenue is 0
+    Object.values(catMap).forEach(item => {
+        if (item.revenue === 0 && item.potentialRev > 0) {
+            item.revenue = item.potentialRev;
+        }
     });
 
     const sortedCats = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
