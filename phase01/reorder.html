@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inventory Reorder Planning | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/reorder.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+                <span id="serverStatus" class="server-status">Checking server...</span>
+                <a href="./inventory.html" class="btn-topbar">Inventory</a>
+                <a href="./sales.html" class="btn-topbar">Record Sale</a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+            <!-- PAGE SUBHEADER ROW -->
+            <div class="reorder-subheader">
+                <p class="reorder-subtext">
+                    Reorder point = (Lead Time × Average Daily Demand) + Safety Stock. Items at or below reorder threshold require restock.
+                </p>
+                <div class="header-actions">
+                    <button id="exportCsvBtn" class="btn-csv">
+                        <i class="ph ph-download-simple"></i> Export CSV
+                    </button>
+                    <a href="forecast.html" class="btn-forecast-engine">
+                        <i class="ph ph-trend-up"></i> Forecast Engine
+                    </a>
+                </div>
+            </div>
+
+            <!-- TOP 4 KPI CARDS GRID -->
+            <div class="kpi-grid-4">
+
+                <!-- CARD 1: SAFE STOCK -->
+                <div class="kpi-card border-green">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Safe Stock</span>
+                        <div class="kpi-icon-box green"><i class="ph ph-check-circle"></i></div>
+                    </div>
+                    <strong id="kpi-safe-count" class="kpi-value">0</strong>
+                    <span class="kpi-sub">products above reorder point</span>
+                </div>
+
+                <!-- CARD 2: LOW STOCK -->
+                <div class="kpi-card border-yellow">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Low Stock</span>
+                        <div class="kpi-icon-box yellow"><i class="ph ph-warning"></i></div>
+                    </div>
+                    <strong id="kpi-lowstock-count" class="kpi-value">0</strong>
+                    <span class="kpi-sub">approaching reorder threshold</span>
+                </div>
+
+                <!-- CARD 3: CRITICAL LEVEL -->
+                <div class="kpi-card border-orange">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Critical Level</span>
+                        <div class="kpi-icon-box orange"><i class="ph ph-clock"></i></div>
+                    </div>
+                    <strong id="kpi-critical-count" class="kpi-value">0</strong>
+                    <span class="kpi-sub">at or below safety buffer</span>
+                </div>
+
+                <!-- CARD 4: OUT OF STOCK -->
+                <div class="kpi-card border-red">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Out of Stock</span>
+                        <div class="kpi-icon-box red"><i class="ph ph-x-circle"></i></div>
+                    </div>
+                    <strong id="kpi-outofstock-count" class="kpi-value">0</strong>
+                    <span class="kpi-sub">zero inventory units remaining</span>
+                </div>
+
+            </div>
+
+            <!-- MESSAGE NOTIFICATION -->
+            <div id="reorderMessage" class="reorder-message"></div>
+
+            <!-- REORDER PRODUCTS TABLE CARD -->
+            <div class="table-card">
+                <div class="table-card-head">
+                    <div>
+                        <h3 class="card-title"><i class="ph ph-package"></i> Products Needing Reorder</h3>
+                    </div>
+                    <span class="alert-badge">RESTOCK ALERTS</span>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="reorder-table">
+                        <thead>
+                            <tr>
+                                <th>PRODUCT</th>
+                                <th class="text-right">CURRENT STOCK</th>
+                                <th class="text-right">REORDER POINT</th>
+                                <th class="text-right">AVG DAILY DEMAND</th>
+                                <th class="text-right">LEAD TIME</th>
+                                <th class="text-right">SAFETY STOCK</th>
+                                <th class="text-right">RECOMMENDED ORDER</th>
+                                <th class="text-center">STATUS</th>
+                                <th class="text-center">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reorderTableBody">
+                            <!-- Rows rendered dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- EMPTY STATE -->
+                <div id="emptyReorderState" class="empty-state" style="display: none;">
+                    <i class="ph ph-check-circle empty-icon"></i>
+                    <h3>All products are in safe stock levels!</h3>
+                    <p>No products currently require inventory restock.</p>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- UPDATE STOCK MODAL -->
+    <div class="modal-backdrop" id="stock-modal" style="display: none;">
+        <div class="modal modal-sm">
+            <div class="modal-head">
+                <h3>Update Stock Level</h3>
+                <button class="modal-close" id="closeStockModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalStockProductInfo" class="stock-info-text">Product details</p>
+                <div class="field">
+                    <label for="stockAddQuantity">Units to Restock / Add</label>
+                    <input type="number" id="stockAddQuantity" min="1" step="1" value="10" placeholder="Enter quantity to add">
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button type="button" class="btn-cancel" id="cancelStockModal">Cancel</button>
+                <button type="button" class="btn-save" id="saveStockModal">Update Stock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/api/salesApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/forecast/movingAverage.js"></script>
+    <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/forecast/forecast.js"></script>
+    <script src="./js/pages/reorder.js"></script>
+
+</body>
+
+</html>

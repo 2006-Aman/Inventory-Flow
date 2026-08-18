@@ -109,16 +109,16 @@
       "supplier": "Global Accessories",
       "costPrice": 3,
       "sellingPrice": 7,
-      "stock": 1,
+      "stock": 412,
       "minimumStock": 5,
       "safetyStock": 6,
       "leadTime": 5,
       "averageDailyDemand": 1.2,
       "reorderPoint": 12,
       "forecastDemand": 8,
-      "status": "Reorder",
+      "status": "In Stock",
       "createdAt": "2026-04-03 09:00",
-      "updatedAt": "2026-08-18 06:13"
+      "updatedAt": "2026-08-18 06:42"
     },
     {
       "id": "4",
@@ -172,16 +172,16 @@
       "supplier": "Dairy Fresh",
       "costPrice": 85,
       "sellingPrice": 120,
-      "stock": 4,
+      "stock": 32,
       "minimumStock": 5,
       "safetyStock": 6,
       "leadTime": 4,
       "averageDailyDemand": 1,
       "reorderPoint": 10,
       "forecastDemand": 7,
-      "status": "Reorder",
+      "status": "In Stock",
       "createdAt": "2026-04-06 09:00",
-      "updatedAt": "2026-08-10 09:00"
+      "updatedAt": "2026-08-18 06:40"
     },
     {
       "id": "7",
@@ -248,6 +248,17 @@
       "customer": "Walk-in Customer",
       "date": "2026-08-18 06:13",
       "id": "6fMaZXtoqoo"
+    },
+    {
+      "productId": "3",
+      "productName": "USB-C Cable",
+      "quantity": 62,
+      "sellingPrice": 7,
+      "costPrice": 3,
+      "profit": 248,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-18 06:41",
+      "id": "vraOj2HU1xo"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
