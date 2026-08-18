@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inventory Analytics | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/analytics.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+                <span id="serverStatus" class="server-status">Checking server...</span>
+                <a href="./inventory.html" class="btn-topbar">Inventory</a>
+                <a href="./sales.html" class="btn-topbar">Record Sale</a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+            <!-- PAGE SUBHEADER ROW -->
+            <div class="analytics-subheader">
+                <p class="analytics-subtext">
+                    Real-time inventory valuation, stock turnover velocity, day-of-week sales patterns, and health metrics.
+                </p>
+                <div class="header-actions">
+                    <span class="pulse-badge">
+                        <span class="pulse-dot"></span> Real-Time Analytics
+                    </span>
+                </div>
+            </div>
+
+            <!-- TOP 4 KPI CARDS GRID -->
+            <div class="kpi-grid-4">
+
+                <!-- CARD 1: INVENTORY VALUATION -->
+                <div class="kpi-card border-cyan">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Inventory Valuation</span>
+                        <div class="kpi-icon-box cyan"><i class="ph ph-coins"></i></div>
+                    </div>
+                    <strong id="kpi-valuation" class="kpi-value">₹0.00</strong>
+                    <span class="kpi-sub"><i class="ph ph-tag"></i> Total stock value at cost price</span>
+                </div>
+
+                <!-- CARD 2: STOCK TURNOVER -->
+                <div class="kpi-card border-green">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Stock Turnover</span>
+                        <div class="kpi-icon-box green"><i class="ph ph-arrows-clockwise"></i></div>
+                    </div>
+                    <strong id="kpi-turnover" class="kpi-value">0.0x</strong>
+                    <span class="kpi-sub"><i class="ph ph-trend-up"></i> Units sold / avg stock (30d)</span>
+                </div>
+
+                <!-- CARD 3: TOP CATEGORY -->
+                <div class="kpi-card border-purple">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Top Category</span>
+                        <div class="kpi-icon-box purple"><i class="ph ph-trophy"></i></div>
+                    </div>
+                    <strong id="kpi-top-category" class="kpi-value text-ellipsis">—</strong>
+                    <span class="kpi-sub"><i class="ph ph-chart-bar"></i> Highest 30-day revenue</span>
+                </div>
+
+                <!-- CARD 4: AVG UNITS / ORDER -->
+                <div class="kpi-card border-yellow">
+                    <div class="kpi-head">
+                        <span class="kpi-title">Avg Units / Order</span>
+                        <div class="kpi-icon-box yellow"><i class="ph ph-package"></i></div>
+                    </div>
+                    <strong id="kpi-avg-units" class="kpi-value">0.00</strong>
+                    <span class="kpi-sub"><i class="ph ph-shopping-bag"></i> Quantity per transaction</span>
+                </div>
+
+            </div>
+
+            <!-- MIDDLE ROW: 2 CHARTS -->
+            <div class="middle-grid">
+
+                <!-- LEFT CHART: SALES BY DAY OF WEEK -->
+                <div class="panel-card chart-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-calendar-blank"></i> Sales by Day of Week</h3>
+                            <p class="panel-sub">Revenue patterns across Sunday to Saturday (Last 90 days).</p>
+                        </div>
+                        <span class="tag-badge">PATTERN</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dayOfWeekChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- RIGHT CHART: REVENUE VS ORDERS -->
+                <div class="panel-card chart-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-chart-bar"></i> Revenue vs. Orders</h3>
+                            <p class="panel-sub">Monthly comparison over the last 6 months.</p>
+                        </div>
+                        <span class="tag-badge">MONTHLY</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueOrdersChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BOTTOM ROW: STOCK HEALTH DOUGHNUT + TOP CATEGORIES TABLE -->
+            <div class="bottom-grid">
+
+                <!-- LEFT: STOCK HEALTH DISTRIBUTION -->
+                <div class="panel-card doughnut-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-chart-pie-slice"></i> Stock Health Distribution</h3>
+                            <p class="panel-sub">Share of catalog items grouped by inventory status.</p>
+                        </div>
+                        <span class="tag-badge">STOCK SHARE</span>
+                    </div>
+
+                    <div class="doughnut-content">
+                        <div class="doughnut-chart-box">
+                            <canvas id="stockHealthChart"></canvas>
+                        </div>
+                        <div class="legend-box" id="stockHealthLegend">
+                            <div class="legend-item"><span class="legend-dot green"></span> In Stock</div>
+                            <div class="legend-item"><span class="legend-dot yellow"></span> Low Stock</div>
+                            <div class="legend-item"><span class="legend-dot orange"></span> Critical</div>
+                            <div class="legend-item"><span class="legend-dot red"></span> Out of Stock</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: TOP CATEGORIES TABLE -->
+                <div class="panel-card categories-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3 class="panel-title"><i class="ph ph-list-numbers"></i> Top Categories</h3>
+                            <p class="panel-sub">Catalog breakdown by revenue and volume.</p>
+                        </div>
+                        <span class="tag-badge">RANKING</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="category-table">
+                            <thead>
+                                <tr>
+                                    <th>CATEGORY</th>
+                                    <th class="text-center">PRODUCTS</th>
+                                    <th class="text-center">UNITS SOLD</th>
+                                    <th class="text-right">REVENUE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topCategoriesBody">
+                                <!-- Rendered dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/api/salesApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/forecast/movingAverage.js"></script>
+    <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/forecast/forecast.js"></script>
+    <script src="./js/pages/analytics.js"></script>
+
+</body>
+
+</html>
