@@ -1,8 +1,128 @@
 /* ==========================================
-   GLOBAL STYLES & SLEEK FLOATING DARK SCROLLBARS
+   GLOBAL STYLES, TYPOGRAPHY & ICON GLOW
 ========================================== */
 
-/* Webkit Scrollbars (Chrome, Edge, Safari) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================
+   GLOWING ICON BOXES (INNER & OUTER LIGHTING)
+========================================== */
+.kpi-icon-box,
+.kpi-icon {
+    transition: all 0.25s ease;
+    border-radius: 12px;
+}
+
+.kpi-icon-box.cyan,
+.kpi-icon.cyan {
+    background: rgba(56, 189, 248, 0.12) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(56, 189, 248, 0.3), 0 0 18px rgba(56, 189, 248, 0.25) !important;
+}
+
+.kpi-icon-box.green,
+.kpi-icon.green {
+    background: rgba(52, 211, 153, 0.12) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(52, 211, 153, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(52, 211, 153, 0.3), 0 0 18px rgba(52, 211, 153, 0.25) !important;
+}
+
+.kpi-icon-box.purple,
+.kpi-icon.purple {
+    background: rgba(192, 132, 252, 0.12) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(192, 132, 252, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(192, 132, 252, 0.3), 0 0 18px rgba(192, 132, 252, 0.25) !important;
+}
+
+.kpi-icon-box.darkpurple,
+.kpi-icon.darkpurple {
+    background: rgba(168, 85, 247, 0.12) !important;
+    color: #a855f7 !important;
+    border: 1px solid rgba(168, 85, 247, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(168, 85, 247, 0.3), 0 0 18px rgba(168, 85, 247, 0.25) !important;
+}
+
+.kpi-icon-box.yellow,
+.kpi-icon.yellow {
+    background: rgba(251, 191, 36, 0.12) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(251, 191, 36, 0.3), 0 0 18px rgba(251, 191, 36, 0.25) !important;
+}
+
+.kpi-icon-box.red,
+.kpi-icon.red {
+    background: rgba(248, 113, 113, 0.12) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(248, 113, 113, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(248, 113, 113, 0.3), 0 0 18px rgba(248, 113, 113, 0.25) !important;
+}
+
+.kpi-icon-box.orange,
+.kpi-icon.orange {
+    background: rgba(249, 115, 22, 0.12) !important;
+    color: #f97316 !important;
+    border: 1px solid rgba(249, 115, 22, 0.35) !important;
+    box-shadow: inset 0 0 14px rgba(249, 115, 22, 0.3), 0 0 18px rgba(249, 115, 22, 0.25) !important;
+}
+
+/* ==========================================
+   PANEL TITLE ICON VIBRANT COLORING
+========================================== */
+.panel-title i {
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+.panel-title i.ph-trend-up {
+    color: #38bdf8;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+}
+
+.panel-title i.ph-trophy {
+    color: #fbbf24;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+.panel-title i.ph-list-bullets,
+.panel-title i.ph-list-numbers {
+    color: #c084fc;
+    filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+}
+
+.panel-title i.ph-calendar-blank,
+.panel-title i.ph-calendar {
+    color: #34d399;
+    filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.6));
+}
+
+.panel-title i.ph-chart-bar {
+    color: #38bdf8;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+}
+
+.panel-title i.ph-chart-pie-slice {
+    color: #f472b6;
+    filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.6));
+}
+
+.panel-title i.ph-package {
+    color: #fbbf24;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+/* ==========================================
+   SLEEK FLOATING DARK SCROLLBARS
+========================================== */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -27,7 +147,6 @@
     background: #38bdf8;
 }
 
-/* Firefox Scrollbars */
 * {
     scrollbar-width: thin;
     scrollbar-color: #1c2840 transparent;
