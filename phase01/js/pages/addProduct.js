@@ -1,18 +1,51 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
+document.addEventListener("DOMContentLoaded", async () => {
         const form = document.getElementById("productForm");
         const message = document.getElementById("formMessage");
         const submitButton = document.getElementById("submitButton");
         const cancelButton = document.getElementById("cancelButton");
         const serverStatus = document.getElementById("serverStatus");
-
+        const pageTitle = document.querySelector(".page-header h1");
+        const pageSubtext = document.querySelector(".page-header p");
 
         if (!form) {
             return;
         }
 
+        // Check if editing existing product
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get("id");
+        const isEditMode = Boolean(productId);
+
+        let existingProduct = null;
+
+        if (isEditMode) {
+            if (pageTitle) pageTitle.textContent = "Edit Product";
+            if (pageSubtext) pageSubtext.textContent = "Update product details in your inventory.";
+            if (submitButton) submitButton.textContent = "Update Product";
+            document.title = "Edit Product | Inventory Reorder System";
+
+            try {
+                showMessage(message, "Loading product details...", "loading");
+                existingProduct = await getProductById(productId);
+
+                if (existingProduct) {
+                    populateProductForm(existingProduct);
+                    clearMessage(message);
+                } else {
+                    showMessage(message, "Product not found.", "error");
+                }
+            } catch (err) {
+                console.error("Error loading product for edit:", err);
+                const localProducts = getLocalProducts();
+                existingProduct = localProducts.find(p => String(p.id) === String(productId));
+                if (existingProduct) {
+                    populateProductForm(existingProduct);
+                    clearMessage(message);
+                } else {
+                    showMessage(message, "Unable to load product details.", "error");
+                }
+            }
+        }
 
         // ======================================
         // CHECK JSON SERVER
@@ -35,11 +68,11 @@ document.addEventListener(
 
                     submitButton.disabled = true;
 
-                    submitButton.textContent = "Saving...";
+                    submitButton.textContent = isEditMode ? "Updating..." : "Saving...";
 
                     showMessage(
                         message,
-                        "Saving product...",
+                        isEditMode ? "Updating product..." : "Saving product...",
                         "loading"
                     );
 
@@ -51,6 +84,7 @@ document.addEventListener(
                     const existingProducts = await getProducts();
 
                     const duplicateSKU = existingProducts.some(existing =>
+                        String(existing.id) !== String(productId) &&
                         existing.sku?.toLowerCase() === product.sku.toLowerCase()
                     );
 
@@ -60,29 +94,59 @@ document.addEventListener(
                     }
 
 
-                    // Create product in JSON Server
-                    const createdProduct = await createProduct(product);
+                    if (isEditMode) {
+                        if (existingProduct) {
+                            product.averageDailyDemand = existingProduct.averageDailyDemand ?? 0;
+                            product.forecastDemand = existingProduct.forecastDemand ?? 0;
+                            product.createdAt = existingProduct.createdAt ?? product.createdAt;
+                            product.reorderPoint = typeof calculateReorderPoint === "function" ?
+                                calculateReorderPoint(product.leadTime, product.averageDailyDemand, product.safetyStock) : 0;
+                            product.status = typeof calculateStockStatus === "function" ?
+                                calculateStockStatus(product.stock, product.minimumStock, product.reorderPoint) : "In Stock";
+                        }
 
-                    // Update LocalStorage
-                    const localProducts = getLocalProducts();
-                    localProducts.push(createdProduct);
-                    saveProducts(localProducts);
+                        const updatedProduct = await updateProduct(productId, product);
 
-                    // Success
-                    showMessage(message, "Product added successfully.", "success");
-                    console.log("Created Product:", createdProduct);
-                    form.reset();
+                        // Update LocalStorage
+                        const localProducts = getLocalProducts();
+                        const index = localProducts.findIndex(p => String(p.id) === String(productId));
+                        if (index !== -1) {
+                            localProducts[index] = { ...localProducts[index], ...updatedProduct };
+                        } else {
+                            localProducts.push(updatedProduct);
+                        }
+                        saveProducts(localProducts);
+
+                        showMessage(message, "Product updated successfully. Redirecting...", "success");
+                        setTimeout(() => {
+                            window.location.href = "inventory.html";
+                        }, 1200);
+
+                    } else {
+                        // Create product in JSON Server
+                        const createdProduct = await createProduct(product);
+
+                        // Update LocalStorage
+                        const localProducts = getLocalProducts();
+                        localProducts.push(createdProduct);
+                        saveProducts(localProducts);
+
+                        // Success
+                        showMessage(message, "Product added successfully.", "success");
+                        console.log("Created Product:", createdProduct);
+                        form.reset();
+                    }
 
                 } catch (error) {
 
-                    console.error("Add product error:", error);
-                    showMessage(message,error.message || "Unable to add product.","error");
+                    console.error(isEditMode ? "Edit product error:" : "Add product error:", error);
+                    showMessage(message, error.message || (isEditMode ? "Unable to update product." : "Unable to add product."), "error");
 
 
                 } finally {
 
                     submitButton.disabled = false;
-                    submitButton.textContent = "Add Product";
+                    submitButton.textContent = isEditMode ? "Update Product" : "Add Product";
                 }
             }
         );
@@ -100,6 +164,22 @@ document.addEventListener(
 
     }
 );
+
+function populateProductForm(product) {
+    if (!product) return;
+    if (document.getElementById("productName")) document.getElementById("productName").value = product.name || "";
+    if (document.getElementById("sku")) document.getElementById("sku").value = product.sku || "";
+    if (document.getElementById("barcode")) document.getElementById("barcode").value = product.barcode || "";
+    if (document.getElementById("category")) document.getElementById("category").value = product.category || "";
+    if (document.getElementById("supplier")) document.getElementById("supplier").value = product.supplier || "";
+    if (document.getElementById("description")) document.getElementById("description").value = product.description || "";
+    if (document.getElementById("costPrice")) document.getElementById("costPrice").value = product.costPrice ?? "";
+    if (document.getElementById("sellingPrice")) document.getElementById("sellingPrice").value = product.sellingPrice ?? "";
+    if (document.getElementById("stock")) document.getElementById("stock").value = product.stock ?? "";
+    if (document.getElementById("minimumStock")) document.getElementById("minimumStock").value = product.minimumStock ?? "";
+    if (document.getElementById("safetyStock")) document.getElementById("safetyStock").value = product.safetyStock ?? "";
+    if (document.getElementById("leadTime")) document.getElementById("leadTime").value = product.leadTime ?? "";
+}
 
 // ==========================================
 // COLLECT FORM DATA

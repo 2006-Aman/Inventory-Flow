@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inventory | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/tables.css">
+    <link rel="stylesheet" href="./css/inventory.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <header class="topbar">
+
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+
+                <span id="serverStatus" class="server-status">
+                    Checking server...
+                </span>
+
+                <a href="./add-product.html" class="btn btn-primary">
+                    + Add Product
+                </a>
+
+            </div>
+
+        </header>
+
+        <!-- =========================================
+             MAIN CONTENT
+        ========================================== -->
+
+        <main class="content">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div>
+                    <h1>Inventory</h1>
+                    <p>Manage and monitor your products and stock.</p>
+                </div>
+            </div>
+
+            <!-- =========================================
+                 SUMMARY CARDS
+            ========================================== -->
+            <section class="inventory-summary">
+                <div class="summary-card">
+                    <span class="summary-label">Total Products</span>
+                    <strong id="totalProducts" class="summary-value">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-label">Total Stock</span>
+                    <strong id="totalStock" class="summary-value">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-label">Low Stock</span>
+                    <strong id="lowStockProducts" class="summary-value">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-label">Reorder Required</span>
+                    <strong id="reorderProducts" class="summary-value">0</strong>
+                </div>
+            </section>
+
+            <!-- =========================================
+                 FILTER TOOLBAR
+            ========================================== -->
+            <section class="inventory-toolbar">
+
+                <div class="search-box">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="search" id="searchInput" placeholder="Search product name, SKU, or barcode...">
+                </div>
+
+                <div class="filter-box">
+                    <div class="filter-group">
+                        <label for="categoryFilter">CATEGORY</label>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="supplierFilter">SUPPLIER</label>
+                        <select id="supplierFilter">
+                            <option value="">All Suppliers</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="statusFilter">STATUS</label>
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="In Stock">In Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                            <option value="Reorder">Reorder</option>
+                        </select>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- =========================================
+                 MESSAGE
+            ========================================== -->
+            <div id="inventoryMessage" class="inventory-message"></div>
+
+            <!-- =========================================
+                 INVENTORY TABLE CARD
+            ========================================== -->
+            <section class="table-card">
+
+                <div class="table-wrapper">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>PRODUCT</th>
+                                <th>CATEGORY</th>
+                                <th>SUPPLIER</th>
+                                <th>COST</th>
+                                <th>SELLING</th>
+                                <th>STOCK</th>
+                                <th>REORDER PT</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="inventoryTableBody">
+                            <!-- Products inserted by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- EMPTY STATE -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <h3>No Products Found</h3>
+                    <p>Add your first product to start managing inventory.</p>
+                    <a href="./add-product.html" class="btn btn-primary">Add Product</a>
+                </div>
+
+                <!-- TABLE CARD FOOTER / PAGINATION -->
+                <div class="table-card-footer">
+                    <span id="productCountText" class="product-count-text">0 product(s)</span>
+                    <div id="paginationContainer" class="pagination-container">
+                        <!-- Pagination buttons inserted by JS -->
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- ===== Edit Product Modal ===== -->
+    <div class="modal-backdrop" id="edit-modal">
+        <div class="modal">
+            <div class="modal-head">
+                <h3>Edit Product</h3>
+                <button class="modal-close" data-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <datalist id="category-list"></datalist>
+                <div id="editModalMessage" class="inventory-message"></div>
+                <input type="hidden" id="edit-id">
+                <div class="form-grid2">
+                    <div class="field full-width">
+                        <label>Product Name</label>
+                        <input id="edit-name" type="text">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>SKU</label>
+                        <input id="edit-sku" type="text">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Barcode</label>
+                        <input id="edit-barcode" type="text">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Category</label>
+                        <input id="edit-category" type="text" list="category-list">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Supplier</label>
+                        <input id="edit-supplier" type="text">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Cost Price (₹)</label>
+                        <input id="edit-cost" type="number" min="0" step="0.01">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Selling Price (₹)</label>
+                        <input id="edit-selling" type="number" min="0" step="0.01">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Stock Quantity</label>
+                        <input id="edit-stock" type="number" min="0">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field">
+                        <label>Safety Stock Buffer</label>
+                        <input id="edit-safety" type="number" min="0">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field full-width">
+                        <label>Supplier Lead Time (Days)</label>
+                        <input id="edit-lead" type="number" min="1">
+                        <div class="field-error"></div>
+                    </div>
+                    <div class="field full-width">
+                        <label>Description</label>
+                        <textarea id="edit-description" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-outline" data-close>Cancel</button>
+                <button class="btn btn-gradient" id="edit-save"><i class="ph ph-check"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Update Stock Level Modal (Matches Image) ===== -->
+    <div class="modal-backdrop" id="stock-modal">
+        <div class="modal modal-sm">
+            <div class="modal-head">
+                <h3>Update Stock Level</h3>
+                <button class="modal-close" data-stock-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="stockModalMessage" class="inventory-message"></div>
+                <input type="hidden" id="stock-product-id">
+
+                <p id="stock-product-info" class="stock-info-text">
+                    Product - currently 0 in stock (reorder point 0)
+                </p>
+
+                <div class="field full-width">
+                    <label>NEW STOCK QUANTITY</label>
+                    <input id="stock-new-qty" type="number" min="0" step="1">
+                    <div class="field-error"></div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-outline" data-stock-close>Cancel</button>
+                <button class="btn btn-gradient" id="stock-save"><i class="ph ph-check"></i> Update Stock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/forecast/reorderPoint.js"></script>
+    <script src="./js/utils/helpers.js"></script>
+    <script src="./js/utils/formatters.js"></script>
+    <script src="./js/components/toast.js"></script>
+    <script src="./js/pages/inventory.js"></script>
+
+</body>
+
+</html>
