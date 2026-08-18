@@ -7,27 +7,44 @@
 
     <title>Add Product | Inventory Reorder System</title>
 
-    <link rel="stylesheet" href="./css/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global CSS -->
     <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/forms.css">
-    <link rel="stylesheet" href="./css/auth.css">
+    <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/responsive.css">
 
     <style>
         /* ==========================================
-           ADD PRODUCT PAGE
+           ADD PRODUCT PAGE - SLEEK DARK THEME
         ========================================== */
+
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
         .page-wrapper {
             min-height: 100vh;
-            background: #f5f7fb;
+            background-color: #0b0f19;
         }
 
+        /* TOPBAR */
         .topbar {
             height: 70px;
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
+            background: #111827;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -35,75 +52,87 @@
         }
 
         .brand {
-            font-size: 21px;
+            font-size: 20px;
             font-weight: 700;
-            color: #111827;
+            color: #ffffff;
+            letter-spacing: -0.02em;
         }
 
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
         }
 
         .server-status {
             font-size: 13px;
-            color: #6b7280;
+            color: #94a3b8;
         }
 
+        .btn-topbar {
+            background: #141c2e;
+            color: #ffffff;
+            border: 1px solid #23314d;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-topbar:hover {
+            background: #23314d;
+        }
+
+        /* CONTENT */
         .content {
-            max-width: 1100px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 35px 25px 60px;
+            padding: 30px 24px 60px;
         }
 
-        .page-header {
-            margin-bottom: 25px;
+        .page-subtext {
+            color: #64748b;
+            font-size: 13.5px;
+            margin: 0 0 24px;
         }
 
-        .page-header h1 {
-            margin: 0 0 8px;
-            font-size: 30px;
-            color: #111827;
+        /* LAYOUT GRID (2 COLUMNS) */
+        .add-product-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
         }
 
-        .page-header p {
-            margin: 0;
-            color: #6b7280;
-        }
-
+        /* LEFT FORM CARD */
         .form-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            background: #101726;
+            border: 1px solid #1a253a;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        .section-title {
-            margin: 0 0 20px;
-            font-size: 18px;
-            color: #111827;
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 24px;
+            letter-spacing: -0.01em;
         }
 
-        .form-section {
-            margin-bottom: 35px;
-        }
-
-        .form-section:last-of-type {
-            margin-bottom: 10px;
-        }
-
-        .form-grid {
+        .form-grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 18px 16px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 7px;
+            gap: 6px;
         }
 
         .form-group.full {
@@ -111,13 +140,9 @@
         }
 
         .form-group label {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            color: #374151;
-        }
-
-        .required {
-            color: #dc2626;
+            color: #94a3b8;
         }
 
         .form-group input,
@@ -125,13 +150,16 @@
         .form-group select {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            padding: 12px 16px;
+            background: #070b14;
+            border: 1px solid #1c2840;
+            border-radius: 10px;
+            color: #ffffff;
             font-size: 14px;
+            font-weight: 500;
             outline: none;
-            transition: border-color 0.2s;
-            background: #ffffff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            font-family: inherit;
         }
 
         .form-group textarea {
@@ -142,106 +170,237 @@
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
-            border-color: #2563eb;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
         }
 
-        .help-text {
-            font-size: 12px;
-            color: #6b7280;
+        .hint-text {
+            font-size: 11.5px;
+            color: #64748b;
+            margin-top: 2px;
         }
 
         .form-actions {
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
             gap: 12px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 25px;
+            margin-top: 28px;
         }
 
-        .btn {
+        .btn-save {
+            background: #02b6ed;
+            color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 12px 22px;
+            padding: 12px 30px;
+            border-radius: 9999px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 18px rgba(2, 182, 237, 0.35);
         }
 
-        .btn-primary {
-            background: #2563eb;
-            color: white;
+        .btn-save:hover {
+            background: #029fd2;
+            box-shadow: 0 6px 24px rgba(2, 182, 237, 0.5);
+            transform: translateY(-1px);
         }
 
-        .btn-primary:hover {
-            background: #1d4ed8;
+        .btn-cancel {
+            background: #141c2e;
+            color: #ffffff;
+            border: 1px solid #23314d;
+            padding: 12px 30px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #374151;
+        .btn-cancel:hover {
+            background: #23314d;
         }
 
-        .btn-secondary:hover {
-            background: #e5e7eb;
+        /* RIGHT PREVIEW COLUMN */
+        .preview-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
+        .preview-card {
+            background: #101726;
+            border: 1px solid #1a253a;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 16px;
+        }
+
+        /* LIVE PREVIEW BANNER */
+        .preview-banner {
+            background: #00b4d8;
+            border-radius: 14px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .preview-banner-text {
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 700;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        /* PREVIEW STATS TABLE */
+        .preview-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13.5px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* CODES CARD */
+        .codes-subtext {
+            font-size: 12px;
+            color: #64748b;
+            margin: -10px 0 16px;
+        }
+
+        .codes-display {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .barcode-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .barcode-lines {
+            height: 48px;
+            width: 85px;
+            background: repeating-linear-gradient(
+                90deg,
+                #ffffff 0px,
+                #ffffff 2px,
+                transparent 2px,
+                transparent 4px,
+                #ffffff 4px,
+                #ffffff 7px,
+                transparent 7px,
+                transparent 9px,
+                #ffffff 9px,
+                #ffffff 11px,
+                transparent 11px,
+                transparent 13px,
+                #ffffff 13px,
+                #ffffff 16px
+            );
+        }
+
+        .barcode-text {
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .qr-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qr-matrix {
+            width: 48px;
+            height: 48px;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 4px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            box-sizing: border-box;
+        }
+
+        .qr-cell {
+            background: #000000;
+            border-radius: 2px;
+        }
+
+        .qr-text {
+            font-size: 10px;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        /* MESSAGE */
         .message {
             display: none;
-            margin-bottom: 25px;
-            padding: 13px 15px;
-            border-radius: 8px;
+            margin-bottom: 24px;
+            padding: 13px 18px;
+            border-radius: 10px;
             font-size: 14px;
         }
 
         .message.success {
             display: block;
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .message.error {
             display: block;
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .message.loading {
             display: block;
-            background: #eff6ff;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        @media (max-width: 700px) {
-
-            .topbar {
-                padding: 0 15px;
-            }
-
-            .content {
-                padding: 25px 15px;
-            }
-
-            .form-card {
-                padding: 20px;
-            }
-
-            .form-grid {
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .add-product-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .form-group.full {
-                grid-column: auto;
-            }
-
-            .form-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
             }
         }
     </style>
@@ -253,368 +412,177 @@
 
         <!-- TOP BAR -->
         <header class="topbar">
-
             <div class="brand">
                 Inventory Reorder System
             </div>
-
             <div class="topbar-right">
-
-                <span
-                    id="serverStatus"
-                    class="server-status">
-                    Checking server...
-                </span>
-
+                <span id="serverStatus" class="server-status">Checking server...</span>
+                <a href="./inventory.html" class="btn-topbar">Back to Inventory</a>
             </div>
-
         </header>
-
 
         <!-- MAIN CONTENT -->
         <main class="content">
 
-            <div class="page-header">
+            <p class="page-subtext">
+                Lead time and safety stock feed straight into the reorder point formula, so fill them in carefully.
+            </p>
 
-                <h1>Add Product</h1>
+            <div id="formMessage" class="message"></div>
 
-                <p>
-                    Add a new product to your inventory.
-                    Forecast values will be calculated
-                    after sales history is available.
-                </p>
+            <div class="add-product-grid">
 
-            </div>
+                <!-- LEFT FORM CARD -->
+                <div class="form-card">
+                    <h2 class="card-title" id="pageFormTitle">Product details</h2>
 
+                    <form id="productForm" novalidate>
 
-            <!-- MESSAGE -->
-            <div
-                id="formMessage"
-                class="message">
-            </div>
-
-
-            <!-- FORM -->
-            <div class="form-card">
-
-                <form
-                    id="productForm"
-                    novalidate>
-
-
-                    <!-- ==================================
-                         BASIC INFORMATION
-                    =================================== -->
-
-                    <section class="form-section">
-
-                        <h2 class="section-title">
-                            Basic Information
-                        </h2>
-
-                        <div class="form-grid">
-
+                        <div class="form-grid-2">
 
                             <!-- PRODUCT NAME -->
                             <div class="form-group">
-
-                                <label for="productName">
-                                    Product Name
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="productName"
-                                    name="productName"
-                                    placeholder="e.g. Wireless Mouse"
-                                    required>
-
+                                <label for="productName">Product name</label>
+                                <input type="text" id="productName" placeholder="Product name" required>
                             </div>
-
 
                             <!-- SKU -->
                             <div class="form-group">
-
-                                <label for="sku">
-                                    SKU
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="sku"
-                                    name="sku"
-                                    placeholder="e.g. ELEC-0001"
-                                    required>
-
+                                <label for="sku">SKU</label>
+                                <input type="text" id="sku" placeholder="G-L8FE2R" required>
                             </div>
-
-
-                            <!-- BARCODE -->
-                            <div class="form-group">
-
-                                <label for="barcode">
-                                    Barcode
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="barcode"
-                                    name="barcode"
-                                    placeholder="e.g. 8901234560017">
-
-                            </div>
-
 
                             <!-- CATEGORY -->
                             <div class="form-group">
-
-                                <label for="category">
-                                    Category
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="category"
-                                    name="category"
-                                    placeholder="e.g. Electronics"
-                                    required>
-
+                                <label for="category">Category</label>
+                                <input type="text" id="category" placeholder="Category" required>
                             </div>
-
 
                             <!-- SUPPLIER -->
                             <div class="form-group">
-
-                                <label for="supplier">
-                                    Supplier
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="supplier"
-                                    name="supplier"
-                                    placeholder="e.g. TechMart Supplies">
-
+                                <label for="supplier">Supplier</label>
+                                <input type="text" id="supplier" placeholder="Supplier">
                             </div>
-
-
-                            <!-- DESCRIPTION -->
-                            <div class="form-group full">
-
-                                <label for="description">
-                                    Description
-                                </label>
-
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    placeholder="Enter product description..."></textarea>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- ==================================
-                         PRICING
-                    =================================== -->
-
-                    <section class="form-section">
-
-                        <h2 class="section-title">
-                            Pricing
-                        </h2>
-
-                        <div class="form-grid">
-
 
                             <!-- COST PRICE -->
                             <div class="form-group">
-
-                                <label for="costPrice">
-                                    Cost Price
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="costPrice"
-                                    name="costPrice"
-                                    min="0"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    required>
-
+                                <label for="costPrice">Cost price (₹)</label>
+                                <input type="number" id="costPrice" min="0" step="0.01" placeholder="Cost price ($)" required>
                             </div>
-
 
                             <!-- SELLING PRICE -->
                             <div class="form-group">
-
-                                <label for="sellingPrice">
-                                    Selling Price
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="sellingPrice"
-                                    name="sellingPrice"
-                                    min="0"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    required>
-
+                                <label for="sellingPrice">Selling price (₹)</label>
+                                <input type="number" id="sellingPrice" min="0" step="0.01" placeholder="Selling price ($)" required>
                             </div>
 
-                        </div>
-
-                    </section>
-
-
-                    <!-- ==================================
-                         INVENTORY
-                    =================================== -->
-
-                    <section class="form-section">
-
-                        <h2 class="section-title">
-                            Inventory Settings
-                        </h2>
-
-                        <div class="form-grid">
-
-
-                            <!-- INITIAL STOCK -->
+                            <!-- OPENING STOCK -->
                             <div class="form-group">
-
-                                <label for="stock">
-                                    Initial Stock
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="stock"
-                                    name="stock"
-                                    min="0"
-                                    step="1"
-                                    placeholder="0"
-                                    required>
-
+                                <label for="stock">Opening stock</label>
+                                <input type="number" id="stock" min="0" step="1" placeholder="Opening stock" required>
                             </div>
-
-
-                            <!-- MINIMUM STOCK -->
-                            <div class="form-group">
-
-                                <label for="minimumStock">
-                                    Minimum Stock
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="minimumStock"
-                                    name="minimumStock"
-                                    min="0"
-                                    step="1"
-                                    placeholder="5"
-                                    required>
-
-                            </div>
-
 
                             <!-- SAFETY STOCK -->
                             <div class="form-group">
-
-                                <label for="safetyStock">
-                                    Safety Stock
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="safetyStock"
-                                    name="safetyStock"
-                                    min="0"
-                                    step="1"
-                                    placeholder="5"
-                                    required>
-
-                                <span class="help-text">
-                                    Extra stock kept to protect against demand or delivery uncertainty.
-                                </span>
-
+                                <label for="safetyStock">Safety stock</label>
+                                <input type="number" id="safetyStock" min="0" step="1" placeholder="Safety stock" required>
+                                <span class="hint-text">Buffer kept for demand spikes</span>
                             </div>
-
 
                             <!-- LEAD TIME -->
-                            <div class="form-group">
-
-                                <label for="leadTime">
-                                    Lead Time (Days)
-                                    <span class="required">*</span>
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="leadTime"
-                                    name="leadTime"
-                                    min="1"
-                                    step="1"
-                                    placeholder="10"
-                                    required>
-
-                                <span class="help-text">
-                                    Expected supplier delivery time after placing an order.
-                                </span>
-
+                            <div class="form-group full">
+                                <label for="leadTime">Lead time (days)</label>
+                                <input type="number" id="leadTime" min="1" step="1" placeholder="Lead time (days)" required>
+                                <span class="hint-text">Supplier delivery window</span>
                             </div>
+
+                            <!-- DESCRIPTION -->
+                            <div class="form-group full">
+                                <label for="description">Description</label>
+                                <textarea id="description" placeholder="Description"></textarea>
+                            </div>
+
+                            <!-- HIDDEN / EXTRA FIELDS -->
+                            <input type="hidden" id="barcode">
+                            <input type="hidden" id="minimumStock" value="5">
 
                         </div>
 
-                    </section>
+                        <div class="form-actions">
+                            <button type="submit" id="submitButton" class="btn-save">Save product</button>
+                            <button type="button" id="cancelButton" class="btn-cancel">Cancel</button>
+                        </div>
 
+                    </form>
+                </div>
 
-                    <div class="form-actions">
+                <!-- RIGHT PREVIEW COLUMN -->
+                <div class="preview-column">
 
-                        <button
-                            type="button"
-                            id="cancelButton"
-                            class="btn btn-secondary">
+                    <!-- LIVE PREVIEW CARD -->
+                    <div class="preview-card">
+                        <h3>Live preview</h3>
 
-                            Cancel
+                        <div class="preview-banner">
+                            <span id="previewName" class="preview-banner-text">Your product name</span>
+                        </div>
 
-                        </button>
-
-
-                        <button
-                            type="reset"
-                            class="btn btn-secondary">
-
-                            Clear
-
-                        </button>
-
-
-                        <button
-                            type="submit"
-                            id="submitButton"
-                            class="btn btn-primary">
-
-                            Add Product
-
-                        </button>
-
+                        <div class="preview-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Category</span>
+                                <span id="previewCategory" class="stat-value">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Supplier</span>
+                                <span id="previewSupplier" class="stat-value">Unassigned</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Unit profit</span>
+                                <span id="previewProfit" class="stat-value">₹0.00</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Margin</span>
+                                <span id="previewMargin" class="stat-value">0.0%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Stock value</span>
+                                <span id="previewStockValue" class="stat-value">₹0.00</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Starting ROP estimate</span>
+                                <span id="previewRop" class="stat-value">0 units</span>
+                            </div>
+                        </div>
                     </div>
 
-                </form>
+                    <!-- CODES CARD -->
+                    <div class="preview-card">
+                        <h3>Codes</h3>
+                        <p class="codes-subtext">Generated from the SKU</p>
+
+                        <div class="codes-display">
+                            <div class="barcode-box">
+                                <div class="barcode-lines"></div>
+                                <span id="previewSkuCode" class="barcode-text">G-L8FE2R</span>
+                            </div>
+                            <div class="qr-box">
+                                <div class="qr-matrix">
+                                    <div class="qr-cell"></div>
+                                    <div></div>
+                                    <div class="qr-cell"></div>
+                                    <div></div>
+                                    <div class="qr-cell"></div>
+                                    <div></div>
+                                    <div class="qr-cell"></div>
+                                    <div></div>
+                                    <div class="qr-cell"></div>
+                                </div>
+                                <span id="previewBarcodeText" class="qr-text">8769933320623</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
 
@@ -622,7 +590,7 @@
 
     </div>
 
-
+    <!-- JAVASCRIPT -->
     <script src="./js/api/api.js"></script>
     <script src="./js/api/productApi.js"></script>
     <script src="./js/storage/storage.js"></script>
