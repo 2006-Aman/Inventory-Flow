@@ -193,8 +193,28 @@ function setupLivePreview() {
     inputIds.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
-            input.addEventListener("input", updateLivePreview);
-            input.addEventListener("change", updateLivePreview);
+            input.addEventListener("input", () => {
+                updateLivePreview();
+                updateFieldLabels();
+            });
+            input.addEventListener("change", () => {
+                updateLivePreview();
+                updateFieldLabels();
+            });
+        }
+    });
+    updateFieldLabels();
+}
+
+function updateFieldLabels() {
+    document.querySelectorAll(".form-group").forEach(group => {
+        const input = group.querySelector("input, select, textarea");
+        if (input) {
+            if (input.value !== undefined && String(input.value).trim() !== "") {
+                group.classList.add("has-value");
+            } else {
+                group.classList.remove("has-value");
+            }
         }
     });
 }

@@ -24,6 +24,18 @@
       "role": "System Administrator",
       "avatar": "X",
       "createdAt": "2026-08-18T04:45:21.615Z"
+    },
+    {
+      "id": "RMDf12yHa8s",
+      "firstName": "12",
+      "lastName": ".",
+      "email": "1@gmail.com",
+      "password": "1111",
+      "phone": "+91 98765 43210",
+      "organization": "1",
+      "role": "System Administrator",
+      "avatar": "1",
+      "createdAt": "2026-08-18T04:49:16.130Z"
     }
   ],
   "categories": [

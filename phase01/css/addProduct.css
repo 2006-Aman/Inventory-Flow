@@ -63,68 +63,94 @@ body {
     gap: 16px 18px;
 }
 
-/* ROUNDED FIELD BOXES (MATCHING REFERENCE IMAGE) */
+/* MATCHING REFERENCE DESIGN PIXEL-FOR-PIXEL: CARD INPUTS & FLOATING LABELS */
 .form-group {
-    background: #080c16;
-    border: 1px solid #1c2840;
-    border-radius: 18px;
-    padding: 10px 18px 10px;
-    min-height: 58px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-sizing: border-box;
-    position: relative;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #080c16 !important;
+    border: 1px solid #1c2840 !important;
+    border-radius: 18px !important;
+    padding: 10px 20px !important;
+    min-height: 58px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .form-group.full {
     grid-column: 1 / -1;
 }
 
+.form-group:focus-within {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18) !important;
+}
+
+/* Hide label by default when empty */
 .form-group label {
     display: none !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    margin-bottom: 2px !important;
+    line-height: 1.2 !important;
 }
 
-.form-group input,
-.form-group select {
-    width: 100%;
-    box-sizing: border-box;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #ffffff;
-    font-size: 14.5px;
-    font-weight: 500;
-    padding: 0;
-    font-family: inherit;
+/* Show label ONLY when input actually has text entered */
+.form-group.has-value label {
+    display: block !important;
 }
 
-.form-group input::placeholder {
-    color: #64748b;
-    font-weight: 400;
+.form-card .form-group input,
+.form-card .form-group select,
+.form-card .form-group textarea,
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-style: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #ffffff !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    padding: 2px 0 !important;
+    margin: 0 !important;
+    font-family: inherit !important;
+    resize: vertical;
 }
 
-/* HIDE NUMBER INPUT ARROW SPINNERS */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.form-card .form-group input:focus,
+.form-card .form-group select:focus,
+.form-card .form-group textarea:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+    background: transparent !important;
+    border: 0 !important;
+    border-style: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
-input[type="number"] {
-    -moz-appearance: textfield;
+.form-group textarea {
+    min-height: 80px !important;
 }
 
-.form-group:focus-within {
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #475569 !important;
+    font-weight: 500 !important;
+    font-size: 14.5px !important;
 }
 
-/* CUSTOM UP / DOWN ARROWS */
-.form-group.number-group {
-    position: relative;
-    padding-right: 36px;
+.form-group.number-group input {
+    padding-right: 40px !important;
 }
 
 .spin-arrows {
