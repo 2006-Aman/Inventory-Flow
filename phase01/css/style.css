@@ -309,6 +309,94 @@ a.btn-secondary-dark {
     border-radius: 9999px !important;
 }
 
+/* SOFT LOW-CONTRAST ELEGANT BUTTON COLORING SYSTEM */
+
+/* Primary Action Buttons */
+.btn-primary,
+.btn-primary-blue,
+.btn-save,
+.btn-save-sale,
+.btn-save-settings,
+.btn-new-sale,
+.btn-export-report,
+.btn-gradient,
+a.btn-primary,
+a.btn-primary-blue,
+a.btn-save {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border: 1px solid #0369a1 !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-primary:hover,
+.btn-primary-blue:hover,
+.btn-save:hover,
+.btn-save-sale:hover,
+.btn-save-settings:hover,
+.btn-new-sale:hover,
+.btn-export-report:hover,
+.btn-gradient:hover,
+a.btn-primary:hover,
+a.btn-primary-blue:hover,
+a.btn-save:hover {
+    background: #0369a1 !important;
+    border-color: #075985 !important;
+    color: #ffffff !important;
+}
+
+/* Secondary / Cancel Buttons */
+.btn-secondary,
+.btn-secondary-dark,
+.btn-cancel,
+.btn-outline,
+a.btn-secondary,
+a.btn-secondary-dark {
+    background: #111827 !important;
+    color: #94a3b8 !important;
+    border: 1px solid #1f2937 !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary-dark:hover,
+.btn-cancel:hover,
+.btn-outline:hover,
+a.btn-secondary:hover,
+a.btn-secondary-dark:hover {
+    background: #1f2937 !important;
+    color: #e2e8f0 !important;
+    border-color: #374151 !important;
+}
+
+/* CSV & Export Buttons */
+.btn-csv,
+.btn-history {
+    background: #111827 !important;
+    color: #38bdf8 !important;
+    border: 1px solid #1f2937 !important;
+    font-weight: 600 !important;
+}
+
+.btn-csv:hover,
+.btn-history:hover {
+    background: #1f2937 !important;
+    color: #ffffff !important;
+}
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    font-weight: 700 !important;
+}
+
+.btn-csv:hover,
+.btn-history:hover {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4) !important;
+}
+
 body {
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
