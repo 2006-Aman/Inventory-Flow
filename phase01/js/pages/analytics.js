@@ -138,12 +138,15 @@ function renderKPIs() {
     // Card 4: Avg Units / Order
     const totalTransactions = allSales.length;
     const avgUnits = totalTransactions > 0 ? (totalUnitsSold / totalTransactions).toFixed(2) : "0.00";
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${v.toFixed(2)}`;
 
-    if (getDom("kpi-valuation")) getDom("kpi-valuation").textContent = `₹${valuation.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (getDom("kpi-valuation")) getDom("kpi-valuation").textContent = fmt(valuation);
     if (getDom("kpi-turnover")) getDom("kpi-turnover").textContent = `${turnover}x`;
     if (getDom("kpi-top-category")) getDom("kpi-top-category").textContent = topCategory;
     if (getDom("kpi-avg-units")) getDom("kpi-avg-units").textContent = avgUnits;
 }
+
+
 
 // ==========================================
 // 2. CHART 1: SALES BY DAY OF WEEK (WIDER BARS)
@@ -435,6 +438,8 @@ function renderTopCategoriesTable() {
         return;
     }
 
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${v.toFixed(2)}`;
+
     sortedCats.forEach((item, index) => {
         const color = catColors[index % catColors.length];
         const tr = document.createElement("tr");
@@ -447,11 +452,12 @@ function renderTopCategoriesTable() {
             </td>
             <td class="text-center">${item.products}</td>
             <td class="text-center"><strong>${item.unitsSold}</strong></td>
-            <td class="text-right cat-revenue-text">₹${item.revenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="text-right cat-revenue-text">${fmt(item.revenue)}</td>
         `;
         tbody.appendChild(tr);
     });
 }
+
 
 // ==========================================
 // HELPERS

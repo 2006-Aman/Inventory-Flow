@@ -227,12 +227,16 @@ function renderKPIs() {
     const totalUnits = filteredSales.reduce((sum, s) => sum + Number(s.quantity || 0), 0);
     const avgOrderValue = totalOrders > 0 ? (totalRev / totalOrders) : 0;
 
-    if (getDom("kpi-revenue")) getDom("kpi-revenue").textContent = `₹${totalRev.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (getDom("kpi-profit")) getDom("kpi-profit").textContent = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${v.toFixed(2)}`;
+
+    if (getDom("kpi-revenue")) getDom("kpi-revenue").textContent = fmt(totalRev);
+    if (getDom("kpi-profit")) getDom("kpi-profit").textContent = fmt(totalProfit);
     if (getDom("kpi-orders")) getDom("kpi-orders").textContent = totalOrders.toLocaleString();
     if (getDom("kpi-units")) getDom("kpi-units").textContent = totalUnits.toLocaleString();
-    if (getDom("kpi-aov")) getDom("kpi-aov").textContent = `₹${avgOrderValue.toFixed(2)}`;
+    if (getDom("kpi-aov")) getDom("kpi-aov").textContent = fmt(avgOrderValue);
 }
+
+
 
 // ==========================================
 // 2. CHART 1: DAILY REVENUE TREND
@@ -428,14 +432,16 @@ function renderMonthlyBreakdownTable() {
         return;
     }
 
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${v.toFixed(2)}`;
+
     sortedMonths.forEach(([_, data]) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><strong>${escapeHtml(data.label)}</strong></td>
             <td class="text-center">${data.orders}</td>
             <td class="text-center">${data.units}</td>
-            <td class="text-right">₹${data.revenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            <td class="text-right text-profit">₹${data.profit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="text-right">${fmt(data.revenue)}</td>
+            <td class="text-right text-profit">${fmt(data.profit)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -452,6 +458,7 @@ function renderTopProductsTable() {
     tbody.innerHTML = "";
 
     const prodMap = {};
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${v.toFixed(2)}`;
 
     filteredSales.forEach(s => {
         const pName = s.productName || "Unknown Product";
@@ -475,12 +482,14 @@ function renderTopProductsTable() {
         tr.innerHTML = `
             <td><span class="prod-name-bold">${escapeHtml(item.name)}</span></td>
             <td class="text-center">${item.units}</td>
-            <td class="text-right">₹${item.revenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            <td class="text-right text-profit">₹${item.profit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="text-right">${fmt(item.revenue)}</td>
+            <td class="text-right text-profit">${fmt(item.profit)}</td>
         `;
         tbody.appendChild(tr);
     });
 }
+
+
 
 // ==========================================
 // CSV EXPORT

@@ -346,9 +346,17 @@ function formatDisplayDate(dateStr) {
 }
 
 function formatCurrency(value) {
-    const number = Number(value);
-    return Number.isFinite(number) ? `₹${number.toFixed(2)}` : "₹0.00";
+    if (typeof convertCurrency === "function" && typeof getCurrencySymbol === "function") {
+        const converted = convertCurrency(value);
+        const sym = getCurrencySymbol();
+        const isForeign = sym !== "₹";
+        return `${sym}${converted.toLocaleString(isForeign ? 'en-US' : 'en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    const number = Number(value || 0);
+    return `₹${number.toFixed(2)}`;
 }
+
+
 
 function escapeHtml(value) {
     return String(value ?? "")

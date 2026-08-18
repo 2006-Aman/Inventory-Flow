@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>System Settings & Preferences | Inventory Reorder System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global & Page CSS -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/settings.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                Inventory Reorder System
+            </div>
+
+            <div class="topbar-right">
+                <span id="serverStatus" class="server-status">● Server Connected</span>
+                <a href="./inventory.html" class="btn-topbar">Inventory</a>
+                <a href="./sales.html" class="btn-topbar">Record Sale</a>
+                <a href="./reorder.html" class="btn-topbar">Reorder Planning</a>
+                <a href="./forecast.html" class="btn-topbar">Demand Forecast</a>
+                <a href="./analytics.html" class="btn-topbar">Analytics</a>
+                <a href="./reports.html" class="btn-topbar">Reports</a>
+                <a href="./settings.html" class="btn-topbar active">Settings</a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+            <!-- PAGE SUBHEADER -->
+            <div class="settings-subheader">
+                <div class="title-group">
+                    <h1 class="page-title"><i class="ph ph-gear-six"></i> System Settings & Preferences</h1>
+                    <p class="settings-subtext">
+                        Configure automated reorder rules, store profile, alert thresholds, and system backups.
+                    </p>
+                </div>
+
+                <div class="header-actions">
+                    <button id="saveSettingsBtn" class="btn-save-settings">
+                        <i class="ph ph-floppy-disk"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- SETTINGS CONTAINER (SIDEBAR TABS + PANEL CONTENT) -->
+            <div class="settings-layout">
+
+                <!-- SIDEBAR TABS NAV -->
+                <nav class="settings-sidebar">
+                    <button class="settings-tab-btn active" data-tab="tab-inventory">
+                        <span class="tab-icon cyan"><i class="ph ph-sliders-horizontal"></i></span>
+                        <div class="tab-text">
+                            <span class="tab-title">Inventory & Reorder</span>
+                            <span class="tab-desc">Lead time & safety stock</span>
+                        </div>
+                    </button>
+
+                    <button class="settings-tab-btn" data-tab="tab-business">
+                        <span class="tab-icon purple"><i class="ph ph-storefront"></i></span>
+                        <div class="tab-text">
+                            <span class="tab-title">Business Profile</span>
+                            <span class="tab-desc">Store name & currency</span>
+                        </div>
+                    </button>
+
+                    <button class="settings-tab-btn" data-tab="tab-notifications">
+                        <span class="tab-icon green"><i class="ph ph-bell-ringing"></i></span>
+                        <div class="tab-text">
+                            <span class="tab-title">Notifications</span>
+                            <span class="tab-desc">Warnings & email alerts</span>
+                        </div>
+                    </button>
+
+                    <button class="settings-tab-btn" data-tab="tab-data">
+                        <span class="tab-icon yellow"><i class="ph ph-database"></i></span>
+                        <div class="tab-text">
+                            <span class="tab-title">Data & Backup</span>
+                            <span class="tab-desc">Export JSON & reset</span>
+                        </div>
+                    </button>
+                </nav>
+
+                <!-- MAIN SETTINGS CONTENT PANELS -->
+                <div class="settings-content-card">
+
+                    <!-- TAB 1: INVENTORY & REORDER DEFAULTS -->
+                    <div id="tab-inventory" class="settings-panel active">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-sliders-horizontal"></i> Inventory & Reorder Parameters</h2>
+                            <p>Set default safety stock days, lead times, and low stock alert thresholds.</p>
+                        </div>
+
+                        <div class="setting-rows-list">
+                            <!-- ROW 1 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-clock"></i> Default Supplier Lead Time</div>
+                                    <div class="setting-desc">Average days taken by suppliers to fulfill restock orders.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="defaultLeadTime" class="setting-input-num" min="1" max="90" value="7">
+                                        <span class="unit-tag">Days</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 2 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-shield-check"></i> Safety Stock Buffer Days</div>
+                                    <div class="setting-desc">Extra buffer days added to absorb unexpected demand spikes.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="safetyStockBuffer" class="setting-input-num" min="1" max="60" value="5">
+                                        <span class="unit-tag">Days</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 3 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-warning-octagon"></i> Critical Level Alert Threshold</div>
+                                    <div class="setting-desc">Triggers Critical Warning when stock falls below this % of Safety Stock.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="criticalLevelPercent" class="setting-input-num" min="5" max="50" value="20">
+                                        <span class="unit-tag">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 4 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-lightning"></i> Automatic Reorder Calculations</div>
+                                    <div class="setting-desc">Automatically calculate recommended purchase order quantities.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="autoReorderToggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: BUSINESS & STORE PROFILE -->
+                    <div id="tab-business" class="settings-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-storefront"></i> Business Profile & Store Info</h2>
+                            <p>Configure store branding, currency symbol, and contact details for reports.</p>
+                        </div>
+
+                        <div class="setting-rows-list">
+                            <!-- ROW 1 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-storefront"></i> Store / Business Name</div>
+                                    <div class="setting-desc">Appears on invoices, reports, and exported ledgers.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="text" id="storeName" class="setting-input-text" value="Inventory Flow Mart">
+                                </div>
+                            </div>
+
+                            <!-- ROW 2 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-currency-inr"></i> System Currency Symbol</div>
+                                    <div class="setting-desc">Currency symbol displayed across financial KPI metrics.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="currencySymbol" class="setting-select-box">
+                                        <option value="₹" selected>₹ (INR - Indian Rupee)</option>
+                                        <option value="$">$ (USD - US Dollar)</option>
+                                        <option value="€">€ (EUR - Euro)</option>
+                                        <option value="£">£ (GBP - British Pound)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- ROW 3 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-envelope-simple"></i> Business Contact Email</div>
+                                    <div class="setting-desc">Email address for receiving system reports and alerts.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="email" id="businessEmail" class="setting-input-text" value="admin@inventoryflow.com">
+                                </div>
+                            </div>
+
+                            <!-- ROW 4 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-percent"></i> Default GST / Tax Rate</div>
+                                    <div class="setting-desc">Standard tax rate applied to sales transactions.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="taxRate" class="setting-input-num" min="0" max="30" value="18">
+                                        <span class="unit-tag">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: NOTIFICATIONS & ALERTS -->
+                    <div id="tab-notifications" class="settings-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-bell-ringing"></i> Notification & Warning Alerts</h2>
+                            <p>Enable or disable system notifications and low margin warnings.</p>
+                        </div>
+
+                        <div class="setting-rows-list">
+                            <!-- ROW 1 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-bell"></i> In-App Low Stock Warning Banners</div>
+                                    <div class="setting-desc">Show warning banners when products hit Low or Out of Stock.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="lowStockBannerToggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- ROW 2 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-envelope"></i> Email Daily Reorder Digest</div>
+                                    <div class="setting-desc">Send daily summary emails for products reaching reorder points.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="emailAlertToggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- ROW 3 -->
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title"><i class="ph ph-trend-down"></i> Low Profit Margin Warning</div>
+                                    <div class="setting-desc">Alert if product selling price profit margin falls below this %.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="minMarginAlert" class="setting-input-num" min="0" max="50" value="15">
+                                        <span class="unit-tag">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: DATA & BACKUP -->
+                    <div id="tab-data" class="settings-panel">
+                        <div class="panel-header">
+                            <h2><i class="ph ph-database"></i> System Data & Backup Tools</h2>
+                            <p>Export complete system database to JSON, or restore from a backup file.</p>
+                        </div>
+
+                        <div class="data-actions-grid">
+                            <div class="data-card">
+                                <div class="data-card-icon cyan"><i class="ph ph-download-simple"></i></div>
+                                <h3>Export Database JSON</h3>
+                                <p>Download full products and sales transaction history as a JSON backup file.</p>
+                                <button id="exportJsonBtn" class="btn-data-action cyan">
+                                    <i class="ph ph-download-simple"></i> Export Backup JSON
+                                </button>
+                            </div>
+
+                            <div class="data-card">
+                                <div class="data-card-icon purple"><i class="ph ph-upload-simple"></i></div>
+                                <h3>Restore Database JSON</h3>
+                                <p>Upload and restore inventory products and sales history from a JSON backup file.</p>
+                                <input type="file" id="importJsonInput" accept=".json" style="display:none;">
+                                <button id="importJsonBtn" class="btn-data-action purple">
+                                    <i class="ph ph-upload-simple"></i> Import Backup JSON
+                                </button>
+                            </div>
+
+                            <div class="data-card">
+                                <div class="data-card-icon red"><i class="ph ph-trash"></i></div>
+                                <h3>Reset System Data</h3>
+                                <p>Clear local storage cache and reload default mock inventory database.</p>
+                                <button id="resetDemoBtn" class="btn-data-action red">
+                                    <i class="ph ph-arrows-counter-clockwise"></i> Reset Cache Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JAVASCRIPT -->
+    <script src="./js/config.js"></script>
+    <script src="./js/api/api.js"></script>
+    <script src="./js/api/productApi.js"></script>
+    <script src="./js/api/salesApi.js"></script>
+    <script src="./js/storage/storage.js"></script>
+    <script src="./js/utils/helpers.js"></script>
+
+    <!-- Page Controller -->
+    <script src="./js/pages/settings.js"></script>
+</body>
+
+
+</html>
