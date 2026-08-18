@@ -1,0 +1,175 @@
+/* ==========================================
+   AUTHENTICATION PAGES - CLEAN AMBIENT BACKGROUND ANIMATION
+   - Floating Ambient Glowing Orbs
+   - Cyber Grid Overlay
+   ========================================== */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050811 !important;
+    margin: 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+}
+
+/* 1. FLOATING AMBIENT GLOWING ORBS */
+.auth-bg-orbs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.5;
+    animation: floatOrb 18s infinite ease-in-out alternate;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    top: -160px;
+    left: -120px;
+    background: radial-gradient(circle, #0284c7 0%, rgba(2, 132, 199, 0) 70%);
+    animation-duration: 15s;
+}
+
+.orb-2 {
+    width: 700px;
+    height: 700px;
+    bottom: -220px;
+    right: -160px;
+    background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+    animation-duration: 21s;
+    animation-delay: -5s;
+}
+
+.orb-3 {
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #10b981 0%, rgba(16, 185, 129, 0) 70%);
+    animation-duration: 25s;
+    animation-delay: -10s;
+    opacity: 0.32;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(75px, 50px) scale(1.2); }
+    100% { transform: translate(-50px, -75px) scale(0.85); }
+}
+
+/* 2. PERSPECTIVE CYBER GRID OVERLAY */
+.auth-bg-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 1;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 85%);
+}
+
+/* 3. GLASSMORPHIC AUTH CARD */
+.auth-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 450px;
+    background: linear-gradient(145deg, rgba(13, 20, 36, 0.94) 0%, rgba(18, 28, 50, 0.94) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 28px;
+    padding: 42px 40px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 50px rgba(2, 132, 199, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(24px);
+    box-sizing: border-box;
+    animation: authFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.signup-card {
+    max-width: 530px !important;
+}
+
+@keyframes authFadeIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* FORM ELEMENTS */
+.auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    text-decoration: none;
+}
+
+.auth-logo h1 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.auth-logo h1 span {
+    color: #38bdf8;
+}
+
+.password-field-wrapper {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+}
+
+.password-toggle-btn:hover {
+    color: #38bdf8;
+}
+
+.error-alert {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    padding: 12px 18px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
