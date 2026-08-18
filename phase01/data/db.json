@@ -6,7 +6,7 @@
       "lastName": "Sharma",
       "name": "Aman Sharma",
       "email": "admin@inventoryflow.com",
-      "password": "12345",
+      "password": "admin123",
       "role": "System Administrator",
       "organization": "InventoryIQ Systems",
       "phone": "+91 98765 43210",
@@ -14,28 +14,16 @@
       "createdAt": "2026-04-01 09:00"
     },
     {
-      "id": "xiC--ylerMs",
-      "firstName": "aman",
-      "lastName": ".",
-      "email": "xyz@gmail.com",
-      "password": "123456",
-      "phone": "+91 98765 43210",
-      "organization": "AA company",
-      "role": "System Administrator",
-      "avatar": "A",
-      "createdAt": "2026-08-18T04:12:05.111Z"
-    },
-    {
-      "id": "4LTNmt04IDI",
-      "firstName": "aman",
+      "id": "6StOBwbNBO4",
+      "firstName": "xyz",
       "lastName": "..",
-      "email": "abc@gmail.com",
-      "password": "1234",
+      "email": "x@gmail.com",
+      "password": "11",
       "phone": "+91 98765 43210",
       "organization": "aa",
       "role": "System Administrator",
-      "avatar": "A",
-      "createdAt": "2026-08-18T04:26:52.034Z"
+      "avatar": "X",
+      "createdAt": "2026-08-18T04:45:21.615Z"
     }
   ],
   "categories": [

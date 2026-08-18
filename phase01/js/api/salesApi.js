@@ -5,10 +5,14 @@
 
 // GET ALL SALES
 async function getSales() {
+    const rawSales = await apiRequest("/sales");
+    const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
 
-    return apiRequest(
-        "/sales"
-    );
+    if (!user || user.id === "1" || user.id === "usr_admin_01" || user.email === "admin@inventoryflow.com") {
+        return Array.isArray(rawSales) ? rawSales.filter(s => !s.userId || s.userId === "1" || s.userId === "usr_admin_01" || s.userEmail === "admin@inventoryflow.com") : [];
+    }
+
+    return Array.isArray(rawSales) ? rawSales.filter(s => s.userId === user.id || s.userEmail === user.email) : [];
 }
 
 
@@ -27,6 +31,11 @@ async function getSaleById(
 async function createSale(
     saleData
 ) {
+    const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+    if (user) {
+        saleData.userId = user.id;
+        saleData.userEmail = user.email;
+    }
 
     return apiRequest(
         "/sales",

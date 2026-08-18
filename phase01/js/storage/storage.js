@@ -29,16 +29,34 @@ function getFromLocalStorage(key, fallback = []) {
     }
 }
 
+// Get user-isolated key for products, sales, and categories
+function getUserStorageKey(baseKey) {
+    const raw = localStorage.getItem("inventory_current_user");
+    if (!raw) return baseKey;
+    try {
+        const user = JSON.parse(raw);
+        // Demo admin account uses shared keys with initial demo data
+        if (!user || user.id === "1" || user.id === "usr_admin_01" || user.email === "admin@inventoryflow.com") {
+            return baseKey;
+        }
+        // New registered accounts get their own clean key starting at 0 items
+        const userSuffix = user.id || (user.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'guest');
+        return `${baseKey}_${userSuffix}`;
+    } catch(e) {
+        return baseKey;
+    }
+}
+
 // ==========================================
 // PRODUCTS
 // ==========================================
 
 function saveProducts(products) {
-    saveToLocalStorage(STORAGE_KEYS.products, products);
+    saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.products), products);
 }
 
 function getLocalProducts() {
-    return getFromLocalStorage(STORAGE_KEYS.products, []);
+    return getFromLocalStorage(getUserStorageKey(STORAGE_KEYS.products), []);
 }
 
 // ==========================================
@@ -46,11 +64,11 @@ function getLocalProducts() {
 // ==========================================
 
 function saveSales(sales) {
-    saveToLocalStorage(STORAGE_KEYS.sales, sales);
+    saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.sales), sales);
 }
 
 function getLocalSales() {
-    return getFromLocalStorage(STORAGE_KEYS.sales, []);
+    return getFromLocalStorage(getUserStorageKey(STORAGE_KEYS.sales), []);
 }
 
 // ==========================================
@@ -58,11 +76,11 @@ function getLocalSales() {
 // ==========================================
 
 function saveCategories(categories) {
-    saveToLocalStorage(STORAGE_KEYS.categories, categories);
+    saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.categories), categories);
 }
 
 function getLocalCategories() {
-    return getFromLocalStorage(STORAGE_KEYS.categories, []);
+    return getFromLocalStorage(getUserStorageKey(STORAGE_KEYS.categories), []);
 }
 
 // ==========================================
@@ -89,41 +107,55 @@ const DEFAULT_USERS = [
 // ==========================================
 
 async function syncAllDataFromBackend() {
-    try {
-        // 1. Sync Products
-        const prodRes = await fetch("http://localhost:3000/products");
-        if (prodRes.ok) {
-            const products = await prodRes.json();
-            if (Array.isArray(products) && products.length > 0) {
-                saveProducts(products);
+    const raw = localStorage.getItem("inventory_current_user");
+    let isDemoAdmin = true;
+    if (raw) {
+        try {
+            const user = JSON.parse(raw);
+            if (user && user.email !== "admin@inventoryflow.com" && user.id !== "1" && user.id !== "usr_admin_01") {
+                isDemoAdmin = false;
             }
-        }
-    } catch(e) {}
+        } catch(e) {}
+    }
+
+    // ONLY populate demo dataset for Demo Admin account!
+    if (isDemoAdmin) {
+        try {
+            // 1. Sync Demo Products
+            const prodRes = await fetch("http://localhost:3000/products");
+            if (prodRes.ok) {
+                const products = await prodRes.json();
+                if (Array.isArray(products) && products.length > 0) {
+                    saveToLocalStorage(STORAGE_KEYS.products, products);
+                }
+            }
+        } catch(e) {}
+
+        try {
+            // 2. Sync Demo Sales
+            const salesRes = await fetch("http://localhost:3000/sales");
+            if (salesRes.ok) {
+                const sales = await salesRes.json();
+                if (Array.isArray(sales) && sales.length > 0) {
+                    saveToLocalStorage(STORAGE_KEYS.sales, sales);
+                }
+            }
+        } catch(e) {}
+
+        try {
+            // 3. Sync Demo Categories
+            const catRes = await fetch("http://localhost:3000/categories");
+            if (catRes.ok) {
+                const categories = await catRes.json();
+                if (Array.isArray(categories) && categories.length > 0) {
+                    saveToLocalStorage(STORAGE_KEYS.categories, categories);
+                }
+            }
+        } catch(e) {}
+    }
 
     try {
-        // 2. Sync Sales
-        const salesRes = await fetch("http://localhost:3000/sales");
-        if (salesRes.ok) {
-            const sales = await salesRes.json();
-            if (Array.isArray(sales) && sales.length > 0) {
-                saveSales(sales);
-            }
-        }
-    } catch(e) {}
-
-    try {
-        // 3. Sync Categories
-        const catRes = await fetch("http://localhost:3000/categories");
-        if (catRes.ok) {
-            const categories = await catRes.json();
-            if (Array.isArray(categories) && categories.length > 0) {
-                saveCategories(categories);
-            }
-        }
-    } catch(e) {}
-
-    try {
-        // 4. Sync Users
+        // 4. Sync Users Database
         const userRes = await fetch("http://localhost:3000/users");
         if (userRes.ok) {
             const dbUsers = await userRes.json();
@@ -139,7 +171,7 @@ async function syncAllDataFromBackend() {
     } catch(e) {}
 }
 
-// Trigger full database sync on load
+// Trigger database sync on load
 syncAllDataFromBackend();
 
 function getCurrentUser() {
