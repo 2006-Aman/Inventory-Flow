@@ -98,7 +98,19 @@ function setupFilterListeners() {
     if (productFilter) productFilter.addEventListener("change", applyFilters);
     if (fromDateFilter) fromDateFilter.addEventListener("change", applyFilters);
     if (toDateFilter) toDateFilter.addEventListener("change", applyFilters);
+
+    // Make date inputs and containers open native picker on click
+    [fromDateFilter, toDateFilter].forEach(input => {
+        if (input) {
+            input.addEventListener("click", () => {
+                if (typeof input.showPicker === "function") {
+                    try { input.showPicker(); } catch (err) {}
+                }
+            });
+        }
+    });
 }
+
 
 function applyFilters() {
     const searchVal = (getDom("searchInput")?.value || "").toLowerCase().trim();

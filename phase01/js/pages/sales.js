@@ -101,7 +101,17 @@ function setupSalesEvents() {
     if (saveButton) {
         saveButton.addEventListener("click", handleSaveSale);
     }
+
+    const dateInput = getDom("sale-date");
+    if (dateInput) {
+        dateInput.addEventListener("click", () => {
+            if (typeof dateInput.showPicker === "function") {
+                try { dateInput.showPicker(); } catch (err) {}
+            }
+        });
+    }
 }
+
 
 // ==========================================
 // 3. LIVE PRODUCT INFO & TOTAL CALCULATOR

@@ -120,6 +120,17 @@ function setupFilterListeners() {
     if (fromInput) fromInput.addEventListener("change", applyFiltersAndRender);
     if (toInput) toInput.addEventListener("change", applyFiltersAndRender);
 
+    // Make whole date group container and labels open calendar picker on click
+    document.querySelectorAll(".date-input-group").forEach(group => {
+        group.addEventListener("click", (e) => {
+            const input = group.querySelector("input[type='date']");
+            if (input && typeof input.showPicker === "function" && e.target !== input) {
+                try { input.showPicker(); } catch (err) { input.focus(); }
+            }
+        });
+    });
+
+
     document.querySelectorAll(".pill-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));

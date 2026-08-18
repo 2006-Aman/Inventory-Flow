@@ -121,6 +121,42 @@ body {
 }
 
 /* ==========================================
+   CUSTOM DARK DATE PICKERS & CLICKABLE CONTAINERS
+========================================== */
+.date-input-group,
+.field.date-field {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.date-input-group:hover,
+.field.date-field:hover {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25) !important;
+}
+
+input[type="date"] {
+    cursor: pointer;
+    color-scheme: dark;
+    transition: all 0.2s ease;
+}
+
+input[type="date"]:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.3) !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.8) sepia(1) saturate(5) hue-rotate(170deg);
+    transition: transform 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    transform: scale(1.2);
+}
+
+/* ==========================================
    SLEEK FLOATING DARK SCROLLBARS
 ========================================== */
 ::-webkit-scrollbar {
