@@ -104,13 +104,24 @@ function setupSalesEvents() {
 
     const dateInput = getDom("sale-date");
     if (dateInput) {
-        dateInput.addEventListener("click", () => {
-            if (typeof dateInput.showPicker === "function") {
-                try { dateInput.showPicker(); } catch (err) {}
-            }
-        });
+        if (typeof flatpickr !== "undefined") {
+            flatpickr(dateInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y",
+                theme: "dark",
+                defaultDate: new Date()
+            });
+        } else {
+            dateInput.addEventListener("click", () => {
+                if (typeof dateInput.showPicker === "function") {
+                    try { dateInput.showPicker(); } catch (err) {}
+                }
+            });
+        }
     }
 }
+
 
 
 // ==========================================

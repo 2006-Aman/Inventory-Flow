@@ -117,8 +117,30 @@ function setupFilterListeners() {
     const fromInput = getDom("fromDate");
     const toInput = getDom("toDate");
 
-    if (fromInput) fromInput.addEventListener("change", applyFiltersAndRender);
-    if (toInput) toInput.addEventListener("change", applyFiltersAndRender);
+    if (typeof flatpickr !== "undefined") {
+        if (fromInput) {
+            fromInput._flatpickr = flatpickr(fromInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y",
+                theme: "dark",
+                onChange: () => applyFiltersAndRender()
+            });
+        }
+        if (toInput) {
+            toInput._flatpickr = flatpickr(toInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y",
+                theme: "dark",
+                onChange: () => applyFiltersAndRender()
+            });
+        }
+    } else {
+        if (fromInput) fromInput.addEventListener("change", applyFiltersAndRender);
+        if (toInput) toInput.addEventListener("change", applyFiltersAndRender);
+    }
+
 
     // Make whole date group container and labels open calendar picker on click
     document.querySelectorAll(".date-input-group").forEach(group => {
@@ -139,23 +161,36 @@ function setupFilterListeners() {
             const range = btn.getAttribute("data-range");
             const today = new Date();
 
+            let startVal = "";
+            let endVal = "";
+
             if (range === "30") {
                 const past = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-                if (fromInput) fromInput.value = formatDateForInput(past);
-                if (toInput) toInput.value = formatDateForInput(today);
+                startVal = formatDateForInput(past);
+                endVal = formatDateForInput(today);
             } else if (range === "90") {
                 const past = new Date(today.getTime() - (90 * 24 * 60 * 60 * 1000));
-                if (fromInput) fromInput.value = formatDateForInput(past);
-                if (toInput) toInput.value = formatDateForInput(today);
+                startVal = formatDateForInput(past);
+                endVal = formatDateForInput(today);
             } else if (range === "all") {
-                if (fromInput) fromInput.value = "";
-                if (toInput) toInput.value = "";
+                startVal = "";
+                endVal = "";
+            }
+
+            if (fromInput) {
+                fromInput.value = startVal;
+                if (fromInput._flatpickr) fromInput._flatpickr.setDate(startVal);
+            }
+            if (toInput) {
+                toInput.value = endVal;
+                if (toInput._flatpickr) toInput._flatpickr.setDate(endVal);
             }
 
             applyFiltersAndRender();
         });
     });
 }
+
 
 function applyFiltersAndRender() {
     const fromVal = getDom("fromDate")?.value;

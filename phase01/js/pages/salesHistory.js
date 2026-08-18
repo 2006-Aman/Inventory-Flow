@@ -96,20 +96,31 @@ function setupFilterListeners() {
 
     if (searchInput) searchInput.addEventListener("input", applyFilters);
     if (productFilter) productFilter.addEventListener("change", applyFilters);
-    if (fromDateFilter) fromDateFilter.addEventListener("change", applyFilters);
-    if (toDateFilter) toDateFilter.addEventListener("change", applyFilters);
-
-    // Make date inputs and containers open native picker on click
-    [fromDateFilter, toDateFilter].forEach(input => {
-        if (input) {
-            input.addEventListener("click", () => {
-                if (typeof input.showPicker === "function") {
-                    try { input.showPicker(); } catch (err) {}
-                }
+    if (typeof flatpickr !== "undefined") {
+        if (fromDateFilter) {
+            flatpickr(fromDateFilter, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y",
+                theme: "dark",
+                onChange: () => applyFilters()
             });
         }
-    });
+        if (toDateFilter) {
+            flatpickr(toDateFilter, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y",
+                theme: "dark",
+                onChange: () => applyFilters()
+            });
+        }
+    } else {
+        if (fromDateFilter) fromDateFilter.addEventListener("change", applyFilters);
+        if (toDateFilter) toDateFilter.addEventListener("change", applyFilters);
+    }
 }
+
 
 
 function applyFilters() {
