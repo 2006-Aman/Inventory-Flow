@@ -144,15 +144,21 @@ body {
     letter-spacing: 0.05em;
 }
 
-.date-input-group input[type="date"] {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 13.5px;
-    font-family: inherit;
-    outline: none;
-    color-scheme: dark;
+.date-input-group input,
+.date-input-group input[type="date"],
+.date-input-group input[type="text"],
+.date-input-group .flatpickr-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 13.5px !important;
+    font-family: inherit !important;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 105px !important;
+    font-weight: 600 !important;
 }
+
 
 .to-text {
     font-size: 12px;
