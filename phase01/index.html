@@ -1,11 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./dashboard.html">
-    <title>Redirecting to Dashboard...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryIQ | Next-Gen AI Inventory & Reorder Intelligence</title>
+    <meta name="description" content="Enterprise AI Inventory Management System with automated reorder calculation, real-time demand forecasting, POS sales tracking, and isolated multi-user workspaces.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global & Landing Stylesheet -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/landing.css">
 </head>
-<body>
-    <script>window.location.href = "./dashboard.html";</script>
+
+<body class="landing-page">
+
+    <!-- BACKGROUND GLOW ORBS & GRID -->
+    <div class="landing-bg-orbs">
+        <div class="landing-orb orb-alpha"></div>
+        <div class="landing-orb orb-beta"></div>
+        <div class="landing-orb orb-gamma"></div>
+    </div>
+    <div class="landing-bg-grid"></div>
+
+    <!-- NAVBAR -->
+    <header class="landing-nav">
+        <a href="index.html" class="nav-brand">
+            <div style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                  <defs>
+                    <linearGradient id="landing-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#38bdf8"/>
+                      <stop offset="100%" stop-color="#6366f1"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="6" y="6" width="88" height="88" rx="24" fill="url(#landing-logo-grad)" />
+                  <rect x="24" y="52" width="10" height="22" rx="3" fill="#ffffff" opacity="0.6" />
+                  <rect x="42" y="40" width="10" height="34" rx="3" fill="#ffffff" opacity="0.8" />
+                  <rect x="60" y="26" width="10" height="48" rx="3" fill="#ffffff" />
+                  <path d="M 20 62 Q 38 48 55 36 T 80 20" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <circle cx="80" cy="20" r="6" fill="#38bdf8" stroke="#ffffff" stroke-width="2.5" />
+                </svg>
+            </div>
+            <h2>Inventory<span>IQ</span></h2>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#features">Capabilities</a>
+            <a href="#reorder-pipeline">Supply Pipeline</a>
+            <a href="#comparison">Why InventoryIQ</a>
+            <a href="#analytics">Analytics</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="login.html" class="btn-nav-outline">Sign In</a>
+            <a href="dashboard.html" class="btn-nav-primary">Launch Dashboard &rarr;</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="landing-hero">
+        <div class="hero-pill">
+            <i class="ph ph-sparkle"></i> NEXT-GEN REORDER INTELLIGENCE 2.0
+        </div>
+
+        <h1 class="hero-title">
+            Automate Stock Restocking &amp;<br><span>Predict Sales Demand in Seconds</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            Eliminate stockouts forever with automated Reorder Point (ROP) thresholds, real-time safety stock calculations, and mathematical sales forecasting.
+        </p>
+
+        <div class="hero-ctas">
+            <a href="dashboard.html" class="btn-hero-primary">
+                <i class="ph ph-squares-four"></i> Launch Dashboard Now
+            </a>
+            <a href="signup.html" class="btn-hero-secondary">
+                <i class="ph ph-user-plus"></i> Create Free Account
+            </a>
+        </div>
+
+        <!-- DASHBOARD PREVIEW MOCKUP -->
+        <div class="hero-mockup-wrap">
+            <div class="hero-mockup-inner">
+                <div class="mockup-header">
+                    <div class="mockup-dot dot-red"></div>
+                    <div class="mockup-dot dot-yellow"></div>
+                    <div class="mockup-dot dot-green"></div>
+                    <span style="font-size: 12.5px; color: #94a3b8; margin-left: 12px; font-weight: 600;">InventoryIQ Workspace &middot; Live Engine Active</span>
+                </div>
+                <div class="mockup-body">
+                    <div class="mockup-card">
+                        <div class="mockup-card-title">
+                            <span>Stock Health Index</span>
+                            <i class="ph ph-trend-up" style="color: #34d399;"></i>
+                        </div>
+                        <div class="mockup-card-val" style="color: #34d399;">98.2%</div>
+                        <span style="font-size: 12px; color: #94a3b8; margin-top: 6px; display: block;">Optimal stock level maintained</span>
+                    </div>
+
+                    <div class="mockup-card">
+                        <div class="mockup-card-title">
+                            <span>Reorder Point (ROP)</span>
+                            <i class="ph ph-arrows-clockwise" style="color: #38bdf8;"></i>
+                        </div>
+                        <div class="mockup-card-val" style="color: #38bdf8;">Auto ROP</div>
+                        <span style="font-size: 12px; color: #94a3b8; margin-top: 6px; display: block;">Lead Time &amp; Safety Stock calculation</span>
+                    </div>
+
+                    <div class="mockup-card">
+                        <div class="mockup-card-title">
+                            <span>Forecast Precision</span>
+                            <i class="ph ph-chart-line-up" style="color: #818cf8;"></i>
+                        </div>
+                        <div class="mockup-card-val" style="color: #818cf8;">96.4%</div>
+                        <span style="font-size: 12px; color: #94a3b8; margin-top: 6px; display: block;">7-day moving average demand</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KEY STATS BAR -->
+    <section class="landing-stats">
+        <div class="stat-box">
+            <h3>99.8%</h3>
+            <p>Stock Uptime Rate</p>
+        </div>
+        <div class="stat-box">
+            <h3>&lt; 5ms</h3>
+            <p>Real-Time Sync Latency</p>
+        </div>
+        <div class="stat-box">
+            <h3>96.4%</h3>
+            <p>Demand Forecast Accuracy</p>
+        </div>
+        <div class="stat-box">
+            <h3>100%</h3>
+            <p>Automated ROP Engine</p>
+        </div>
+    </section>
+
+    <!-- INFINITE TICKER MARQUEE COMPONENT -->
+    <div class="ticker-wrap">
+        <div class="ticker-marquee">
+            <div class="ticker-item"><i class="ph ph-lightning"></i> Dynamic ROP Engine</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-chart-line-up"></i> 96.4% Demand Forecast Accuracy</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-shopping-cart-simple"></i> Instant POS Checkout</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-shield-check"></i> Isolated User Workspaces</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-magnifying-glass"></i> Topbar Global Search</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-file-text"></i> One-Click CSV Export</div>
+            <div class="ticker-item">&middot;</div>
+            <!-- DUPLICATE FOR INFINITE LOOP -->
+            <div class="ticker-item"><i class="ph ph-lightning"></i> Dynamic ROP Engine</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-chart-line-up"></i> 96.4% Demand Forecast Accuracy</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-shopping-cart-simple"></i> Instant POS Checkout</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-shield-check"></i> Isolated User Workspaces</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-magnifying-glass"></i> Topbar Global Search</div>
+            <div class="ticker-item">&middot;</div>
+            <div class="ticker-item"><i class="ph ph-file-text"></i> One-Click CSV Export</div>
+        </div>
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="landing-features">
+        <div class="section-head">
+            <span class="section-tag">Core Capabilities</span>
+            <h2 class="section-title">Everything needed for complete stock control</h2>
+            <p class="section-desc">Designed for modern retail, wholesale, and multi-channel businesses requiring real-time inventory precision.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-arrows-clockwise"></i></div>
+                <h3>Dynamic Reorder Engine</h3>
+                <p>Calculates exact Reorder Points (ROP = Lead Time Demand + Safety Stock) to trigger timely purchase orders before stockouts occur.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-chart-line-up"></i></div>
+                <h3>AI Demand Forecasting</h3>
+                <p>Predict future stock requirements using 7-day and 30-day moving average demand models based on historical customer sales data.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-shopping-cart-simple"></i></div>
+                <h3>Fast POS Sales Terminal</h3>
+                <p>Record customer orders instantly with automated stock deductions, real-time profit tracking, and receipt generation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-users-three"></i></div>
+                <h3>User Data Isolation</h3>
+                <p>Isolated account workspaces ensure every business or team member gets clean stock records starting at zero boilerplate data.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-magnifying-glass"></i></div>
+                <h3>System-Wide Instant Search</h3>
+                <p>Find any product, SKU, or category from anywhere using topbar search shortcuts with real-time filtering.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="ph ph-file-text"></i></div>
+                <h3>Export &amp; CSV Analytics</h3>
+                <p>Generate clean PDF and CSV reports for inventory valuation, low stock alerts, and daily sales performance.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D INTERACTIVE SUPPLY CHAIN & DELIVERY FLOW SECTION -->
+    <section id="reorder-pipeline" class="supply-chain-section">
+        <div class="section-head">
+            <span class="section-tag">Interactive Supply Pipeline</span>
+            <h2 class="section-title">Automated Delivery &amp; Reorder Pipeline</h2>
+            <p class="section-desc">Watch stock restock automatically as you scroll — from low stock trigger to delivery dispatch and retail arrival.</p>
+        </div>
+
+        <div class="pipeline-card">
+            <div class="pipeline-track-container">
+                <div class="pipeline-base-track">
+                    <div class="pipeline-progress"></div>
+                    <div class="delivery-truck-badge">
+                        <i class="ph ph-truck"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pipeline-nodes-grid">
+                <div class="pipeline-node node-active">
+                    <div class="node-icon-wrap"><i class="ph ph-warning-amber"></i></div>
+                    <span class="node-title">1. Reorder Trigger</span>
+                    <span class="node-desc">Stock &le; ROP threshold</span>
+                </div>
+
+                <div class="pipeline-node">
+                    <div class="node-icon-wrap"><i class="ph ph-buildings"></i></div>
+                    <span class="node-title">2. Warehouse Pick</span>
+                    <span class="node-desc">Safety stock packed</span>
+                </div>
+
+                <div class="pipeline-node">
+                    <div class="node-icon-wrap"><i class="ph ph-truck"></i></div>
+                    <span class="node-title">3. Express Transit</span>
+                    <span class="node-desc">Delivery truck en route</span>
+                </div>
+
+                <div class="pipeline-node">
+                    <div class="node-icon-wrap"><i class="ph ph-storefront"></i></div>
+                    <span class="node-title">4. Store Restocked</span>
+                    <span class="node-desc">POS updated live</span>
+                </div>
+            </div>
+
+            <div class="truck-status-banner">
+                <i class="ph ph-arrows-clockwise" style="font-size: 20px;"></i>
+                <span id="truck-status-text">Step 1: Low Stock Detected &mdash; Auto Purchase Order Triggered</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- VS COMPARISON MATRIX SECTION -->
+    <section id="comparison" class="comparison-section">
+        <div class="section-head">
+            <span class="section-tag">Why Switch</span>
+            <h2 class="section-title">Traditional Spreadsheets vs InventoryIQ</h2>
+            <p class="section-desc">Upgrade from manual errors and out-of-stock crises to mathematical automated precision.</p>
+        </div>
+
+        <div class="comparison-card">
+            <div class="comparison-grid">
+                <div class="comp-column old">
+                    <h4><i class="ph ph-x-circle"></i> Traditional Excel / Manual</h4>
+                    <div class="comp-list">
+                        <div class="comp-item"><i class="ph ph-x" style="color: #ef4444;"></i> Frequent unexpected stockouts</div>
+                        <div class="comp-item"><i class="ph ph-x" style="color: #ef4444;"></i> Guessed reorder quantities</div>
+                        <div class="comp-item"><i class="ph ph-x" style="color: #ef4444;"></i> Hours spent fixing spreadsheet errors</div>
+                        <div class="comp-item"><i class="ph ph-x" style="color: #ef4444;"></i> No real-time demand forecasting</div>
+                    </div>
+                </div>
+
+                <div class="comp-column new">
+                    <h4><i class="ph ph-check-circle"></i> InventoryIQ Engine</h4>
+                    <div class="comp-list">
+                        <div class="comp-item"><i class="ph ph-check" style="color: #34d399;"></i> 100% Automated ROP Reorder Alerts</div>
+                        <div class="comp-item"><i class="ph ph-check" style="color: #34d399;"></i> Exact Lead Time &amp; Safety Stock formula</div>
+                        <div class="comp-item"><i class="ph ph-check" style="color: #34d399;"></i> Instant POS checkout &amp; stock sync</div>
+                        <div class="comp-item"><i class="ph ph-check" style="color: #34d399;"></i> AI-driven 7-day &amp; 30-day demand prediction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION SECTION -->
+    <section class="landing-cta">
+        <div class="cta-box">
+            <h2>Ready to transform your inventory workflow?</h2>
+            <p>Join businesses using InventoryIQ to automate stock reordering and forecast demand effortlessly.</p>
+            <a href="dashboard.html" class="btn-hero-primary">
+                <i class="ph ph-squares-four"></i> Launch Dashboard Now &rarr;
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="landing-footer">
+        <p>&copy; 2026 InventoryIQ System. All rights reserved. &middot; Powered by Inventory Flow Engine</p>
+    </footer>
+
+    <!-- LANDING PAGE ANIMATION CONTROLLER -->
+    <script src="./js/landing.js"></script>
+
 </body>
 </html>
