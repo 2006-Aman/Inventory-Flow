@@ -191,7 +191,7 @@
         });
 
         // Form Submit Authentication
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
@@ -205,7 +205,7 @@
             }
 
             // Real authentication check against registered users database
-            const authResult = authenticateUser(email, password);
+            const authResult = await authenticateUser(email, password);
 
             if (!authResult.success) {
                 if (errorMsg) errorMsg.textContent = authResult.message;

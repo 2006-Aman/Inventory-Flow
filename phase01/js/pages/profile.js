@@ -82,17 +82,30 @@ function setupSecurityFormHandler() {
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const currentPass = document.getElementById("currentPassInput")?.value;
-        const newPass = document.getElementById("newPassInput")?.value;
-        const confirmPass = document.getElementById("confirmPassInput")?.value;
+        const currentPass = document.getElementById("currentPassInput")?.value || "";
+        const newPass = document.getElementById("newPassInput")?.value || "";
+        const confirmPass = document.getElementById("confirmPassInput")?.value || "";
 
-        if (newPass && newPass !== confirmPass) {
+        if (!currentPass) {
+            showProfileToast("Please enter your current password!", true);
+            return;
+        }
+
+        if (newPass !== confirmPass) {
             showProfileToast("New passwords do not match!", true);
             return;
         }
 
+        // Call storage controller password update handler
+        const result = updateUserPassword(currentPass, newPass);
+
+        if (!result.success) {
+            showProfileToast(result.message, true);
+            return;
+        }
+
         form.reset();
-        showProfileToast("Password updated successfully!");
+        showProfileToast(result.message);
     });
 }
 

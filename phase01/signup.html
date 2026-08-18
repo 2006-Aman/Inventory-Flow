@@ -174,7 +174,7 @@
     <!-- Storage Script -->
     <script src="./js/storage/storage.js"></script>
     <script>
-        document.getElementById('signupForm').addEventListener('submit', (e) => {
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const firstName = document.getElementById('signupFirstName').value.trim();
@@ -206,7 +206,7 @@
             };
 
             // Register new user in database
-            const regResult = registerNewUser(newUser);
+            const regResult = await registerNewUser(newUser);
             if (!regResult.success) {
                 errorMsg.textContent = regResult.message;
                 errorAlert.style.display = 'flex';
@@ -214,7 +214,7 @@
             }
 
             // Save active user session
-            saveCurrentUser(newUser);
+            saveCurrentUser(regResult.user || newUser);
 
             // Redirect to dashboard
             window.location.href = "dashboard.html";
