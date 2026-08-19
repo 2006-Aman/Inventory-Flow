@@ -104,20 +104,19 @@ function renderKPIs() {
     if (getDom("kpi-reorder-sub")) getDom("kpi-reorder-sub").textContent = `products below reorder point`;
 
     // Dynamic Forecast Accuracy Calculation (WAPE Variance Model)
-    let accuracy = 96.4;
+    // 0% when no sales data exists — accuracy can only be measured with actual data
+    let accuracy = 0;
     if (allSales.length > 0 && total7dDemand > 0) {
-        const error = Math.abs(actual7dSales - total7dDemand);
-        const denominator = Math.max(actual7dSales, total7dDemand, 1);
-        const variance = (error / denominator);
-        accuracy = Math.max(78.5, Math.min(99.4, (1 - variance) * 100));
-    } else if (allProducts.length > 0) {
-        accuracy = 95.0;
-    } else {
-        accuracy = 100.0;
+        if (actual7dSales > 0) {
+            const error = Math.abs(actual7dSales - total7dDemand);
+            const denominator = Math.max(actual7dSales, total7dDemand, 1);
+            const variance = (error / denominator);
+            accuracy = Math.max(0, Math.min(99.4, (1 - variance) * 100));
+        }
     }
 
     if (getDom("kpi-accuracy")) getDom("kpi-accuracy").textContent = `${accuracy.toFixed(1)}%`;
-    if (getDom("kpi-accuracy-sub")) getDom("kpi-accuracy-sub").textContent = `weighted 7-day moving avg`;
+    if (getDom("kpi-accuracy-sub")) getDom("kpi-accuracy-sub").textContent = accuracy > 0 ? `weighted 7-day moving avg` : `no sales data yet`;
 }
 
 // ==========================================

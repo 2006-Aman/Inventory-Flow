@@ -37,6 +37,18 @@
       "role": "System Administrator",
       "avatar": "A",
       "createdAt": "2026-08-18T22:05:07.087Z"
+    },
+    {
+      "id": "RrvK-GAuSEo",
+      "firstName": "abc",
+      "lastName": ".",
+      "email": "abcd@gmail.com",
+      "password": "12345",
+      "phone": "+91 98765 43210",
+      "organization": "abc",
+      "role": "System Administrator",
+      "avatar": "A",
+      "createdAt": "2026-08-19T10:59:00.838Z"
     }
   ],
   "categories": [
@@ -363,6 +375,52 @@
       "userId": "jBosHY9h1Vg",
       "userEmail": "abc@gmail.com",
       "id": "8GAFCAAXpxk"
+    },
+    {
+      "sku": "ELE-0001",
+      "barcode": "8769958461638",
+      "name": "Mobile",
+      "description": "",
+      "category": "Electronics",
+      "supplier": "abc",
+      "costPrice": 100,
+      "sellingPrice": 500,
+      "stock": 140,
+      "minimumStock": 5,
+      "safetyStock": 120,
+      "leadTime": 1,
+      "averageDailyDemand": 1.5,
+      "forecastDemand": 11,
+      "reorderPoint": 122,
+      "status": "In Stock",
+      "createdAt": "2026-08-19 16:40",
+      "updatedAt": "2026-08-19 16:52",
+      "userId": "RrvK-GAuSEo",
+      "userEmail": "abcd@gmail.com",
+      "id": "r4ibGWvtKL4"
+    },
+    {
+      "sku": "ELE-0002",
+      "barcode": "8768286591288",
+      "name": "laptop",
+      "description": "",
+      "category": "Electronics",
+      "supplier": "",
+      "costPrice": 1000,
+      "sellingPrice": 1500,
+      "stock": 30,
+      "minimumStock": 5,
+      "safetyStock": 20,
+      "leadTime": 6,
+      "averageDailyDemand": 1.5,
+      "forecastDemand": 11,
+      "reorderPoint": 29,
+      "status": "In Stock",
+      "createdAt": "2026-08-19 16:44",
+      "updatedAt": "2026-08-19 16:52",
+      "userId": "RrvK-GAuSEo",
+      "userEmail": "abcd@gmail.com",
+      "id": "N4LjTSmqQpY"
     }
   ],
   "sales": [
@@ -552,6 +610,45 @@
       "userId": "jBosHY9h1Vg",
       "userEmail": "abc@gmail.com",
       "id": "vhKHgNLD1ow"
+    },
+    {
+      "productId": "r4ibGWvtKL4",
+      "productName": "Mobile",
+      "quantity": 130,
+      "sellingPrice": 500,
+      "costPrice": 100,
+      "profit": 52000,
+      "customer": "cba",
+      "date": "2026-08-19 05:30",
+      "userId": "RrvK-GAuSEo",
+      "userEmail": "abcd@gmail.com",
+      "id": "Qhy07TqN7M4"
+    },
+    {
+      "productId": "N4LjTSmqQpY",
+      "productName": "laptop",
+      "quantity": 50,
+      "sellingPrice": 1500,
+      "costPrice": 1000,
+      "profit": 25000,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-19 05:30",
+      "userId": "RrvK-GAuSEo",
+      "userEmail": "abcd@gmail.com",
+      "id": "UVDPCkBFSwY"
+    },
+    {
+      "productId": "N4LjTSmqQpY",
+      "productName": "laptop",
+      "quantity": 30,
+      "sellingPrice": 1500,
+      "costPrice": 1000,
+      "profit": 15000,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-19 05:30",
+      "userId": "RrvK-GAuSEo",
+      "userEmail": "abcd@gmail.com",
+      "id": "77D6m11lWIw"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

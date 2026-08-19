@@ -178,7 +178,23 @@ function render12KPIs() {
     if (getDom("stat-orders-logged")) getDom("stat-orders-logged").textContent = `${allSales.length} orders`;
     if (getDom("delta-orders-logged")) getDom("delta-orders-logged").textContent = `${todaysSalesList.length} today • ${allSales.length} total`;
 
-    if (getDom("stat-forecast-accuracy")) getDom("stat-forecast-accuracy").textContent = "94%";
+    // Dynamic Forecast Accuracy — 0% when no sales data exists
+    let forecastAccuracy = 0;
+    if (allSales.length > 0) {
+        const _now2 = new Date();
+        const sevenDaysAgo = new Date(_now2.getTime() - (7 * 24 * 60 * 60 * 1000));
+        const actual7dSales = allSales
+            .filter(s => s && s.date && new Date(s.date) >= sevenDaysAgo)
+            .reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+        const total7dForecast = allProducts.reduce((sum, p) => sum + (Number(p.forecastDemand || p.averageDailyDemand || 0) * 7), 0);
+        if (actual7dSales > 0 && total7dForecast > 0) {
+            const error = Math.abs(actual7dSales - total7dForecast);
+            const denominator = Math.max(actual7dSales, total7dForecast, 1);
+            const variance = error / denominator;
+            forecastAccuracy = Math.max(0, Math.min(99.4, (1 - variance) * 100));
+        }
+    }
+    if (getDom("stat-forecast-accuracy")) getDom("stat-forecast-accuracy").textContent = `${Math.round(forecastAccuracy)}%`;
     if (getDom("delta-forecast-accuracy")) getDom("delta-forecast-accuracy").textContent = "7-day moving avg";
 
     if (getDom("stat-items-running-low")) getDom("stat-items-running-low").textContent = lowCount;
@@ -228,6 +244,22 @@ function render12Sparklines() {
     const totalAlerts = lowCount + outCount;
     const bizHealth = totalProducts > 0 ? Math.round((safeCount / totalProducts) * 100) : 0;
 
+    // Dynamic forecast accuracy for sparkline
+    let sparkAccuracy = 0;
+    if (allSales.length > 0) {
+        const _now3 = new Date();
+        const sevenDaysAgo2 = new Date(_now3.getTime() - (7 * 24 * 60 * 60 * 1000));
+        const actual7d = allSales
+            .filter(s => s && s.date && new Date(s.date) >= sevenDaysAgo2)
+            .reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+        const forecast7d = allProducts.reduce((sum, p) => sum + (Number(p.forecastDemand || p.averageDailyDemand || 0) * 7), 0);
+        if (actual7d > 0 && forecast7d > 0) {
+            const err = Math.abs(actual7d - forecast7d);
+            const denom = Math.max(actual7d, forecast7d, 1);
+            sparkAccuracy = Math.max(0, Math.min(99.4, (1 - err / denom) * 100));
+        }
+    }
+
     const ids = [
         { id: "sparkline-total-products", color: "#38bdf8", data: [0, 0, 0, 0, totalProducts] },
         { id: "sparkline-inventory-value", color: "#34d399", data: [0, 0, 0, 0, invValue] },
@@ -236,7 +268,7 @@ function render12Sparklines() {
         { id: "sparkline-thirty-day-profit", color: "#34d399", data: [0, 0, 0, 0, totalProfit] },
         { id: "sparkline-avg-daily-demand", color: "#38bdf8", data: [0, 0, 0, 0, avgDailyDemand] },
         { id: "sparkline-orders-logged", color: "#a855f7", data: [0, 0, 0, 0, allSales.length] },
-        { id: "sparkline-forecast-accuracy", color: "#38bdf8", data: [0, 0, 0, 0, totalProducts > 0 ? 94 : 0] },
+        { id: "sparkline-forecast-accuracy", color: "#38bdf8", data: [0, 0, 0, 0, Math.round(sparkAccuracy)] },
         { id: "sparkline-items-running-low", color: "#fbbf24", data: [0, 0, 0, 0, lowCount] },
         { id: "sparkline-out-of-stock", color: "#f87171", data: [0, 0, 0, 0, outCount] },
         { id: "sparkline-upcoming-reorders", color: "#f97316", data: [0, 0, 0, 0, totalAlerts] },
