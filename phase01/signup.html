@@ -87,7 +87,7 @@
                 <input type="text" id="signupOrg" class="form-control" placeholder="InventoryIQ Systems" required>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px;">
                 <div class="form-group">
                     <label><i class="ph ph-lock" style="color:#38bdf8;"></i> Password</label>
                     <input type="password" id="signupPass" class="form-control" placeholder="••••••••" required>
@@ -97,6 +97,213 @@
                     <input type="password" id="signupConfirmPass" class="form-control" placeholder="••••••••" required>
                 </div>
             </div>
+
+            <!-- Password Strength Meter -->
+            <div id="passwordStrengthBox" class="pwd-strength-box">
+                <!-- Header Row -->
+                <div class="pwd-strength-header">
+                    <div class="pwd-strength-title">
+                        <i class="ph ph-shield-check" style="font-size: 16px; color: #38bdf8;"></i>
+                        <span>Password Strength</span>
+                    </div>
+                    <span id="strengthLabel" class="pwd-strength-label" data-level="weak">Weak</span>
+                </div>
+
+                <!-- Segmented Strength Bar (4 segments) -->
+                <div class="pwd-bar-segments">
+                    <div class="pwd-bar-seg" id="seg1"></div>
+                    <div class="pwd-bar-seg" id="seg2"></div>
+                    <div class="pwd-bar-seg" id="seg3"></div>
+                    <div class="pwd-bar-seg" id="seg4"></div>
+                </div>
+
+                <!-- Rules Grid -->
+                <div class="pwd-rules-grid">
+                    <div class="pwd-rule" id="rule-length">
+                        <i class="ph ph-circle"></i>
+                        <span>Min 8 characters</span>
+                    </div>
+                    <div class="pwd-rule" id="rule-upper">
+                        <i class="ph ph-circle"></i>
+                        <span>Uppercase (A-Z)</span>
+                    </div>
+                    <div class="pwd-rule" id="rule-lower">
+                        <i class="ph ph-circle"></i>
+                        <span>Lowercase (a-z)</span>
+                    </div>
+                    <div class="pwd-rule" id="rule-number">
+                        <i class="ph ph-circle"></i>
+                        <span>Number (0-9)</span>
+                    </div>
+                    <div class="pwd-rule" id="rule-special">
+                        <i class="ph ph-circle"></i>
+                        <span>Special (!@#$...)</span>
+                    </div>
+                    <div class="pwd-rule" id="rule-match">
+                        <i class="ph ph-circle"></i>
+                        <span>Passwords match</span>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                /* ==========================================
+                   PASSWORD STRENGTH METER - PREMIUM DESIGN
+                   ========================================== */
+                .pwd-strength-box {
+                    margin-bottom: 20px;
+                    padding: 16px 18px 18px;
+                    border-radius: 16px;
+                    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(20, 30, 55, 0.85) 100%);
+                    border: 1px solid rgba(56, 189, 248, 0.12);
+                    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                    backdrop-filter: blur(12px);
+                    display: none;
+                    overflow: hidden;
+                    animation: pwdBoxSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+
+                @keyframes pwdBoxSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-8px);
+                        max-height: 0;
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                        max-height: 300px;
+                    }
+                }
+
+                /* Header */
+                .pwd-strength-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                }
+
+                .pwd-strength-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 12.5px;
+                    font-weight: 700;
+                    color: #cbd5e1;
+                    text-transform: uppercase;
+                    letter-spacing: 0.6px;
+                }
+
+                .pwd-strength-label {
+                    font-size: 11.5px;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
+                    padding: 3px 10px;
+                    border-radius: 99px;
+                    transition: all 0.35s ease;
+                }
+
+                .pwd-strength-label[data-level="weak"] {
+                    color: #fca5a5;
+                    background: rgba(239, 68, 68, 0.15);
+                    border: 1px solid rgba(239, 68, 68, 0.25);
+                }
+
+                .pwd-strength-label[data-level="medium"] {
+                    color: #fde68a;
+                    background: rgba(251, 191, 36, 0.15);
+                    border: 1px solid rgba(251, 191, 36, 0.25);
+                }
+
+                .pwd-strength-label[data-level="strong"] {
+                    color: #7dd3fc;
+                    background: rgba(56, 189, 248, 0.15);
+                    border: 1px solid rgba(56, 189, 248, 0.25);
+                }
+
+                .pwd-strength-label[data-level="excellent"] {
+                    color: #6ee7b7;
+                    background: rgba(52, 211, 153, 0.15);
+                    border: 1px solid rgba(52, 211, 153, 0.25);
+                }
+
+                /* Segmented Bar */
+                .pwd-bar-segments {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 5px;
+                    margin-bottom: 16px;
+                }
+
+                .pwd-bar-seg {
+                    height: 4px;
+                    border-radius: 99px;
+                    background: rgba(255, 255, 255, 0.06);
+                    transition: background 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s ease;
+                }
+
+                .pwd-bar-seg.active-weak {
+                    background: #f87171;
+                    box-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+                }
+
+                .pwd-bar-seg.active-medium {
+                    background: #fbbf24;
+                    box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+                }
+
+                .pwd-bar-seg.active-strong {
+                    background: #38bdf8;
+                    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+                }
+
+                .pwd-bar-seg.active-excellent {
+                    background: #34d399;
+                    box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+                }
+
+                /* Rules Grid */
+                .pwd-rules-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 20px;
+                }
+
+                .pwd-rule {
+                    font-size: 12.5px;
+                    font-weight: 500;
+                    color: #475569;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.3s ease;
+                    padding: 4px 0;
+                }
+
+                .pwd-rule i {
+                    font-size: 15px;
+                    flex-shrink: 0;
+                    transition: all 0.3s ease;
+                }
+
+                .pwd-rule.pass {
+                    color: #34d399;
+                }
+
+                .pwd-rule.pass i {
+                    color: #34d399;
+                }
+
+                .pwd-rule.fail {
+                    color: #f87171;
+                }
+
+                .pwd-rule.fail i {
+                    color: #f87171;
+                }
+            </style>
 
             <div style="margin-bottom: 24px; font-size: 13px;">
                 <label style="display: flex; align-items: flex-start; gap: 10px; color: #cbd5e1; cursor: pointer; line-height: 1.4;">
@@ -118,6 +325,112 @@
     <!-- Storage Script -->
     <script src="./js/storage/storage.js"></script>
     <script>
+        // ==========================================
+        // PASSWORD VALIDATION ENGINE
+        // ==========================================
+        const passInput = document.getElementById('signupPass');
+        const confirmInput = document.getElementById('signupConfirmPass');
+        const strengthBox = document.getElementById('passwordStrengthBox');
+        const strengthLabel = document.getElementById('strengthLabel');
+        const segments = [
+            document.getElementById('seg1'),
+            document.getElementById('seg2'),
+            document.getElementById('seg3'),
+            document.getElementById('seg4')
+        ];
+
+        const rules = {
+            length:  { el: document.getElementById('rule-length'),  test: (p) => p.length >= 8 },
+            upper:   { el: document.getElementById('rule-upper'),   test: (p) => /[A-Z]/.test(p) },
+            lower:   { el: document.getElementById('rule-lower'),   test: (p) => /[a-z]/.test(p) },
+            number:  { el: document.getElementById('rule-number'),  test: (p) => /[0-9]/.test(p) },
+            special: { el: document.getElementById('rule-special'), test: (p) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(p) },
+            match:   { el: document.getElementById('rule-match'),   test: (p) => p.length > 0 && p === confirmInput.value }
+        };
+
+        function updateRule(ruleEl, passed) {
+            const icon = ruleEl.querySelector('i');
+            if (passed) {
+                ruleEl.classList.add('pass');
+                ruleEl.classList.remove('fail');
+                icon.className = 'ph ph-check-circle';
+            } else {
+                ruleEl.classList.remove('pass');
+                ruleEl.classList.add('fail');
+                icon.className = 'ph ph-x-circle';
+            }
+        }
+
+        function resetRule(ruleEl) {
+            ruleEl.classList.remove('pass', 'fail');
+            ruleEl.querySelector('i').className = 'ph ph-circle';
+        }
+
+        function updateSegments(passed, levelClass) {
+            // Map passed count (0-6) to segments (0-4)
+            let activeBars = 0;
+            if (passed <= 0) activeBars = 0;
+            else if (passed <= 2) activeBars = 1;
+            else if (passed <= 4) activeBars = 2;
+            else if (passed === 5) activeBars = 3;
+            else activeBars = 4;
+
+            segments.forEach((seg, i) => {
+                seg.className = 'pwd-bar-seg'; // reset
+                if (i < activeBars) {
+                    seg.classList.add('active-' + levelClass);
+                }
+            });
+        }
+
+        function validatePassword() {
+            const pass = passInput.value;
+            const confirm = confirmInput.value;
+
+            // Show/hide strength box
+            if (pass.length > 0 || confirm.length > 0) {
+                strengthBox.style.display = 'block';
+            } else {
+                strengthBox.style.display = 'none';
+                Object.values(rules).forEach(r => resetRule(r.el));
+                updateSegments(0, 'weak');
+                strengthLabel.textContent = 'Weak';
+                strengthLabel.setAttribute('data-level', 'weak');
+                return;
+            }
+
+            let passed = 0;
+            for (const key in rules) {
+                const ok = rules[key].test(pass);
+                updateRule(rules[key].el, ok);
+                if (ok) passed++;
+            }
+
+            // Determine strength level
+            let level, text;
+            if (passed <= 2) {
+                level = 'weak'; text = 'Weak';
+            } else if (passed <= 4) {
+                level = 'medium'; text = 'Medium';
+            } else if (passed === 5) {
+                level = 'strong'; text = 'Strong';
+            } else {
+                level = 'excellent'; text = 'Excellent';
+            }
+
+            strengthLabel.textContent = text;
+            strengthLabel.setAttribute('data-level', level);
+            updateSegments(passed, level);
+
+            return passed === Object.keys(rules).length;
+        }
+
+        passInput.addEventListener('input', validatePassword);
+        confirmInput.addEventListener('input', validatePassword);
+
+        // ==========================================
+        // SIGNUP FORM SUBMIT
+        // ==========================================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -130,8 +443,24 @@
             const errorAlert = document.getElementById('signupError');
             const errorMsg = document.getElementById('signupErrorMsg');
 
-            if (pass !== confirmPass) {
-                errorMsg.textContent = "Passwords do not match!";
+            // Hide previous error
+            errorAlert.style.display = 'none';
+
+            // Check all password rules
+            const allRulesPassed = validatePassword();
+            if (!allRulesPassed) {
+                // Find which rules failed for error message
+                const failedRules = [];
+                if (!rules.length.test(pass)) failedRules.push('at least 8 characters');
+                if (!rules.upper.test(pass)) failedRules.push('an uppercase letter');
+                if (!rules.lower.test(pass)) failedRules.push('a lowercase letter');
+                if (!rules.number.test(pass)) failedRules.push('a number');
+                if (!rules.special.test(pass)) failedRules.push('a special character');
+                if (pass !== confirmPass) failedRules.push('passwords must match');
+
+                errorMsg.textContent = failedRules.length > 0
+                    ? `Password needs: ${failedRules.join(', ')}`
+                    : 'Please fix password requirements';
                 errorAlert.style.display = 'flex';
                 return;
             }
