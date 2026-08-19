@@ -1010,5 +1010,5 @@ This project is licensed under the **ISC License**.
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by <a href="https://github.com/2006-Aman">Aman</a><a href="https://github.com/Himanshu151106">Himanshu Sidana</a></strong>
+  <strong>Built with ❤️ by <a href="https://github.com/2006-Aman">Aman</a>, <a href="https://github.com/Himanshu151106">Himanshu Sidana</a></strong>
 </p>
