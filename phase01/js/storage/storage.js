@@ -171,6 +171,41 @@ async function syncAllDataFromBackend() {
     } catch(e) {}
 }
 
+/**
+ * Sync all data from JSON-Server into LocalStorage.
+ * Called by api-test.html "Sync Data to LocalStorage" button.
+ * Returns an object with arrays: { users, categories, products, sales }
+ */
+async function syncAllDataToStorage() {
+    const result = { users: [], categories: [], products: [], sales: [] };
+
+    const prodRes = await fetch(`${API_BASE_URL}/products`);
+    if (prodRes.ok) {
+        result.products = await prodRes.json();
+        if (Array.isArray(result.products)) saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.products), result.products);
+    }
+
+    const salesRes = await fetch(`${API_BASE_URL}/sales`);
+    if (salesRes.ok) {
+        result.sales = await salesRes.json();
+        if (Array.isArray(result.sales)) saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.sales), result.sales);
+    }
+
+    const catRes = await fetch(`${API_BASE_URL}/categories`);
+    if (catRes.ok) {
+        result.categories = await catRes.json();
+        if (Array.isArray(result.categories)) saveToLocalStorage(getUserStorageKey(STORAGE_KEYS.categories), result.categories);
+    }
+
+    const userRes = await fetch(`${API_BASE_URL}/users`);
+    if (userRes.ok) {
+        result.users = await userRes.json();
+        if (Array.isArray(result.users)) saveToLocalStorage(STORAGE_KEYS.users, result.users);
+    }
+
+    return result;
+}
+
 // Trigger database sync on load
 syncAllDataFromBackend();
 

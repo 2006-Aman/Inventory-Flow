@@ -20,3 +20,20 @@ async function apiRequest(endpoint, options = {}) {
 
     return response.json();
 }
+
+// Shorthand helpers used by userApi.js, categoryApi.js, etc.
+async function apiGet(endpoint) {
+    return apiRequest(endpoint);
+}
+
+async function apiPost(endpoint, data) {
+    return apiRequest(endpoint, { method: "POST", body: JSON.stringify(data) });
+}
+
+async function apiPut(endpoint, data) {
+    return apiRequest(endpoint, { method: "PUT", body: JSON.stringify(data) });
+}
+
+async function apiDelete(endpoint) {
+    return apiRequest(endpoint, { method: "DELETE" });
+}
