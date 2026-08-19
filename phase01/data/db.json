@@ -49,6 +49,18 @@
       "role": "System Administrator",
       "avatar": "A",
       "createdAt": "2026-08-19T10:59:00.838Z"
+    },
+    {
+      "id": "GB_hTqdZ-ew",
+      "firstName": "Ram",
+      "lastName": "Ram",
+      "email": "Ram@gmail.com",
+      "password": "Aman@2006",
+      "phone": "+91 98765 43210",
+      "organization": "Ram",
+      "role": "System Administrator",
+      "avatar": "R",
+      "createdAt": "2026-08-19T12:42:43.070Z"
     }
   ],
   "categories": [
@@ -421,6 +433,29 @@
       "userId": "RrvK-GAuSEo",
       "userEmail": "abcd@gmail.com",
       "id": "N4LjTSmqQpY"
+    },
+    {
+      "sku": "ELE-0001",
+      "barcode": "8765730462875",
+      "name": "SamsungS25",
+      "description": "",
+      "category": "Electronics",
+      "supplier": "xyz",
+      "costPrice": 140000,
+      "sellingPrice": 200000,
+      "stock": 80,
+      "minimumStock": 5,
+      "safetyStock": 5,
+      "leadTime": 10,
+      "averageDailyDemand": 1.5,
+      "forecastDemand": 11,
+      "reorderPoint": 20,
+      "status": "In Stock",
+      "createdAt": "2026-08-19 18:19",
+      "updatedAt": "2026-08-19 18:31",
+      "userId": "GB_hTqdZ-ew",
+      "userEmail": "Ram@gmail.com",
+      "id": "xYiYfPCt3TM"
     }
   ],
   "sales": [
@@ -649,6 +684,19 @@
       "userId": "RrvK-GAuSEo",
       "userEmail": "abcd@gmail.com",
       "id": "77D6m11lWIw"
+    },
+    {
+      "productId": "xYiYfPCt3TM",
+      "productName": "SamsungS25",
+      "quantity": 7,
+      "sellingPrice": 200000,
+      "costPrice": 140000,
+      "profit": 420000,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-19 05:30",
+      "userId": "GB_hTqdZ-ew",
+      "userEmail": "Ram@gmail.com",
+      "id": "66iZaZabp58"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -24,11 +24,8 @@
     <!-- Global & Page CSS -->
     <link rel="stylesheet" href="./css/variables.css">
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/dashboard.css">
     <link rel="stylesheet" href="./css/sales.css">
-    <link rel="stylesheet" href="./css/responsive.css">
 </head>
 
 <body>
@@ -43,7 +40,7 @@
                 </div>
                 <div class="brand-text-group">
                     <span class="brand-name">Inventory<span class="brand-highlight">IQ</span></span>
-                    <span class="brand-tagline">FORECAST • REORDER • GROW</span>
+                    <span class="brand-tagline">FORECAST â€¢ REORDER â€¢ GROW</span>
                 </div>
             </div>
 
@@ -103,7 +100,7 @@
                     </div>
                     <div class="engine-info">
                         <span class="engine-title">Forecast Engine</span>
-                        <span class="engine-desc">Moving Average • 7d</span>
+                        <span class="engine-desc">Moving Average â€¢ 7d</span>
                         <span class="engine-refresh">Next refresh in <span id="engine-countdown">16:06:29</span></span>
                     </div>
                 </div>
@@ -116,7 +113,7 @@
             <!-- Global Topbar (Search/Profile) -->
             <header class="navbar">
                 <div class="navbar-left">
-                    <span class="greeting-subtitle">GOOD MORNING • AMAN</span>
+                    <span class="greeting-subtitle">GOOD MORNING â€¢ AMAN</span>
                     <h1 class="navbar-page-title">Sales</h1>
                 </div>
 
@@ -198,10 +195,10 @@
                         <!-- LIVE PRODUCT INFO CARD (when selected) -->
                         <div class="product-info-card" id="product-info-card" style="display: none;">
                             <div class="info-grid">
-                                <div><span>Price</span><strong id="info-price">₹0.00</strong></div>
+                                <div><span>Price</span><strong id="info-price">â‚¹0.00</strong></div>
                                 <div><span>Stock</span><strong id="info-stock">0</strong></div>
-                                <div><span>Unit profit</span><strong id="info-profit">₹0.00</strong></div>
-                                <div><span>Status</span><strong id="info-status">—</strong></div>
+                                <div><span>Unit profit</span><strong id="info-profit">â‚¹0.00</strong></div>
+                                <div><span>Status</span><strong id="info-status">â€”</strong></div>
                             </div>
                         </div>
 
@@ -227,8 +224,8 @@
                         <!-- LIVE SALE TOTAL (when selected) -->
                         <div class="sale-total" id="sale-total" style="display: none;">
                             <span>TOTAL AMOUNT</span>
-                            <strong id="sale-total-amount">₹0.00</strong>
-                            <small id="sale-total-profit">Profit ₹0.00</small>
+                            <strong id="sale-total-amount">â‚¹0.00</strong>
+                            <small id="sale-total-profit">Profit â‚¹0.00</small>
                         </div>
 
                         <!-- SUBMIT BUTTON -->
@@ -254,11 +251,11 @@
                         </div>
                         <div class="stat-box">
                             <span class="stat-label">REVENUE</span>
-                            <strong id="today-revenue" class="stat-val">₹0.00</strong>
+                            <strong id="today-revenue" class="stat-val">â‚¹0.00</strong>
                         </div>
                         <div class="stat-box">
                             <span class="stat-label">PROFIT</span>
-                            <strong id="today-profit" class="stat-val">₹0.00</strong>
+                            <strong id="today-profit" class="stat-val">â‚¹0.00</strong>
                         </div>
                     </div>
 
@@ -284,15 +281,12 @@
 </div>
 
 <!-- JAVASCRIPT -->
-<script src="./js/config.js"></script>
 <script src="./js/api/api.js"></script>
 <script src="./js/api/productApi.js"></script>
 <script src="./js/api/salesApi.js"></script>
 <script src="./js/storage/storage.js"></script>
 <script src="./js/forecast/reorderPoint.js"></script>
 <script src="./js/utils/helpers.js"></script>
-<script src="./js/utils/formatters.js"></script>
-<script src="./js/components/toast.js"></script>
 <script src="./js/components/sidebar.js"></script>
 <script src="./js/components/topbar.js"></script>
 <script src="./js/pages/sales.js"></script>
