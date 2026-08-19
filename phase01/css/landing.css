@@ -773,9 +773,7 @@ body.landing-page {
     50% { opacity: 0.9; }
     100% { top: 100%; opacity: 0.2; }
 }
-    background: #080d1a;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
+
 
 .mockup-header {
     display: flex;
