@@ -1001,13 +1001,7 @@ The JSON-Server automatically generates REST endpoints from `db.json`:
 | 8 | Recent Sales Timeline | Feed list | Latest 5 transactions |
 | 9 | 12× Sparklines | Mini line charts | One per KPI card |
 
----
 
-## 📜 License
-
-This project is licensed under the **ISC License**.
-
----
 
 <p align="center">
   <strong>Built with ❤️ by <a href="https://github.com/2006-Aman">Aman</a>, <a href="https://github.com/Himanshu151106">Himanshu Sidana</a></strong>
