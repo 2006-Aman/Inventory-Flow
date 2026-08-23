@@ -37,7 +37,7 @@
                 </div>
                 <div class="brand-text-group">
                     <span class="brand-name">Inventory<span class="brand-highlight">IQ</span></span>
-                    <span class="brand-tagline">FORECAST â€¢ REORDER â€¢ GROW</span>
+                    <span class="brand-tagline">FORECAST • REORDER • GROW</span>
                 </div>
             </div>
 
@@ -195,14 +195,6 @@
                         </div>
                     </button>
 
-                    <button class="settings-tab-btn" data-tab="tab-notifications">
-                        <span class="tab-icon green"><i class="ph ph-bell-ringing"></i></span>
-                        <div class="tab-text">
-                            <span class="tab-title">Notifications</span>
-                            <span class="tab-desc">Warnings & email alerts</span>
-                        </div>
-                    </button>
-
                     <button class="settings-tab-btn" data-tab="tab-data">
                         <span class="tab-icon yellow"><i class="ph ph-database"></i></span>
                         <div class="tab-text">
@@ -308,22 +300,11 @@
                                 </div>
                                 <div class="setting-control">
                                     <select id="currencySymbol" class="setting-select-box">
-                                        <option value="â‚¹" selected>â‚¹ (INR - Indian Rupee)</option>
+                                        <option value="₹" selected>₹ (INR - Indian Rupee)</option>
                                         <option value="$">$ (USD - US Dollar)</option>
-                                        <option value="â‚¬">â‚¬ (EUR - Euro)</option>
-                                        <option value="Â£">Â£ (GBP - British Pound)</option>
+                                        <option value="€">€ (EUR - Euro)</option>
+                                        <option value="£">£ (GBP - British Pound)</option>
                                     </select>
-                                </div>
-                            </div>
-
-                            <!-- ROW 3 -->
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <div class="setting-title"><i class="ph ph-envelope-simple"></i> Business Contact Email</div>
-                                    <div class="setting-desc">Email address for receiving system reports and alerts.</div>
-                                </div>
-                                <div class="setting-control">
-                                    <input type="email" id="businessEmail" class="setting-input-text" value="admin@inventoryflow.com">
                                 </div>
                             </div>
 
@@ -343,58 +324,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: NOTIFICATIONS & ALERTS -->
-                    <div id="tab-notifications" class="settings-panel">
-                        <div class="panel-header">
-                            <h2><i class="ph ph-bell-ringing"></i> Notification & Warning Alerts</h2>
-                            <p>Enable or disable system notifications and low margin warnings.</p>
-                        </div>
-
-                        <div class="setting-rows-list">
-                            <!-- ROW 1 -->
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <div class="setting-title"><i class="ph ph-bell"></i> In-App Low Stock Warning Banners</div>
-                                    <div class="setting-desc">Show warning banners when products hit Low or Out of Stock.</div>
-                                </div>
-                                <div class="setting-control">
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="lowStockBannerToggle" checked>
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- ROW 2 -->
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <div class="setting-title"><i class="ph ph-envelope"></i> Email Daily Reorder Digest</div>
-                                    <div class="setting-desc">Send daily summary emails for products reaching reorder points.</div>
-                                </div>
-                                <div class="setting-control">
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="emailAlertToggle" checked>
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- ROW 3 -->
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <div class="setting-title"><i class="ph ph-trend-down"></i> Low Profit Margin Warning</div>
-                                    <div class="setting-desc">Alert if product selling price profit margin falls below this %.</div>
-                                </div>
-                                <div class="setting-control">
-                                    <div class="input-with-unit">
-                                        <input type="number" id="minMarginAlert" class="setting-input-num" min="0" max="50" value="15">
-                                        <span class="unit-tag">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+        
                     <!-- TAB 4: DATA & BACKUP -->
                     <div id="tab-data" class="settings-panel">
                         <div class="panel-header">

@@ -36,7 +36,7 @@ function getUserStorageKey(baseKey) {
     try {
         const user = JSON.parse(raw);
         // Demo admin account uses shared keys with initial demo data
-        if (!user || user.id === "1" || user.id === "usr_admin_01" || user.email === "admin@inventoryflow.com") {
+        if (!user || user.id === "1" || user.id === "usr_demo_01" || user.email === "demo@inventoryflow.com") {
             return baseKey;
         }
         // New registered accounts get their own clean key starting at 0 items
@@ -89,10 +89,10 @@ function getLocalCategories() {
 
 const DEFAULT_USERS = [
     {
-        id: "usr_admin_01",
+        id: "usr_demo_01",
         firstName: "Aman",
         lastName: "Sharma",
-        email: "admin@inventoryflow.com",
+        email: "demo@inventoryflow.com",
         password: "admin123",
         phone: "+91 98765 43210",
         organization: "InventoryIQ Systems",
@@ -112,10 +112,10 @@ async function syncAllDataFromBackend() {
     if (raw) {
         try {
             const user = JSON.parse(raw);
-            if (user && user.email !== "admin@inventoryflow.com" && user.id !== "1" && user.id !== "usr_admin_01") {
+            if (user && user.email !== "demo@inventoryflow.com" && user.id !== "1" && user.id !== "usr_demo_01") {
                 isDemoAdmin = false;
             }
-        } catch(e) {}
+        } catch(e) {} 
     }
 
     // ONLY populate demo dataset for Demo Admin account!
@@ -437,7 +437,7 @@ function updateGlobalUserUI(userObj) {
     document.querySelectorAll('.user-name').forEach(el => el.textContent = user.firstName || 'Aman');
     document.querySelectorAll('.avatar-circle').forEach(el => el.textContent = initial);
     document.querySelectorAll('.user-dropdown-header strong').forEach(el => el.textContent = fullName);
-    document.querySelectorAll('.user-dropdown-header span').forEach(el => el.textContent = user.email || 'admin@inventoryflow.com');
+    document.querySelectorAll('.user-dropdown-header span').forEach(el => el.textContent = user.email || 'demo@inventoryflow.com');
     document.querySelectorAll('.greeting-subtitle').forEach(el => el.textContent = `GOOD MORNING • ${(user.firstName || 'AMAN').toUpperCase()}`);
 }
 

@@ -232,12 +232,21 @@ function openInvoiceModal(saleId) {
     const index = allSales.indexOf(sale);
     const invNum = generateInvoiceNumber(sale, index >= 0 ? index : 0);
     const prod = allProducts.find(p => String(p.id) === String(sale.productId));
-    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `$${v.toFixed(2)}`;
+    const fmt = typeof formatCurrency === "function" ? formatCurrency : (v) => `₹${Number(v).toFixed(2)}`;
+
+    // System Settings & User Profile resolution
+    const settings = typeof getSystemSettings === "function" ? getSystemSettings() : { storeName: "Inventory Flow Mart", taxRate: 18 };
+    const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+
+    const storeName = settings.storeName || (currentUser && currentUser.organization) || "Inventory Flow Mart";
+    const issuerName = (currentUser && currentUser.firstName) ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() : "Store Admin";
+    const issuerEmail = (currentUser && currentUser.email) || sale.userEmail || "demo@inventoryflow.com";
+    const taxRate = typeof getTaxRate === "function" ? getTaxRate() : (Number.isFinite(Number(settings.taxRate)) ? Number(settings.taxRate) : 18);
 
     const qty = Number(sale.quantity || 1);
     const unitPrice = Number(sale.sellingPrice || sale.price || (prod ? prod.sellingPrice : 0) || 0);
     const subtotal = qty * unitPrice;
-    const tax = Number((subtotal * 0.18).toFixed(2));
+    const tax = Number(((subtotal * taxRate) / 100).toFixed(2));
     const grandTotal = subtotal + tax;
 
     const dateStr = sale.date ? new Date(sale.date).toLocaleDateString([], { dateStyle: 'full' }) : new Date().toLocaleDateString([], { dateStyle: 'full' });
@@ -246,8 +255,28 @@ function openInvoiceModal(saleId) {
     if (getDom("sheetInvNum")) getDom("sheetInvNum").textContent = invNum;
     if (getDom("sheetInvDate")) getDom("sheetInvDate").textContent = `Issued: ${dateStr}`;
 
-    if (getDom("sheetCustomerName")) getDom("sheetCustomerName").textContent = sale.customer || "Walk-in Customer";
-    if (getDom("sheetCustomerContact")) getDom("sheetCustomerContact").textContent = sale.userEmail || "customer@inventoryflow.com";
+    // Store Branding & Issuer details
+    if (getDom("sheetStoreName")) getDom("sheetStoreName").textContent = storeName;
+    if (getDom("sheetIssuerStore")) getDom("sheetIssuerStore").textContent = storeName;
+    if (getDom("sheetIssuerUser")) getDom("sheetIssuerUser").textContent = `${issuerName} (Store Admin)`;
+    if (getDom("sheetIssuerEmail")) getDom("sheetIssuerEmail").textContent = issuerEmail;
+
+    // Customer details
+    const customerName = sale.customer || "Walk-in Customer";
+    const isWalkIn = !sale.customer || sale.customer.toLowerCase().includes("walk-in");
+
+    if (getDom("sheetCustomerName")) getDom("sheetCustomerName").textContent = customerName;
+
+    const contactEl = getDom("sheetCustomerContact");
+    if (contactEl) {
+        if (sale.customerEmail && !isWalkIn) {
+            contactEl.textContent = sale.customerEmail;
+            contactEl.style.display = "block";
+        } else {
+            contactEl.textContent = "";
+            contactEl.style.display = "none";
+        }
+    }
 
     // Itemized table row
     const itemsTbody = getDom("sheetItemsBody");
@@ -265,8 +294,13 @@ function openInvoiceModal(saleId) {
     }
 
     if (getDom("sheetSubtotal")) getDom("sheetSubtotal").textContent = fmt(subtotal);
+    if (getDom("sheetTaxLabel")) getDom("sheetTaxLabel").textContent = taxRate > 0 ? `Estimated Tax / GST (${taxRate}%)` : "Estimated Tax / GST (0%)";
     if (getDom("sheetTax")) getDom("sheetTax").textContent = fmt(tax);
     if (getDom("sheetGrandTotal")) getDom("sheetGrandTotal").textContent = fmt(grandTotal);
+
+    if (getDom("sheetFooterNote")) {
+        getDom("sheetFooterNote").textContent = `Thank you for doing business with ${storeName}! For questions or support, email ${issuerEmail}.`;
+    }
 
     const modal = getDom("invoiceModal");
     if (modal) modal.style.display = "flex";

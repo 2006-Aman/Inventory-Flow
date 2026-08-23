@@ -5,7 +5,7 @@
       "firstName": "Aman",
       "lastName": "Sharma",
       "name": "Aman Sharma",
-      "email": "admin@inventoryflow.com",
+      "email": "demo@inventoryflow.com",
       "password": "admin123",
       "role": "System Administrator",
       "organization": "InventoryIQ Systems",
@@ -436,26 +436,26 @@
     },
     {
       "sku": "ELE-0001",
-      "barcode": "8765730462875",
-      "name": "SamsungS25",
+      "barcode": "8769619419782",
+      "name": "keybord",
       "description": "",
       "category": "Electronics",
-      "supplier": "xyz",
-      "costPrice": 140000,
-      "sellingPrice": 200000,
-      "stock": 80,
+      "supplier": "xzc",
+      "costPrice": 10,
+      "sellingPrice": 20,
+      "stock": 1,
       "minimumStock": 5,
-      "safetyStock": 5,
-      "leadTime": 10,
+      "safetyStock": 4,
+      "leadTime": 4,
       "averageDailyDemand": 1.5,
       "forecastDemand": 11,
-      "reorderPoint": 20,
-      "status": "In Stock",
-      "createdAt": "2026-08-19 18:19",
-      "updatedAt": "2026-08-19 18:31",
+      "reorderPoint": 10,
+      "status": "Reorder",
+      "createdAt": "2026-08-23 18:15",
+      "updatedAt": "2026-08-23 18:17",
       "userId": "GB_hTqdZ-ew",
       "userEmail": "Ram@gmail.com",
-      "id": "xYiYfPCt3TM"
+      "id": "h85vhmJuI3U"
     }
   ],
   "sales": [
@@ -686,7 +686,7 @@
       "id": "77D6m11lWIw"
     },
     {
-      "productId": "xYiYfPCt3TM",
+      "productId": null,
       "productName": "SamsungS25",
       "quantity": 7,
       "sellingPrice": 200000,
@@ -697,6 +697,32 @@
       "userId": "GB_hTqdZ-ew",
       "userEmail": "Ram@gmail.com",
       "id": "66iZaZabp58"
+    },
+    {
+      "productId": "h85vhmJuI3U",
+      "productName": "keybord",
+      "quantity": 10,
+      "sellingPrice": 20,
+      "costPrice": 10,
+      "profit": 100,
+      "customer": "Walk-in Customer",
+      "date": "2026-08-23 05:30",
+      "userId": "GB_hTqdZ-ew",
+      "userEmail": "Ram@gmail.com",
+      "id": "-s1G4sgLKjc"
+    },
+    {
+      "productId": "h85vhmJuI3U",
+      "productName": "keybord",
+      "quantity": 1,
+      "sellingPrice": 20,
+      "costPrice": 10,
+      "profit": 10,
+      "customer": "acss",
+      "date": "2026-08-23 05:30",
+      "userId": "GB_hTqdZ-ew",
+      "userEmail": "Ram@gmail.com",
+      "id": "pbXuJ1a4Cro"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

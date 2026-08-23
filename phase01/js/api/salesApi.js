@@ -8,8 +8,8 @@ async function getSales() {
     const rawSales = await apiRequest("/sales");
     const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
 
-    if (!user || user.id === "1" || user.id === "usr_admin_01" || user.email === "admin@inventoryflow.com") {
-        return Array.isArray(rawSales) ? rawSales.filter(s => !s.userId || s.userId === "1" || s.userId === "usr_admin_01" || s.userEmail === "admin@inventoryflow.com") : [];
+    if (!user || user.id === "1" || user.id === "usr_demo_01" || user.id === "usr_admin_01" || user.email === "demo@inventoryflow.com" || user.email === "admin@inventoryflow.com") {
+        return Array.isArray(rawSales) ? rawSales.filter(s => !s.userId || s.userId === "1" || s.userId === "usr_demo_01" || s.userId === "usr_admin_01" || s.userEmail === "demo@inventoryflow.com" || s.userEmail === "admin@inventoryflow.com") : [];
     }
 
     return Array.isArray(rawSales) ? rawSales.filter(s => s.userId === user.id || s.userEmail === user.email) : [];

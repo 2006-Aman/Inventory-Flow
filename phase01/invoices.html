@@ -258,7 +258,7 @@
                         <div class="inv-brand-box">
                             <img src="./assets/logo.svg" alt="Logo" class="inv-logo-img">
                             <div>
-                                <h2 class="inv-company-name">InventoryIQ</h2>
+                                <h2 class="inv-company-name" id="sheetStoreName">Inventory Flow Mart</h2>
                                 <span class="inv-company-tag">OFFICIAL TAX INVOICE</span>
                             </div>
                         </div>
@@ -274,14 +274,14 @@
                         <div class="inv-party-col">
                             <h5>BILLED TO</h5>
                             <p id="sheetCustomerName">Walk-in Customer</p>
-                            <span id="sheetCustomerContact">customer@inventoryflow.com</span>
+                            <span id="sheetCustomerContact" style="display: none;"></span>
                             <span>Payment Method: Cash / Card</span>
                         </div>
                         <div class="inv-party-col">
                             <h5>ISSUED BY</h5>
-                            <p>InventoryIQ Systems</p>
-                            <span>Aman Sharma (Store Admin)</span>
-                            <span>admin@inventoryflow.com</span>
+                            <p id="sheetIssuerStore">Inventory Flow Mart</p>
+                            <span id="sheetIssuerUser">Store Admin</span>
+                            <span id="sheetIssuerEmail">admin@inventoryflow.com</span>
                         </div>
                     </div>
 
@@ -309,7 +309,7 @@
                             <span id="sheetSubtotal">$0.00</span>
                         </div>
                         <div class="inv-sum-row">
-                            <span>Estimated Tax / GST (18%)</span>
+                            <span id="sheetTaxLabel">Estimated Tax / GST (18%)</span>
                             <span id="sheetTax">$0.00</span>
                         </div>
                         <div class="inv-sum-row total">
@@ -320,7 +320,7 @@
 
                     <!-- Footer Note -->
                     <div class="inv-footer-note">
-                        <p>Thank you for doing business with InventoryIQ! For questions or support, email admin@inventoryflow.com.</p>
+                        <p id="sheetFooterNote">Thank you for doing business with Inventory Flow Mart! For questions or support, email admin@inventoryflow.com.</p>
                     </div>
 
                 </div>

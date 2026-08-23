@@ -9,11 +9,7 @@ const DEFAULT_SYSTEM_SETTINGS = {
     autoReorderToggle: true,
     storeName: "Inventory Flow Mart",
     currencySymbol: "₹",
-    businessEmail: "admin@inventoryflow.com",
-    taxRate: 18,
-    lowStockBannerToggle: true,
-    emailAlertToggle: true,
-    minMarginAlert: 15
+    taxRate: 18
 };
 
 const EXCHANGE_RATES_FROM_INR = {
@@ -72,3 +68,14 @@ var escapeHtml = function(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 };
+
+function getStoreName() {
+    const settings = getSystemSettings();
+    return settings.storeName || "Inventory Flow Mart";
+}
+
+function getTaxRate() {
+    const settings = getSystemSettings();
+    return Number.isFinite(Number(settings.taxRate)) ? Number(settings.taxRate) : 18;
+}
+

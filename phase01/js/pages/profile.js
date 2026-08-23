@@ -25,7 +25,7 @@ function loadProfileData() {
 
     if (firstNameInput) firstNameInput.value = user.firstName || "Aman";
     if (lastNameInput) lastNameInput.value = user.lastName || "Sharma";
-    if (emailInput) emailInput.value = user.email || "admin@inventoryflow.com";
+    if (emailInput) emailInput.value = user.email || "demo@inventoryflow.com";
     if (phoneInput) phoneInput.value = user.phone || "+91 98765 43210";
     if (orgInput) orgInput.value = user.organization || "InventoryIQ Systems";
     if (desigInput) desigInput.value = user.role || user.designation || "Lead Operations Manager";
@@ -38,7 +38,7 @@ function loadProfileData() {
 
     if (headerName) headerName.textContent = `${user.firstName || 'Aman'} ${user.lastName || 'Sharma'}`;
     if (headerRole) headerRole.textContent = user.role || user.designation || "Lead Operations Manager";
-    if (headerEmail) headerEmail.innerHTML = `<i class="ph ph-envelope-simple" style="color: #38bdf8;"></i> ${user.email || 'admin@inventoryflow.com'}`;
+    if (headerEmail) headerEmail.innerHTML = `<i class="ph ph-envelope-simple" style="color: #38bdf8;"></i> ${user.email || 'demo@inventoryflow.com'}`;
 
     // Real Sales Count from Local Storage
     if (salesCountEl) {

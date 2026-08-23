@@ -266,7 +266,7 @@
                         <div class="inv-brand-box">
                             <img src="./assets/logo.svg" alt="Logo" class="inv-logo-img">
                             <div>
-                                <h2 class="inv-company-name">InventoryIQ</h2>
+                                <h2 class="inv-company-name" id="sheetStoreName">Inventory Flow Mart</h2>
                                 <span class="inv-company-tag">OFFICIAL TAX RECEIPT</span>
                             </div>
                         </div>
@@ -283,14 +283,14 @@
                         <div class="inv-party-col">
                             <h5>CUSTOMER DETAILS</h5>
                             <p id="sheetCustomerName">Walk-in Customer</p>
-                            <span id="sheetCustomerContact">customer@inventoryflow.com</span>
+                            <span id="sheetCustomerContact" style="display: none;"></span>
                             <span style="margin-top:4px; font-size:11px; color:#38bdf8;">Payment Status: Verified</span>
                         </div>
                         <div class="inv-party-col">
                             <h5>MERCHANT / ISSUED BY</h5>
-                            <p>InventoryIQ Systems</p>
-                            <span>Aman Sharma (Store Admin)</span>
-                            <span>admin@inventoryflow.com</span>
+                            <p id="sheetIssuerStore">Inventory Flow Mart</p>
+                            <span id="sheetIssuerUser">Store Admin</span>
+                            <span id="sheetIssuerEmail">admin@inventoryflow.com</span>
                         </div>
                     </div>
 
@@ -315,21 +315,21 @@
                     <div class="inv-summary-box">
                         <div class="inv-sum-row">
                             <span>Subtotal</span>
-                            <span id="sheetSubtotal">â‚¹0.00</span>
+                            <span id="sheetSubtotal">₹0.00</span>
                         </div>
                         <div class="inv-sum-row">
-                            <span>Estimated GST / Tax (18%)</span>
-                            <span id="sheetTax">â‚¹0.00</span>
+                            <span id="sheetTaxLabel">Estimated GST / Tax (18%)</span>
+                            <span id="sheetTax">₹0.00</span>
                         </div>
                         <div class="inv-sum-row total">
                             <span>Total Amount</span>
-                            <span id="sheetGrandTotal">â‚¹0.00</span>
+                            <span id="sheetGrandTotal">₹0.00</span>
                         </div>
                     </div>
 
                     <!-- Footer Note -->
                     <div class="inv-footer-note">
-                        <p>Thank you for shopping with InventoryIQ! For support or inquiries, contact admin@inventoryflow.com.</p>
+                        <p id="sheetFooterNote">Thank you for shopping with Inventory Flow Mart! For support or inquiries, contact admin@inventoryflow.com.</p>
                     </div>
 
                 </div>

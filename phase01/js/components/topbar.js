@@ -41,7 +41,7 @@ const topbarHTML = `
             <div class="user-dropdown" id="user-dropdown">
                 <div class="user-dropdown-head">
                     <strong id="dd-name">Aman</strong>
-                    <span id="dd-email">admin@inventoryflow.com</span>
+                    <span id="dd-email">demo@inventoryflow.com</span>
                 </div>
                 <a href="settings.html"><i class="ph ph-sliders"></i> Settings</a>
                 <button id="user-signout"><i class="ph ph-sign-out"></i> Sign out</button>

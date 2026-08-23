@@ -115,22 +115,41 @@ function setupFormEventHandlers() {
 }
 
 function saveSettingsValues() {
+    const existing = getSavedSettings();
+    const storeNameVal = getDom("storeName") ? getDom("storeName").value.trim() : existing.storeName;
+    const currencyVal = getDom("currencySymbol") ? getDom("currencySymbol").value : existing.currencySymbol;
+    const taxRateVal = getDom("taxRate") ? Number(getDom("taxRate").value) : existing.taxRate;
+
     const updated = {
-        defaultLeadTime: Number(getDom("defaultLeadTime")?.value || 7),
-        safetyStockBuffer: Number(getDom("safetyStockBuffer")?.value || 5),
-        criticalLevelPercent: Number(getDom("criticalLevelPercent")?.value || 20),
-        autoReorderToggle: Boolean(getDom("autoReorderToggle")?.checked),
-        storeName: getDom("storeName")?.value || "Inventory Flow Mart",
-        currencySymbol: getDom("currencySymbol")?.value || "₹",
-        businessEmail: getDom("businessEmail")?.value || "admin@inventoryflow.com",
-        taxRate: Number(getDom("taxRate")?.value || 18),
-        lowStockBannerToggle: Boolean(getDom("lowStockBannerToggle")?.checked),
-        emailAlertToggle: Boolean(getDom("emailAlertToggle")?.checked),
-        minMarginAlert: Number(getDom("minMarginAlert")?.value || 15)
+        ...existing,
+        defaultLeadTime: getDom("defaultLeadTime") ? Number(getDom("defaultLeadTime").value) : existing.defaultLeadTime,
+        safetyStockBuffer: getDom("safetyStockBuffer") ? Number(getDom("safetyStockBuffer").value) : existing.safetyStockBuffer,
+        criticalLevelPercent: getDom("criticalLevelPercent") ? Number(getDom("criticalLevelPercent").value) : existing.criticalLevelPercent,
+        autoReorderToggle: getDom("autoReorderToggle") ? Boolean(getDom("autoReorderToggle").checked) : existing.autoReorderToggle,
+        storeName: storeNameVal || "Inventory Flow Mart",
+        currencySymbol: currencyVal || "₹",
+        taxRate: Number.isFinite(taxRateVal) ? taxRateVal : 18
     };
 
+    if (getDom("businessEmail")) updated.businessEmail = getDom("businessEmail").value.trim();
+    if (getDom("lowStockBannerToggle")) updated.lowStockBannerToggle = Boolean(getDom("lowStockBannerToggle").checked);
+    if (getDom("emailAlertToggle")) updated.emailAlertToggle = Boolean(getDom("emailAlertToggle").checked);
+    if (getDom("minMarginAlert")) updated.minMarginAlert = Number(getDom("minMarginAlert").value);
+
     localStorage.setItem("system_settings", JSON.stringify(updated));
-    showToast("✓ Settings & System Preferences Saved Successfully!");
+
+    // Also sync storeName to logged-in user profile organization if active
+    const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+    if (currentUser && updated.storeName) {
+        currentUser.organization = updated.storeName;
+        if (typeof saveCurrentUser === "function") {
+            saveCurrentUser(currentUser);
+        } else {
+            localStorage.setItem("inventory_current_user", JSON.stringify(currentUser));
+        }
+    }
+
+    showToast("✓ Settings & Store Preferences Saved Successfully!");
 }
 
 // ==========================================
