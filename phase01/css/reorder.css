@@ -589,3 +589,71 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR REORDER PAGE
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .kpi-title {
+    color: #475569 !important;
+}
+
+body.theme-light .kpi-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-sub {
+    color: #64748b !important;
+}
+
+body.theme-light .table-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .table-card-head {
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .card-title {
+    color: #0f172a !important;
+}
+
+body.theme-light .reorder-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+body.theme-light .reorder-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .reorder-table tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .product-name {
+    color: #0f172a !important;
+}
+
+body.theme-light .product-sku {
+    color: #64748b !important;
+}
+
+

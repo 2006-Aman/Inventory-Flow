@@ -500,4 +500,98 @@ body {
     scrollbar-color: #1c2840 transparent;
 }
 
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR DEMAND FORECAST
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-card,
+body.theme-light .panel-card,
+body.theme-light .chart-card,
+body.theme-light .table-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .kpi-title,
+body.theme-light .panel-title {
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-sub,
+body.theme-light .panel-sub {
+    color: #64748b !important;
+}
+
+body.theme-light .tag-badge {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #0284c7 !important;
+}
+
+body.theme-light .top-prod-item,
+body.theme-light .top-product-item {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .top-prod-name,
+body.theme-light .top-product-name {
+    color: #0f172a !important;
+}
+
+body.theme-light .top-rank-num,
+body.theme-light .top-product-rank {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #0284c7 !important;
+}
+
+body.theme-light .top-rate-sub {
+    color: #64748b !important;
+}
+
+body.theme-light .top-units-badge {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #0284c7 !important;
+}
+
+body.theme-light .forecast-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+
+body.theme-light .forecast-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .forecast-table tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .prod-name-text {
+    color: #0f172a !important;
+}
+
+body.theme-light .prod-sku-text {
+    color: #64748b !important;
+}
+
+
+
 

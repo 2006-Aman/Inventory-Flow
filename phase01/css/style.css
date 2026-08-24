@@ -9,9 +9,17 @@
 }
 
 html, body {
-    background-color: #0b0f19 !important;
+    background-color: #0b0f19;
     color-scheme: dark;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+}
+
+html.theme-light, body.theme-light {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    color-scheme: light !important;
+    scrollbar-gutter: stable;
 }
 
 /* SIDEBAR & MAIN WRAPPER LAYOUT OVERRIDE */
@@ -58,6 +66,24 @@ html, body {
     margin-left: 265px !important;
     width: calc(100% - 265px) !important;
 }
+
+.content,
+.main-wrapper > main,
+.main-wrapper > .content {
+    animation: contentSmoothFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes contentSmoothFadeIn {
+    from {
+        opacity: 0.92;
+        transform: translateY(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 /* GLOBAL TOPBAR PILL SHAPES & HEIGHT OVERRIDE */
 .navbar {
@@ -1257,3 +1283,221 @@ span.flatpickr-weekday {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 24px rgba(56, 189, 248, 0.25);
     backdrop-filter: blur(12px);
 }
+
+/* ==========================================
+   UNIVERSAL LIGHT THEME ENHANCEMENTS
+========================================== */
+body.theme-light .sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .sidebar-brand .brand-name,
+body.theme-light .sidebar-logo .logo-text h2,
+body.theme-light .brand-name,
+body.theme-light .logo-text h2 {
+    color: #0f172a !important;
+}
+
+body.theme-light .sidebar-brand .brand-tagline,
+body.theme-light .sidebar-logo .logo-text p,
+body.theme-light .brand-tagline,
+body.theme-light .logo-text p {
+    color: #64748b !important;
+}
+
+body.theme-light .nav-item,
+body.theme-light .sidebar-nav a {
+    color: #475569 !important;
+}
+
+body.theme-light .nav-item:hover,
+body.theme-light .sidebar-nav a:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .nav-item.active,
+body.theme-light .sidebar-nav a.active {
+    background: #eff6ff !important;
+    color: #0284c7 !important;
+    border: 1px solid #bfdbfe !important;
+    box-shadow: none !important;
+}
+
+body.theme-light .nav-item.active i,
+body.theme-light .sidebar-nav a.active i {
+    color: #0284c7 !important;
+}
+
+body.theme-light .sidebar-footer-card,
+body.theme-light .engine-card {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .engine-ring-inner {
+    background: #ffffff !important;
+}
+
+body.theme-light .engine-ring-inner span,
+body.theme-light .engine-gauge-circle span {
+    color: #0f172a !important;
+}
+
+body.theme-light .engine-title,
+body.theme-light .engine-info h4 {
+    color: #0f172a !important;
+}
+
+body.theme-light .engine-subtitle,
+body.theme-light .engine-info p,
+body.theme-light .engine-next,
+body.theme-light .engine-timer {
+    color: #64748b !important;
+}
+
+body.theme-light .navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #eaecf0 !important;
+}
+
+body.theme-light .navbar .search-bar input {
+    color: #1e293b !important;
+}
+
+body.theme-light .navbar .search-bar {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .navbar .date-badge,
+body.theme-light .navbar .time-badge {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+body.theme-light .navbar .icon-btn {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+body.theme-light .navbar .icon-btn:hover {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+
+body.theme-light .navbar .user-profile {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .navbar .user-name {
+    color: #1e293b !important;
+}
+
+body.theme-light .user-dropdown-menu {
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.theme-light .user-dropdown-header {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .user-dropdown-header strong {
+    color: #1e293b !important;
+}
+
+body.theme-light .user-dropdown-header span {
+    color: #64748b !important;
+}
+
+body.theme-light .user-dropdown-item {
+    color: #1e293b !important;
+}
+
+body.theme-light .user-dropdown-item:hover {
+    background: #f8fafc !important;
+}
+
+/* Global Universal Light Theme Fallbacks */
+body.theme-light .stat-box,
+body.theme-light .kpi-mini-card,
+body.theme-light .mini-stat-card {
+    background: #f8fafc !important;
+    border: 1px solid #eaecf0 !important;
+}
+
+body.theme-light .stat-box .stat-label,
+body.theme-light .kpi-mini-card .kpi-label {
+    color: #64748b !important;
+}
+
+body.theme-light .stat-box .stat-val,
+body.theme-light .kpi-mini-card .kpi-val {
+    color: #1e293b !important;
+}
+
+body.theme-light .panel-card,
+body.theme-light .card-panel {
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    box-shadow: 0 2px 16px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Notification Popover Dropdown Light Theme */
+body.theme-light .notification-dropdown {
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.theme-light .noti-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #eaecf0 !important;
+}
+
+body.theme-light .noti-header strong {
+    color: #1e293b !important;
+}
+
+body.theme-light .noti-item {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .noti-item:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .noti-details strong {
+    color: #1e293b !important;
+}
+
+body.theme-light .noti-details span {
+    color: #64748b !important;
+}
+
+body.theme-light .noti-empty {
+    color: #64748b !important;
+}
+
+body.theme-light .noti-footer {
+    background: #f8fafc !important;
+    border-top: 1px solid #eaecf0 !important;
+}
+
+body.theme-light .noti-footer a {
+    color: #0284c7 !important;
+}
+
+body.theme-light .noti-footer a:hover {
+    color: #0369a1 !important;
+}
+
+
+
+

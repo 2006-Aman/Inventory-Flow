@@ -20,7 +20,8 @@ const DEFAULT_SETTINGS = {
     taxRate: 18,
     lowStockBannerToggle: true,
     emailAlertToggle: true,
-    minMarginAlert: 15
+    minMarginAlert: 15,
+    theme: "dark"
 };
 
 document.addEventListener("DOMContentLoaded", initSettingsPage);
@@ -91,6 +92,7 @@ function getSavedSettings() {
 
 function loadSettingsValues() {
     const config = getSavedSettings();
+    const currentTheme = localStorage.getItem('theme') || config.theme || 'dark';
 
     if (getDom("defaultLeadTime")) getDom("defaultLeadTime").value = config.defaultLeadTime;
     if (getDom("safetyStockBuffer")) getDom("safetyStockBuffer").value = config.safetyStockBuffer;
@@ -101,6 +103,7 @@ function loadSettingsValues() {
     if (getDom("currencySymbol")) getDom("currencySymbol").value = config.currencySymbol;
     if (getDom("businessEmail")) getDom("businessEmail").value = config.businessEmail;
     if (getDom("taxRate")) getDom("taxRate").value = config.taxRate;
+    if (getDom("themeSelect")) getDom("themeSelect").value = currentTheme;
 
     if (getDom("lowStockBannerToggle")) getDom("lowStockBannerToggle").checked = Boolean(config.lowStockBannerToggle);
     if (getDom("emailAlertToggle")) getDom("emailAlertToggle").checked = Boolean(config.emailAlertToggle);
@@ -112,6 +115,20 @@ function setupFormEventHandlers() {
     if (saveBtn) {
         saveBtn.addEventListener("click", saveSettingsValues);
     }
+
+    const themeSelect = getDom("themeSelect");
+    if (themeSelect) {
+        themeSelect.addEventListener("change", (e) => {
+            const selectedTheme = e.target.value;
+            if (typeof applyGlobalTheme === "function") {
+                applyGlobalTheme(selectedTheme);
+            } else {
+                localStorage.setItem('theme', selectedTheme);
+                document.body.classList.toggle('theme-light', selectedTheme === 'light');
+                document.documentElement.classList.toggle('theme-light', selectedTheme === 'light');
+            }
+        });
+    }
 }
 
 function saveSettingsValues() {
@@ -119,6 +136,7 @@ function saveSettingsValues() {
     const storeNameVal = getDom("storeName") ? getDom("storeName").value.trim() : existing.storeName;
     const currencyVal = getDom("currencySymbol") ? getDom("currencySymbol").value : existing.currencySymbol;
     const taxRateVal = getDom("taxRate") ? Number(getDom("taxRate").value) : existing.taxRate;
+    const themeVal = getDom("themeSelect") ? getDom("themeSelect").value : (localStorage.getItem('theme') || 'dark');
 
     const updated = {
         ...existing,
@@ -128,7 +146,8 @@ function saveSettingsValues() {
         autoReorderToggle: getDom("autoReorderToggle") ? Boolean(getDom("autoReorderToggle").checked) : existing.autoReorderToggle,
         storeName: storeNameVal || "Inventory Flow Mart",
         currencySymbol: currencyVal || "₹",
-        taxRate: Number.isFinite(taxRateVal) ? taxRateVal : 18
+        taxRate: Number.isFinite(taxRateVal) ? taxRateVal : 18,
+        theme: themeVal
     };
 
     if (getDom("businessEmail")) updated.businessEmail = getDom("businessEmail").value.trim();
@@ -137,6 +156,10 @@ function saveSettingsValues() {
     if (getDom("minMarginAlert")) updated.minMarginAlert = Number(getDom("minMarginAlert").value);
 
     localStorage.setItem("system_settings", JSON.stringify(updated));
+    localStorage.setItem("theme", themeVal);
+    if (typeof applyGlobalTheme === "function") {
+        applyGlobalTheme(themeVal);
+    }
 
     // Also sync storeName to logged-in user profile organization if active
     const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;

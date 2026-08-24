@@ -10,6 +10,10 @@ function initProfilePage() {
     loadProfileData();
     setupProfileFormHandler();
     setupSecurityFormHandler();
+    setupAvatarUploadHandler();
+    if (typeof updateGlobalAlertBadges === 'function') {
+        updateGlobalAlertBadges();
+    }
 }
 
 function loadProfileData() {
@@ -35,19 +39,144 @@ function loadProfileData() {
     const headerRole = document.getElementById("profileHeaderRole");
     const headerEmail = document.getElementById("profileHeaderEmail");
     const salesCountEl = document.getElementById("profileSalesCount");
+    const largeAvatar = document.getElementById("profileAvatarLarge");
+    const removeBtn = document.getElementById("removePhotoBtn");
+    const separator = document.getElementById("avatarActionSeparator");
+    const changeBtn = document.getElementById("changePhotoBtn");
 
-    if (headerName) headerName.textContent = `${user.firstName || 'Aman'} ${user.lastName || 'Sharma'}`;
+    const fullName = `${user.firstName || 'Aman'} ${user.lastName || 'Sharma'}`.trim();
+    const initial = (user.firstName || 'A')[0].toUpperCase();
+
+    if (headerName) headerName.textContent = fullName;
     if (headerRole) headerRole.textContent = user.role || user.designation || "Lead Operations Manager";
     if (headerEmail) headerEmail.innerHTML = `<i class="ph ph-envelope-simple" style="color: #38bdf8;"></i> ${user.email || 'demo@inventoryflow.com'}`;
 
-    // Real Sales Count from Local Storage
+    // Update Large Profile Avatar
+    if (largeAvatar) {
+        if (user.avatarImage) {
+            largeAvatar.innerHTML = `<img src="${user.avatarImage}" alt="${fullName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+            largeAvatar.style.background = "transparent";
+            if (removeBtn) removeBtn.style.display = "inline-block";
+            if (separator) separator.style.display = "inline";
+            if (changeBtn) changeBtn.textContent = "Change";
+        } else {
+            largeAvatar.innerHTML = '';
+            largeAvatar.textContent = initial;
+            largeAvatar.style.background = "#0284c7";
+            if (removeBtn) removeBtn.style.display = "none";
+            if (separator) separator.style.display = "none";
+            if (changeBtn) changeBtn.textContent = "Upload";
+        }
+    }
+
+    // Real Sales Count from Local Storage / API
     if (salesCountEl) {
-        const sales = getLocalSales();
-        salesCountEl.textContent = sales.length || 0;
+        try {
+            if (typeof getSales === 'function') {
+                getSales().then(s => {
+                    if (Array.isArray(s)) {
+                        salesCountEl.textContent = s.length;
+                    } else {
+                        const localSales = getLocalSales();
+                        salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
+                    }
+                }).catch(() => {
+                    const localSales = getLocalSales();
+                    salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
+                });
+            } else {
+                const localSales = getLocalSales();
+                salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
+            }
+        } catch (e) {
+            const localSales = getLocalSales();
+            salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
+        }
     }
 
     // Sync global UI elements
     updateGlobalUserUI(user);
+}
+
+function setupAvatarUploadHandler() {
+    const fileInput = document.getElementById("avatarFileInput");
+    const avatarContainer = document.getElementById("profileAvatarContainer");
+    const changeBtn = document.getElementById("changePhotoBtn");
+    const removeBtn = document.getElementById("removePhotoBtn");
+
+    if (avatarContainer && fileInput) {
+        avatarContainer.addEventListener("click", () => fileInput.click());
+    }
+    if (changeBtn && fileInput) {
+        changeBtn.addEventListener("click", () => fileInput.click());
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                showProfileToast("Please select a valid image file (PNG, JPG, etc.)", true);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Compress image using Canvas to max 300x300 for optimal localStorage footprint
+                    const canvas = document.createElement("canvas");
+                    const maxDim = 300;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+                    // Save to user profile
+                    const user = getCurrentUser();
+                    user.avatarImage = compressedDataUrl;
+                    saveCurrentUser(user);
+
+                    // Update UI across all components
+                    loadProfileData();
+                    showProfileToast("Profile photo updated successfully!");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Reset input so same image can be re-selected if needed
+            fileInput.value = "";
+        });
+    }
+
+    if (removeBtn) {
+        removeBtn.addEventListener("click", () => {
+            const user = getCurrentUser();
+            delete user.avatarImage;
+            saveCurrentUser(user);
+            loadProfileData();
+            showProfileToast("Profile photo removed.");
+        });
+    }
 }
 
 function setupProfileFormHandler() {
@@ -122,3 +251,4 @@ function showProfileToast(msg, isError = false) {
         toast.style.display = "none";
     }, 3000);
 }
+

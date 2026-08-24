@@ -435,7 +435,18 @@ function updateGlobalUserUI(userObj) {
 
     // Update topbar & profile elements across DOM
     document.querySelectorAll('.user-name').forEach(el => el.textContent = user.firstName || 'Aman');
-    document.querySelectorAll('.avatar-circle').forEach(el => el.textContent = initial);
+    
+    document.querySelectorAll('.avatar-circle').forEach(el => {
+        if (user.avatarImage) {
+            el.innerHTML = `<img src="${user.avatarImage}" alt="${fullName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+            el.style.backgroundColor = 'transparent';
+        } else {
+            el.innerHTML = '';
+            el.textContent = initial;
+            el.style.backgroundColor = '';
+        }
+    });
+
     document.querySelectorAll('.user-dropdown-header strong').forEach(el => el.textContent = fullName);
     document.querySelectorAll('.user-dropdown-header span').forEach(el => el.textContent = user.email || 'demo@inventoryflow.com');
     document.querySelectorAll('.greeting-subtitle').forEach(el => el.textContent = `GOOD MORNING • ${(user.firstName || 'AMAN').toUpperCase()}`);
@@ -530,6 +541,7 @@ function initGlobalTopbarSearch() {
 
 async function updateGlobalAlertBadges() {
     let products = [];
+    let sales = [];
     try {
         if (typeof getProducts === 'function') {
             products = await getProducts();
@@ -541,16 +553,41 @@ async function updateGlobalAlertBadges() {
             products = getLocalProducts();
         }
     }
-
     if (!Array.isArray(products)) products = [];
 
-    // Filter products needing reorder (stock <= reorderPoint or stock <= minimumStock)
-    const reorderItems = products.filter(p => {
-        const stock = Number(p.stock ?? p.currentStock ?? 0);
-        const min = Number(p.minimumStock ?? 5);
-        const rop = Number(p.reorderPoint ?? min);
-        return stock <= rop;
-    });
+    try {
+        if (typeof getSales === 'function') {
+            sales = await getSales();
+        } else if (typeof getLocalSales === 'function') {
+            sales = getLocalSales();
+        }
+    } catch(e) {
+        if (typeof getLocalSales === 'function') {
+            sales = getLocalSales();
+        }
+    }
+    if (!Array.isArray(sales)) sales = [];
+
+    let reorderItems = [];
+
+    // Use unified Forecast Engine calculation if available
+    if (typeof calculateAllProductForecasts === 'function' && products.length > 0) {
+        const forecastResults = calculateAllProductForecasts(products, sales, 7);
+        reorderItems = forecastResults.filter(r => {
+            const stock = Number(r.currentStock || 0);
+            const rop = Number(r.reorderPoint || 0);
+            const safety = Number(r.safetyStock || 0);
+            return stock === 0 || stock <= safety || stock <= rop;
+        });
+    } else {
+        reorderItems = products.filter(p => {
+            const stock = Number(p.stock ?? p.currentStock ?? 0);
+            const rop = Number(p.reorderPoint ?? 0);
+            const min = Number(p.minimumStock ?? 0);
+            const threshold = rop > 0 ? rop : min;
+            return threshold > 0 && stock <= threshold;
+        });
+    }
 
     const alertCount = reorderItems.length;
 
@@ -573,7 +610,7 @@ async function updateGlobalAlertBadges() {
 }
 
 function renderNotificationDropdown(reorderItems) {
-    const bellBtns = document.querySelectorAll('.icon-btn.has-badge, #bell-btn, button[title*="Notification"]');
+    const bellBtns = document.querySelectorAll('.icon-btn.has-badge, #bell-btn, #bellBtn, button[title*="Notification"], button[title*="Notifications"]');
     
     bellBtns.forEach(btn => {
         btn.style.position = 'relative';
@@ -596,16 +633,17 @@ function renderNotificationDropdown(reorderItems) {
                 </div>`;
         } else {
             itemsHtml = reorderItems.map(item => {
-                const stock = Number(item.stock || 0);
-                const rop = Number(item.reorderPoint || item.minimumStock || 5);
+                const stock = Number(item.currentStock ?? item.stock ?? 0);
+                const rop = Number(item.reorderPoint ?? item.minimumStock ?? 0);
                 const isOut = stock === 0;
+                const name = item.productName || item.name || 'Product';
                 return `
-                    <a href="reorder.html" class="noti-item">
+                    <a href="./reorder.html" class="noti-item" onclick="event.stopPropagation(); window.location.href='./reorder.html';">
                         <div class="noti-icon ${isOut ? 'out' : 'low'}">
                             <i class="ph ${isOut ? 'ph-x-circle' : 'ph-warning-amber'}"></i>
                         </div>
                         <div class="noti-details">
-                            <strong>${escapeHtml(item.name || 'Product')}</strong>
+                            <strong>${escapeHtml(name)}</strong>
                             <span>${isOut ? 'Out of Stock (0 units)' : `Low Stock: ${stock} units left`} &middot; ROP: ${rop}</span>
                         </div>
                     </a>
@@ -622,21 +660,42 @@ function renderNotificationDropdown(reorderItems) {
                 ${itemsHtml}
             </div>
             <div class="noti-footer">
-                <a href="reorder.html">View Reorder Hub &rarr;</a>
+                <a href="./reorder.html" onclick="event.stopPropagation(); window.location.href='./reorder.html';">View Reorder Hub &rarr;</a>
             </div>
         `;
 
+        // Prevent clicks inside the dropdown from bubbling to the toggle button
+        dropdown.onclick = (e) => {
+            e.stopPropagation();
+        };
+
         btn.onclick = (e) => {
+            if (e.target.closest('.notification-dropdown')) return;
+            e.preventDefault();
             e.stopPropagation();
             const isActive = dropdown.classList.contains('show');
             document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
             if (!isActive) dropdown.classList.add('show');
         };
     });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.notification-dropdown') && !e.target.closest('.icon-btn.has-badge') && !e.target.closest('#bell-btn')) {
-            document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
-        }
-    });
 }
+
+// Global click delegation for notification bell buttons & dismissals
+document.addEventListener('click', (e) => {
+    const bellBtn = e.target.closest('.icon-btn.has-badge, #bell-btn, #bellBtn, button[title*="Notification"], button[title*="Notifications"]');
+    if (bellBtn && !e.target.closest('.notification-dropdown')) {
+        const dropdown = bellBtn.querySelector('.notification-dropdown');
+        if (dropdown) {
+            e.preventDefault();
+            e.stopPropagation();
+            const isActive = dropdown.classList.contains('show');
+            document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
+            if (!isActive) dropdown.classList.add('show');
+            return;
+        }
+    }
+
+    if (!e.target.closest('.notification-dropdown')) {
+        document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('show'));
+    }
+});

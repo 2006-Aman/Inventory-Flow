@@ -532,3 +532,144 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR ADD PRODUCT
+========================================= */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .page-subtext {
+    color: #64748b !important;
+}
+
+body.theme-light .form-card,
+body.theme-light .preview-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .card-title,
+body.theme-light .preview-card h3 {
+    color: #0f172a !important;
+}
+
+/* Card Form Groups & Inputs */
+body.theme-light .form-group {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .form-group:focus-within {
+    background: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.theme-light .form-group label {
+    color: #64748b !important;
+}
+
+body.theme-light .form-card .form-group input,
+body.theme-light .form-card .form-group select,
+body.theme-light .form-card .form-group textarea,
+body.theme-light .form-group input[type="text"],
+body.theme-light .form-group input[type="number"],
+body.theme-light .form-group textarea,
+body.theme-light #sku {
+    color: #0f172a !important;
+}
+
+body.theme-light .form-group textarea {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .form-group textarea:focus {
+    background: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.theme-light .form-group input::placeholder,
+body.theme-light .form-group textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+body.theme-light .spin-btn {
+    color: #64748b !important;
+}
+
+body.theme-light .spin-btn:hover {
+    color: #0284c7 !important;
+    background: rgba(2, 132, 199, 0.1) !important;
+}
+
+body.theme-light .hint-text {
+    color: #64748b !important;
+}
+
+body.theme-light .btn-cancel {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .btn-cancel:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* Right Column Live Preview */
+body.theme-light .stat-label {
+    color: #64748b !important;
+}
+
+body.theme-light .stat-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .codes-subtext {
+    color: #64748b !important;
+}
+
+body.theme-light .barcode-lines {
+    background: repeating-linear-gradient(
+        90deg,
+        #0f172a 0px,
+        #0f172a 2px,
+        transparent 2px,
+        transparent 4px,
+        #0f172a 4px,
+        #0f172a 7px,
+        transparent 7px,
+        transparent 9px,
+        #0f172a 9px,
+        #0f172a 11px,
+        transparent 11px,
+        transparent 13px,
+        #0f172a 13px,
+        #0f172a 16px
+    ) !important;
+}
+
+body.theme-light .barcode-text {
+    color: #0284c7 !important;
+}
+
+body.theme-light .qr-matrix {
+    background: #0f172a !important;
+}
+
+body.theme-light .qr-cell {
+    background: #ffffff !important;
+}
+
+

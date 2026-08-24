@@ -457,3 +457,142 @@ body {
     scrollbar-width: thin;
     scrollbar-color: #1c2840 transparent;
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR SALES PAGE
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .sales-subtext {
+    color: #64748b !important;
+}
+
+body.theme-light .btn-history {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .btn-history:hover {
+    background: #f1f5f9 !important;
+}
+
+body.theme-light .sales-form-panel,
+body.theme-light .sales-summary-panel {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .panel-title {
+    color: #0f172a !important;
+}
+
+body.theme-light .form-group label {
+    color: #64748b !important;
+}
+
+body.theme-light .form-group input,
+body.theme-light .form-group select {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .form-group input:focus,
+body.theme-light .form-group select:focus {
+    background: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.theme-light .product-info-card {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .info-grid div span,
+body.theme-light .info-label {
+    color: #64748b !important;
+}
+
+body.theme-light .info-grid div strong,
+body.theme-light .info-val {
+    color: #0f172a !important;
+}
+
+/* Today's Performance Stats */
+body.theme-light .stat-box {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .stat-label {
+    color: #64748b !important;
+}
+
+body.theme-light .stat-val {
+    color: #0f172a !important;
+}
+
+/* Recent Activity Feed Items */
+body.theme-light .recent-sale-item {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .recent-sale-title {
+    color: #0f172a !important;
+}
+
+body.theme-light .recent-sale-sub {
+    color: #64748b !important;
+}
+
+body.theme-light .recent-sale-price {
+    color: #059669 !important;
+}
+
+body.theme-light .ledger-link {
+    color: #0284c7 !important;
+}
+
+body.theme-light .ledger-link:hover {
+    color: #0369a1 !important;
+}
+
+/* Sale Total Box */
+body.theme-light .sale-total {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+body.theme-light .sale-total span {
+    color: #166534 !important;
+}
+
+body.theme-light .sale-total strong {
+    color: #15803d !important;
+}
+
+body.theme-light .sale-total small {
+    color: #16a34a !important;
+}
+
+body.theme-light .summary-item {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .summary-lbl {
+    color: #64748b !important;
+}
+
+body.theme-light .summary-val {
+    color: #0f172a !important;
+}

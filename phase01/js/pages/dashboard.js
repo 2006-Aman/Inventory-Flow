@@ -45,6 +45,16 @@ async function initDashboardPage() {
     try { renderRecentSalesTimeline(); } catch (e) { console.warn("Timeline error:", e); }
     try { setupRestockModalEvents(); } catch (e) { console.warn("Restock modal error:", e); }
     try { setupDropdownListeners(); } catch (e) { console.warn("Dropdown error:", e); }
+
+    // Re-render charts & sparklines on theme toggle
+    window.addEventListener("themechange", () => {
+        try { render12Sparklines(); } catch (e) {}
+        try { renderRevenueDemandChart(); } catch (e) {}
+        try { renderMonthlySalesBarChart(); } catch (e) {}
+        try { renderCategoryRadarChart(); } catch (e) {}
+        try { renderForecastVsActualChart(); } catch (e) {}
+        try { renderSpeedometerGauge(); } catch (e) {}
+    });
 }
 
 function setupLiveClock() {
@@ -354,6 +364,14 @@ function renderRevenueDemandChart(rangeDays = 14) {
     demandGrad.addColorStop(0, "rgba(52, 211, 153, 0.20)");
     demandGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.05)';
+    const tickColor = isLight ? '#475569' : '#64748b';
+    const tooltipBg = isLight ? '#ffffff' : 'rgba(9, 14, 26, 0.96)';
+    const tooltipTitle = isLight ? '#0f172a' : '#ffffff';
+    const tooltipBody = isLight ? '#334155' : '#cbd5e1';
+    const tooltipBorder = isLight ? '#cbd5e1' : '#223049';
+
     window.myRevenueDemandChart = new Chart(ctx, {
         type: "line",
         data: {
@@ -362,36 +380,36 @@ function renderRevenueDemandChart(rangeDays = 14) {
                 {
                     label: "Revenue ($)",
                     data: revData,
-                    borderColor: "#38bdf8",
+                    borderColor: isLight ? "#0284c7" : "#38bdf8",
                     borderWidth: 3,
                     fill: true,
                     backgroundColor: revGrad,
                     tension: 0.42,
-                    pointBackgroundColor: "#38bdf8",
-                    pointBorderColor: "#0b1019",
+                    pointBackgroundColor: isLight ? "#0284c7" : "#38bdf8",
+                    pointBorderColor: isLight ? "#ffffff" : "#0b1019",
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 7,
                     pointHoverBackgroundColor: "#ffffff",
-                    pointHoverBorderColor: "#38bdf8",
+                    pointHoverBorderColor: isLight ? "#0284c7" : "#38bdf8",
                     pointHoverBorderWidth: 3
                 },
                 {
                     label: "Demand (Units)",
                     data: demandData,
-                    borderColor: "#34d399",
+                    borderColor: "#10b981",
                     borderWidth: 2.5,
                     borderDash: [6, 5],
                     fill: true,
                     backgroundColor: demandGrad,
                     tension: 0.4,
-                    pointBackgroundColor: "#34d399",
-                    pointBorderColor: "#0b1019",
+                    pointBackgroundColor: "#10b981",
+                    pointBorderColor: isLight ? "#ffffff" : "#0b1019",
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 7,
                     pointHoverBackgroundColor: "#ffffff",
-                    pointHoverBorderColor: "#34d399",
+                    pointHoverBorderColor: "#10b981",
                     pointHoverBorderWidth: 3,
                     yAxisID: "y1"
                 }
@@ -404,14 +422,14 @@ function renderRevenueDemandChart(rangeDays = 14) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "rgba(9, 14, 26, 0.96)",
-                    titleColor: "#ffffff",
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
                     titleFont: { size: 13, weight: "700", family: "Plus Jakarta Sans" },
                     titleMarginBottom: 8,
-                    bodyColor: "#cbd5e1",
+                    bodyColor: tooltipBody,
                     bodyFont: { size: 12, weight: "600", family: "Plus Jakarta Sans" },
                     bodySpacing: 7,
-                    borderColor: "#223049",
+                    borderColor: tooltipBorder,
                     borderWidth: 1.5,
                     cornerRadius: 10,
                     padding: 14,
@@ -450,18 +468,18 @@ function renderRevenueDemandChart(rangeDays = 14) {
             },
             scales: {
                 x: {
-                    grid: { color: "rgba(255, 255, 255, 0.03)", drawBorder: false },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Plus Jakarta Sans" } }
+                    grid: { color: isLight ? '#f1f5f9' : 'rgba(255, 255, 255, 0.03)', drawBorder: false },
+                    ticks: { color: tickColor, font: { size: 11, family: "Plus Jakarta Sans" } }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.05)", drawBorder: false },
-                    ticks: { color: "#64748b", font: { size: 11, family: "IBM Plex Mono" } },
+                    grid: { color: gridColor, drawBorder: false },
+                    ticks: { color: tickColor, font: { size: 11, family: "IBM Plex Mono" } },
                     beginAtZero: true
                 },
                 y1: {
                     position: "right",
                     grid: { display: false },
-                    ticks: { color: "#34d399", font: { size: 11, family: "IBM Plex Mono" } },
+                    ticks: { color: isLight ? "#059669" : "#34d399", font: { size: 11, family: "IBM Plex Mono" } },
                     beginAtZero: true
                 }
             }
@@ -570,12 +588,19 @@ function renderMonthlySalesBarChart() {
     const canvas = getDom("chart-monthly-sales");
     if (!canvas) return;
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+
     const ctx = canvas.getContext("2d");
     if (window.myMonthlyBarChart) window.myMonthlyBarChart.destroy();
 
     const barGrad = ctx.createLinearGradient(0, 0, 0, 200);
-    barGrad.addColorStop(0, "#38bdf8");
-    barGrad.addColorStop(1, "#818cf8");
+    if (isLight) {
+        barGrad.addColorStop(0, "#0284c7");
+        barGrad.addColorStop(1, "#38bdf8");
+    } else {
+        barGrad.addColorStop(0, "#38bdf8");
+        barGrad.addColorStop(1, "#818cf8");
+    }
 
     const today = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -586,8 +611,16 @@ function renderMonthlySalesBarChart() {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
         labels.push(months[d.getMonth()]);
 
-        const yearMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        const monthSales = allSales.filter(s => s.date && String(s.date).slice(0, 7) === yearMonth);
+        const targetYear = d.getFullYear();
+        const targetMonth = d.getMonth();
+
+        const monthSales = allSales.filter(s => {
+            if (!s) return false;
+            const sDate = s.date ? new Date(s.date) : (s.createdAt ? new Date(s.createdAt) : null);
+            if (!sDate || isNaN(sDate.getTime())) return false;
+            return sDate.getFullYear() === targetYear && sDate.getMonth() === targetMonth;
+        });
+
         const monthRev = monthSales.reduce((sum, s) => sum + getSaleRevenue(s), 0);
         monthlyData.push(monthRev);
     }
@@ -607,10 +640,34 @@ function renderMonthlySalesBarChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isLight ? "#ffffff" : "#0d1424",
+                    titleColor: isLight ? "#0f172a" : "#ffffff",
+                    bodyColor: isLight ? "#0284c7" : "#38bdf8",
+                    borderColor: isLight ? "#cbd5e1" : "#1a273e",
+                    borderWidth: 1,
+                    callbacks: {
+                        label: (ctx) => {
+                            const val = ctx.parsed.y || 0;
+                            const fmt = typeof formatCurrency === "function" ? formatCurrency(val) : `$${val.toFixed(2)}`;
+                            return ` Revenue: ${fmt}`;
+                        }
+                    }
+                }
+            },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#64748b", font: { size: 12, weight: "600" } } },
-                y: { grid: { color: "rgba(255, 255, 255, 0.05)" }, ticks: { color: "#64748b", font: { size: 11 } } }
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 12, weight: "600" } }
+                },
+                y: {
+                    grid: { color: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.05)", drawBorder: false },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 11 } },
+                    min: 0,
+                    beginAtZero: true
+                }
             }
         }
     });
@@ -667,6 +724,8 @@ function renderCategoryRadarChart() {
     const canvas = getDom("chart-stock-value");
     if (!canvas) return;
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+
     const ctx = canvas.getContext("2d");
     if (window.myRadarChart) window.myRadarChart.destroy();
 
@@ -687,10 +746,10 @@ function renderCategoryRadarChart() {
             datasets: [{
                 label: "Category Valuation",
                 data: data.length ? data : [0, 0, 0],
-                backgroundColor: "rgba(192, 132, 252, 0.2)",
-                borderColor: "#c084fc",
+                backgroundColor: isLight ? "rgba(168, 85, 247, 0.25)" : "rgba(192, 132, 252, 0.2)",
+                borderColor: isLight ? "#9333ea" : "#c084fc",
                 borderWidth: 2,
-                pointBackgroundColor: "#c084fc",
+                pointBackgroundColor: isLight ? "#9333ea" : "#c084fc",
                 pointRadius: 4
             }]
         },
@@ -700,9 +759,9 @@ function renderCategoryRadarChart() {
             plugins: { legend: { display: false } },
             scales: {
                 r: {
-                    angleLines: { color: "rgba(255, 255, 255, 0.08)" },
-                    grid: { color: "rgba(255, 255, 255, 0.08)" },
-                    pointLabels: { color: "#cbd5e1", font: { size: 11, weight: "600" } },
+                    angleLines: { color: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)" },
+                    grid: { color: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)" },
+                    pointLabels: { color: isLight ? "#334155" : "#cbd5e1", font: { size: 11, weight: "600" } },
                     ticks: { display: false }
                 }
             }
@@ -844,6 +903,8 @@ function renderForecastVsActualChart(rangeDays = 14) {
     forecastGrad.addColorStop(0, "rgba(52, 211, 153, 0.22)");
     forecastGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+
     window.myForecastvsActualChart = new Chart(ctx, {
         type: "line",
         data: {
@@ -852,36 +913,36 @@ function renderForecastVsActualChart(rangeDays = 14) {
                 {
                     label: "Actual Sales",
                     data: actualData,
-                    borderColor: "#38bdf8",
+                    borderColor: isLight ? "#0284c7" : "#38bdf8",
                     borderWidth: 3,
                     fill: true,
                     backgroundColor: actualGrad,
                     tension: 0.42,
-                    pointBackgroundColor: "#38bdf8",
-                    pointBorderColor: "#0b1019",
+                    pointBackgroundColor: isLight ? "#0284c7" : "#38bdf8",
+                    pointBorderColor: isLight ? "#ffffff" : "#0b1019",
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 7,
                     pointHoverBackgroundColor: "#ffffff",
-                    pointHoverBorderColor: "#38bdf8",
+                    pointHoverBorderColor: isLight ? "#0284c7" : "#38bdf8",
                     pointHoverBorderWidth: 3
                 },
                 {
                     label: "Forecast (Moving Avg)",
                     data: forecastData,
-                    borderColor: "#34d399",
+                    borderColor: "#10b981",
                     borderWidth: 2.5,
                     borderDash: [6, 5],
                     fill: true,
                     backgroundColor: forecastGrad,
                     tension: 0.4,
-                    pointBackgroundColor: "#34d399",
-                    pointBorderColor: "#0b1019",
+                    pointBackgroundColor: "#10b981",
+                    pointBorderColor: isLight ? "#ffffff" : "#0b1019",
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 7,
                     pointHoverBackgroundColor: "#ffffff",
-                    pointHoverBorderColor: "#34d399",
+                    pointHoverBorderColor: "#10b981",
                     pointHoverBorderWidth: 3
                 }
             ]
@@ -893,14 +954,14 @@ function renderForecastVsActualChart(rangeDays = 14) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "rgba(9, 14, 26, 0.96)",
-                    titleColor: "#ffffff",
+                    backgroundColor: isLight ? "#ffffff" : "rgba(9, 14, 26, 0.96)",
+                    titleColor: isLight ? "#0f172a" : "#ffffff",
                     titleFont: { size: 13, weight: "700", family: "Plus Jakarta Sans" },
                     titleMarginBottom: 8,
-                    bodyColor: "#cbd5e1",
+                    bodyColor: isLight ? "#334155" : "#cbd5e1",
                     bodyFont: { size: 12, weight: "600", family: "Plus Jakarta Sans" },
                     bodySpacing: 7,
-                    borderColor: "#223049",
+                    borderColor: isLight ? "#cbd5e1" : "#223049",
                     borderWidth: 1.5,
                     cornerRadius: 10,
                     padding: 14,
@@ -935,12 +996,12 @@ function renderForecastVsActualChart(rangeDays = 14) {
             },
             scales: {
                 x: {
-                    grid: { color: "rgba(255, 255, 255, 0.03)", drawBorder: false },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Plus Jakarta Sans" } }
+                    grid: { color: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.03)", drawBorder: false },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 11, family: "Plus Jakarta Sans" } }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.05)", drawBorder: false },
-                    ticks: { color: "#64748b", font: { size: 11, family: "IBM Plex Mono" } },
+                    grid: { color: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.05)", drawBorder: false },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 11, family: "IBM Plex Mono" } },
                     beginAtZero: true
                 }
             }

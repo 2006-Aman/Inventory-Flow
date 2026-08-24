@@ -129,17 +129,8 @@ class AppSidebar extends HTMLElement {
 
     // Keep the reorder notification badge in sync with LocalStorage
     refreshBadge() {
-        const badge = this.querySelector('#sidebar-reorder-badge');
-        if (!badge) return;
-        if (typeof initializeDatabase === 'function') {
-            initializeDatabase().then(() => {
-                const count = countProductsNeedingReorder();
-                badge.textContent = count;
-                badge.style.display = count > 0 ? 'inline-block' : 'none';
-            });
-        } else {
-            badge.textContent = "0";
-            badge.style.display = "none";
+        if (typeof updateGlobalAlertBadges === 'function') {
+            updateGlobalAlertBadges();
         }
     }
 
@@ -225,8 +216,9 @@ async function updateSidebarEngineCard(container = document) {
 // SMOOTH PAGE TRANSITION INTERCEPTOR
 // ==========================================
 function setupSmoothNavigation() {
+    // Enable instant, flicker-free native navigation
     document.addEventListener("click", (e) => {
-        const link = e.target.closest("a[href]");
+        const link = e.target.closest(".sidebar-nav a");
         if (!link) return;
 
         const href = link.getAttribute("href");
@@ -234,18 +226,10 @@ function setupSmoothNavigation() {
         if (e.metaKey || e.ctrlKey || link.target === "_blank") return;
 
         const currentPath = window.location.pathname.split("/").pop() || "dashboard.html";
-        if (href === currentPath || href === `./${currentPath}`) return;
-
-        e.preventDefault();
-
-        const targetEl = document.querySelector(".content") || document.querySelector(".main-wrapper") || document.body;
-        targetEl.style.transition = "opacity 0.14s cubic-bezier(0.16, 1, 0.3, 1), transform 0.14s cubic-bezier(0.16, 1, 0.3, 1)";
-        targetEl.style.opacity = "0";
-        targetEl.style.transform = "translateY(-6px)";
-
-        setTimeout(() => {
-            window.location.href = href;
-        }, 130);
+        if (href === currentPath || href === `./${currentPath}`) {
+            e.preventDefault();
+            return;
+        }
     });
 }
 
@@ -307,15 +291,34 @@ function setupUserProfileDropdown() {
     });
 }
 
+// Global fallback theme runner in case page loaded sidebar before/without topbar
+function initSidebarTheme() {
+    if (typeof applyGlobalTheme === 'function') {
+        applyGlobalTheme(localStorage.getItem('theme') || 'dark');
+    } else {
+        const theme = localStorage.getItem('theme') || 'dark';
+        const isLight = theme === 'light';
+        document.documentElement.classList.toggle('theme-light', isLight);
+        document.body.classList.toggle('theme-light', isLight);
+        const selector = '#theme-toggle, .theme-toggle, [title*="Theme"], [title*="theme"]';
+        document.querySelectorAll(selector).forEach(btn => {
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = isLight ? 'ph ph-moon' : 'ph ph-sun';
+        });
+    }
+}
+
 // Auto-initialize for sidebars, smooth navigation, clock & profile dropdown
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        initSidebarTheme();
         updateSidebarEngineCard();
         setupSmoothNavigation();
         initGlobalClock();
         setupUserProfileDropdown();
     });
 } else {
+    initSidebarTheme();
     updateSidebarEngineCard();
     setupSmoothNavigation();
     initGlobalClock();

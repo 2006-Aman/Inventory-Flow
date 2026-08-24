@@ -472,3 +472,134 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR REPORTS PAGE
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .reports-subheader .reports-subtext {
+    color: #475569 !important;
+}
+
+/* Filter Card */
+body.theme-light .filter-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .date-input-group {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .date-input-group label {
+    color: #64748b !important;
+}
+
+body.theme-light .date-input-group input,
+body.theme-light .date-input-group input[type="date"],
+body.theme-light .date-input-group input[type="text"],
+body.theme-light .date-input-group .flatpickr-input {
+    color: #0f172a !important;
+}
+
+body.theme-light .to-text {
+    color: #64748b !important;
+}
+
+body.theme-light .pill-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .pill-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .pill-btn.active {
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25) !important;
+}
+
+/* 5 KPI Cards */
+body.theme-light .kpi-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .kpi-title {
+    color: #475569 !important;
+    font-weight: 700 !important;
+}
+
+body.theme-light .kpi-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .kpi-value.text-green {
+    color: #059669 !important;
+}
+
+body.theme-light .kpi-sub {
+    color: #64748b !important;
+}
+
+/* Panel Cards & Charts */
+body.theme-light .panel-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .panel-title {
+    color: #0f172a !important;
+}
+
+body.theme-light .tag-badge {
+    background: #e0f2fe !important;
+    border-color: #bae6fd !important;
+    color: #0284c7 !important;
+}
+
+body.theme-light .legend-item {
+    color: #334155 !important;
+}
+
+/* Tables */
+body.theme-light .report-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+body.theme-light .report-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .report-table tbody tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .prod-name-bold {
+    color: #0f172a !important;
+}
+
+body.theme-light .text-profit {
+    color: #059669 !important;
+}
+
+

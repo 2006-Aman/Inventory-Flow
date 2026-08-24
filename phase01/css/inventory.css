@@ -965,3 +965,216 @@ body {
     scrollbar-width: thin;
     scrollbar-color: #1c2840 transparent;
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR INVENTORY PAGE
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .page-header p {
+    color: #64748b !important;
+}
+
+/* 4 Summary Cards */
+body.theme-light .summary-card,
+body.theme-light .stat-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .summary-card:hover {
+    border-color: #38bdf8 !important;
+}
+
+body.theme-light .summary-label,
+body.theme-light .stat-title {
+    color: #475569 !important;
+}
+
+body.theme-light .summary-value,
+body.theme-light .stat-value {
+    color: #0f172a !important;
+}
+
+/* Inventory Toolbar & Search / Filters */
+body.theme-light .inventory-toolbar {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .search-box input {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .search-box input:focus {
+    background: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.theme-light .search-box input::placeholder {
+    color: #94a3b8 !important;
+}
+
+body.theme-light .search-box .search-icon {
+    color: #64748b !important;
+}
+
+body.theme-light .filter-group label {
+    color: #64748b !important;
+}
+
+body.theme-light .filter-group select {
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .filter-group select:focus {
+    background-color: #ffffff !important;
+    border-color: #0284c7 !important;
+}
+
+/* Table Card & Content */
+body.theme-light .inventory-table-container,
+body.theme-light .table-card,
+body.theme-light .table-wrap {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .inventory-table th,
+body.theme-light .table-wrap th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+body.theme-light .inventory-table td,
+body.theme-light .table-wrap td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .inventory-table tr:hover,
+body.theme-light .table-wrap tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .product-name {
+    color: #0f172a !important;
+}
+
+body.theme-light .product-meta {
+    color: #64748b !important;
+}
+
+/* Action Buttons */
+body.theme-light .action-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .action-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .action-btn.edit:hover {
+    background: #eff6ff !important;
+    color: #0284c7 !important;
+    border-color: #93c5fd !important;
+}
+
+body.theme-light .action-btn.reorder:hover {
+    background: #faf5ff !important;
+    color: #9333ea !important;
+    border-color: #d8b4fe !important;
+}
+
+body.theme-light .action-btn.delete:hover {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+}
+
+/* Table Card Footer & Pagination */
+body.theme-light .table-card-footer {
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .product-count-text {
+    color: #64748b !important;
+}
+
+body.theme-light .page-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .page-btn:hover:not(:disabled) {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .page-btn.active {
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+}
+
+body.theme-light .page-btn:disabled {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #cbd5e1 !important;
+}
+
+/* Modal & Forms */
+body.theme-light .modal-content,
+body.theme-light .modal {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15) !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .modal-head,
+body.theme-light .modal-header,
+body.theme-light .modal-footer {
+    border-color: #e2e8f0 !important;
+}
+
+body.theme-light .modal-head h3 {
+    color: #0f172a !important;
+}
+
+body.theme-light .modal-close {
+    color: #64748b !important;
+}
+
+body.theme-light .form-input,
+body.theme-light .form-select,
+body.theme-light .form-control {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .form-label {
+    color: #475569 !important;
+}

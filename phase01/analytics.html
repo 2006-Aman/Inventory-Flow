@@ -4,7 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>html,body{background-color:#0b0f19!important;color-scheme:dark;}</style>
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'dark';
+            if (t === 'light') {
+                document.documentElement.classList.add('theme-light');
+                document.documentElement.style.backgroundColor = '#f8fafc';
+            } else {
+                document.documentElement.classList.remove('theme-light');
+                document.documentElement.style.backgroundColor = '#0b0f19';
+            }
+        })();
+    </script>
+    <style>
+        :root { background-color: #0b0f19; }
+        :root.theme-light { background-color: #f8fafc; }
+        html, body { margin: 0; min-height: 100vh; }
+        html:not(.theme-light), body:not(.theme-light) { background-color: #0b0f19 !important; color-scheme: dark; }
+        html.theme-light, body.theme-light { background-color: #f8fafc !important; color-scheme: light; }
+    </style>
 
     <title>Inventory Analytics | Inventory Reorder System</title>
 
@@ -13,11 +31,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Phosphor Icons & Chart.js -->
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
     <!-- Global & Page CSS -->
     <link rel="stylesheet" href="./css/variables.css">
@@ -129,7 +145,7 @@
                     </div>
                     <div class="time-badge" id="liveTime">--:--:--</div>
 
-                    <button class="icon-btn" title="Toggle Theme"><i class="ph ph-sun"></i></button>
+                    <button class="icon-btn theme-toggle" id="theme-toggle" title="Toggle Theme" aria-label="Toggle Theme"><i class="ph ph-sun"></i></button>
                     <button class="icon-btn has-badge" title="Notifications">
                         <i class="ph ph-bell"></i>
                         <span class="dot-badge">0</span>

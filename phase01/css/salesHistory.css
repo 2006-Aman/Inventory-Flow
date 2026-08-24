@@ -441,4 +441,132 @@ body {
     scrollbar-color: #1c2840 transparent;
 }
 
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR SALES HISTORY
+========================================== */
+body.theme-light,
+body.theme-light .page-wrapper,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .summary-card,
+body.theme-light .filter-card,
+body.theme-light .table-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .summary-label {
+    color: #475569 !important;
+}
+
+body.theme-light .summary-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .sales-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+body.theme-light .sales-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .sales-table tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .btn-csv {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .btn-csv:hover {
+    background: #f1f5f9 !important;
+}
+
+body.theme-light .filter-group label {
+    color: #64748b !important;
+}
+
+body.theme-light .filter-group input,
+body.theme-light .filter-group select,
+body.theme-light .filter-input,
+body.theme-light .filter-select {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .filter-group input:focus,
+body.theme-light .filter-group select:focus {
+    background: #ffffff !important;
+    border-color: #0284c7 !important;
+}
+
+body.theme-light .search-icon {
+    color: #64748b !important;
+}
+
+body.theme-light .date-cell-main,
+body.theme-light .customer-cell-main {
+    color: #0f172a !important;
+}
+
+body.theme-light .date-cell-sub,
+body.theme-light .customer-cell-sub {
+    color: #64748b !important;
+}
+
+body.theme-light .customer-text,
+body.theme-light .qty-badge,
+body.theme-light .price-text,
+body.theme-light .total-text {
+    color: #0f172a !important;
+}
+
+body.theme-light .table-footer {
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .sales-count {
+    color: #64748b !important;
+}
+
+body.theme-light .page-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .page-btn:hover:not(:disabled) {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .page-btn.active {
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+}
+
+body.theme-light .page-btn:disabled {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #cbd5e1 !important;
+}
+
+
+
+
 

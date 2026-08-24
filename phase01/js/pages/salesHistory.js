@@ -291,47 +291,63 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", (e) => {
-        e.preventDefault();
+    // Remove existing listener to avoid duplicates if re-called
+    btn.onclick = (e) => {
+        if (e) e.preventDefault();
 
-        if (filteredSales.length === 0) {
+        const dataToExport = (filteredSales && filteredSales.length > 0) ? filteredSales : allSales;
+
+        if (!dataToExport || dataToExport.length === 0) {
             alert("No sales transactions to export.");
             return;
         }
 
         try {
-            const headers = ["Transaction ID", "Date", "Product Name", "Customer", "Quantity", "Selling Price", "Profit", "Total Amount"];
-            const rows = filteredSales.map(s => [
-                s.id || "",
-                s.date || "",
-                `"${(s.productName || "").replace(/"/g, '""')}"`,
-                `"${(s.customer || "").replace(/"/g, '""')}"`,
-                s.quantity || 0,
-                s.sellingPrice || 0,
-                s.profit || 0,
-                (Number(s.sellingPrice || 0) * Number(s.quantity || 0))
-            ]);
+            const headers = ["Invoice / Txn ID", "Date", "Product Name", "Customer", "Quantity", "Unit Price", "Profit", "Total Amount"];
+            const rows = dataToExport.map((s, idx) => {
+                const prod = allProducts.find(p => String(p.id) === String(s.productId));
+                const invNo = generateInvoiceNumber(s, idx);
+                const prodName = s.productName || (prod ? prod.name : "Product");
+                const custName = s.customer || "Walk-in Customer";
+                const qty = Number(s.quantity || 0);
+                const price = Number(s.sellingPrice || s.price || (prod ? prod.sellingPrice : 0) || 0);
+                const profit = Number(s.profit || (qty * (price - (Number(s.costPrice || (prod ? prod.costPrice : 0)) || 0))));
+                const total = Number(s.totalAmount || (price * qty));
 
-            const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                return [
+                    `"${String(invNo).replace(/"/g, '""')}"`,
+                    `"${String(s.date || "").replace(/"/g, '""')}"`,
+                    `"${String(prodName).replace(/"/g, '""')}"`,
+                    `"${String(custName).replace(/"/g, '""')}"`,
+                    qty,
+                    price.toFixed(2),
+                    profit.toFixed(2),
+                    total.toFixed(2)
+                ];
+            });
+
+            const csvString = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+            const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement("a");
             a.style.display = "none";
             a.href = url;
-            a.download = "Sales_Ledger_" + new Date().toISOString().slice(0, 10) + ".csv";
+            a.setAttribute("download", `Sales_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
             document.body.appendChild(a);
             a.click();
 
             setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
+                try {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { /* ignore */ }
+            }, 1000);
         } catch (err) {
             console.error("CSV Export Error:", err);
             alert("Failed to export CSV. Please try again.");
         }
-    });
+    };
 }
 
 // ==========================================

@@ -427,3 +427,91 @@
     .inv-items-table td { color: #111827 !important; border-color: #e5e7eb !important; }
     .inv-sum-row.total span:last-child { color: #0284c7 !important; }
 }
+
+/* ==========================================
+   LIGHT THEME OVERRIDES FOR INVOICES PAGE
+========================================== */
+body.theme-light,
+body.theme-light .app-layout,
+body.theme-light .main-wrapper,
+body.theme-light .content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .summary-card,
+body.theme-light .invoice-filter-card,
+body.theme-light .invoice-table-card,
+body.theme-light .card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.theme-light .summary-label {
+    color: #475569 !important;
+}
+
+body.theme-light .summary-value {
+    color: #0f172a !important;
+}
+
+body.theme-light .invoice-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+body.theme-light .invoice-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .invoice-table tr:hover {
+    background: #f8fafc !important;
+}
+
+body.theme-light .invoice-search-input,
+body.theme-light .invoice-select {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .invoice-modal-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15) !important;
+}
+
+body.theme-light .invoice-sheet {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .inv-company-name {
+    color: #0f172a !important;
+}
+
+body.theme-light .inv-party-col p {
+    color: #0f172a !important;
+}
+
+body.theme-light .inv-items-table th {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .inv-items-table td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.theme-light .inv-sum-row.total {
+    color: #0f172a !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+

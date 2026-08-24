@@ -76,6 +76,10 @@ async function loadDataAndRunEngine() {
     try { renderForecastChart(); } catch (e) { console.warn("Forecast chart error:", e); }
     try { renderTop8Products(); } catch (e) { console.warn("Forecast top products error:", e); }
     try { renderBreakdownTable(); } catch (e) { console.warn("Forecast table error:", e); }
+
+    window.addEventListener("themechange", () => {
+        try { renderForecastChart(); } catch (e) {}
+    });
 }
 
 // ==========================================
@@ -126,6 +130,8 @@ function renderKPIs() {
 function renderForecastChart() {
     const canvas = getDom("forecastChart");
     if (!canvas) return;
+
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
 
     const labels = [];
     const actualData = [];
@@ -236,7 +242,7 @@ function renderForecastChart() {
                     position: "top",
                     align: "center",
                     labels: {
-                        color: "#94a3b8",
+                        color: isLight ? "#475569" : "#94a3b8",
                         font: { size: 12, family: "Inter", weight: "600" },
                         usePointStyle: true,
                         boxWidth: 8
@@ -246,12 +252,12 @@ function renderForecastChart() {
                     enabled: true,
                     mode: "index",
                     intersect: false,
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
+                    backgroundColor: isLight ? "#ffffff" : "#0d1424",
+                    titleColor: isLight ? "#0f172a" : "#ffffff",
                     titleFont: { size: 13, weight: "700", family: "Inter" },
-                    bodyColor: "#cbd5e1",
+                    bodyColor: isLight ? "#334155" : "#cbd5e1",
                     bodyFont: { size: 12, family: "Inter" },
-                    borderColor: "#1a273e",
+                    borderColor: isLight ? "#cbd5e1" : "#1a273e",
                     borderWidth: 1.5,
                     padding: 12,
                     displayColors: true,
@@ -273,12 +279,12 @@ function renderForecastChart() {
             },
             scales: {
                 x: {
-                    grid: { color: "rgba(255, 255, 255, 0.04)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter", weight: "500" } }
+                    grid: { color: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.04)" },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 11, family: "Inter", weight: "500" } }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.04)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter", weight: "500" } },
+                    grid: { color: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.04)" },
+                    ticks: { color: isLight ? "#475569" : "#64748b", font: { size: 11, family: "Inter", weight: "500" } },
                     min: 0
                 }
             }
@@ -389,46 +395,59 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", () => {
-        if (!forecastResults.length) {
+    btn.onclick = (e) => {
+        if (e) e.preventDefault();
+
+        if (!forecastResults || !forecastResults.length) {
             alert("No forecast data available to export.");
             return;
         }
 
-        const headers = ["Product ID", "Product Name", "Avg Daily Demand", "7D Forecast", "30D Forecast", "Current Stock", "Reorder Point", "Days to Stockout", "Status"];
-        const rows = forecastResults.map(r => {
-            const prod = allProducts.find(p => String(p.id) === String(r.productId)) || {};
-            const f30 = Math.round(r.averageDailyDemand * 30);
-            let days = "90+";
-            if (r.averageDailyDemand > 0) {
-                const d = Math.floor(r.currentStock / r.averageDailyDemand);
-                days = d > 90 ? "90+" : `${d} days`;
-            }
-            return [
-                r.productId,
-                `"${(r.productName || "").replace(/"/g, '""')}"`,
-                r.averageDailyDemand,
-                Math.round(r.forecastDemand),
-                f30,
-                r.currentStock,
-                r.reorderPoint,
-                `"${days}"`,
-                `"${r.status}"`
-            ];
-        });
+        try {
+            const headers = ["Product ID", "Product Name", "Avg Daily Demand", "7D Forecast", "30D Forecast", "Current Stock", "Reorder Point", "Days to Stockout", "Status"];
+            const rows = forecastResults.map(r => {
+                const prod = allProducts.find(p => String(p.id) === String(r.productId)) || {};
+                const f30 = Math.round(r.averageDailyDemand * 30);
+                let days = "90+";
+                if (r.averageDailyDemand > 0) {
+                    const d = Math.floor(r.currentStock / r.averageDailyDemand);
+                    days = d > 90 ? "90+" : `${d} days`;
+                }
+                return [
+                    `"${String(r.productId || "").replace(/"/g, '""')}"`,
+                    `"${String(r.productName || "").replace(/"/g, '""')}"`,
+                    r.averageDailyDemand,
+                    Math.round(r.forecastDemand),
+                    f30,
+                    r.currentStock,
+                    r.reorderPoint,
+                    `"${days}"`,
+                    `"${String(r.status || "").replace(/"/g, '""')}"`
+                ];
+            });
 
-        const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
+            const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Demand_Forecast_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.setAttribute("download", `Demand_Forecast_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                try {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { /* ignore */ }
+            }, 1000);
+        } catch (err) {
+            console.error("CSV Export Error:", err);
+            alert("Failed to export forecast CSV.");
+        }
+    };
 }
 
 // ==========================================

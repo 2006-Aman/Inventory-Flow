@@ -24,6 +24,12 @@ async function initAnalyticsPage() {
         renderRevenueOrdersChart();
         renderStockHealthChart();
         renderTopCategoriesTable();
+
+        window.addEventListener("themechange", () => {
+            renderDayOfWeekChart();
+            renderRevenueOrdersChart();
+            renderStockHealthChart();
+        });
     } catch (error) {
         console.error("Analytics Page Init Error:", error);
     }
@@ -164,6 +170,14 @@ function renderDayOfWeekChart() {
     const ctx = canvas.getContext("2d");
     if (window.myDayChart) window.myDayChart.destroy();
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.05)';
+    const tickColor = isLight ? '#475569' : '#64748b';
+    const tooltipBg = isLight ? '#ffffff' : '#0d1424';
+    const tooltipTitle = isLight ? '#0f172a' : '#ffffff';
+    const tooltipBody = isLight ? '#0284c7' : '#38bdf8';
+    const tooltipBorder = isLight ? '#cbd5e1' : '#1a273e';
+
     window.myDayChart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -182,10 +196,10 @@ function renderDayOfWeekChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
-                    bodyColor: "#38bdf8",
-                    borderColor: "#1a273e",
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
+                    bodyColor: tooltipBody,
+                    borderColor: tooltipBorder,
                     borderWidth: 1,
                     callbacks: {
                         label: (ctx) => `Revenue: ₹${ctx.parsed.y.toLocaleString('en-IN')}`
@@ -195,11 +209,11 @@ function renderDayOfWeekChart() {
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: "#64748b", font: { size: 12, family: "Inter", weight: "600" } }
+                    ticks: { color: tickColor, font: { size: 12, family: "Inter", weight: "600" } }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.05)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter" } },
+                    grid: { color: gridColor },
+                    ticks: { color: tickColor, font: { size: 11, family: "Inter" } },
                     min: 0
                 }
             }
@@ -244,6 +258,13 @@ function renderRevenueOrdersChart() {
     const ctx = canvas.getContext("2d");
     if (window.myComboChart) window.myComboChart.destroy();
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.04)';
+    const tickColor = isLight ? '#475569' : '#64748b';
+    const tooltipBg = isLight ? '#ffffff' : '#0d1424';
+    const tooltipTitle = isLight ? '#0f172a' : '#ffffff';
+    const tooltipBorder = isLight ? '#cbd5e1' : '#1a273e';
+
     window.myComboChart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -253,7 +274,7 @@ function renderRevenueOrdersChart() {
                     type: "bar",
                     label: "Revenue (₹)",
                     data: monthlyRev,
-                    backgroundColor: "rgba(56, 189, 248, 0.8)",
+                    backgroundColor: isLight ? "rgba(2, 132, 199, 0.85)" : "rgba(56, 189, 248, 0.8)",
                     borderRadius: 6,
                     barThickness: 36,
                     yAxisID: "y"
@@ -262,11 +283,11 @@ function renderRevenueOrdersChart() {
                     type: "line",
                     label: "Orders",
                     data: monthlyOrders,
-                    borderColor: "#c084fc",
+                    borderColor: "#a855f7",
                     borderWidth: 3,
-                    backgroundColor: "#c084fc",
+                    backgroundColor: "#a855f7",
                     pointRadius: 5,
-                    pointBackgroundColor: "#c084fc",
+                    pointBackgroundColor: "#a855f7",
                     tension: 0.4,
                     yAxisID: "y1"
                 }
@@ -280,32 +301,32 @@ function renderRevenueOrdersChart() {
                 legend: {
                     display: true,
                     position: "top",
-                    labels: { color: "#94a3b8", font: { size: 11, family: "Inter" }, usePointStyle: true }
+                    labels: { color: tickColor, font: { size: 11, family: "Inter" }, usePointStyle: true }
                 },
                 tooltip: {
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
-                    borderColor: "#1a273e",
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
+                    borderColor: tooltipBorder,
                     borderWidth: 1
                 }
             },
             scales: {
                 x: {
-                    grid: { color: "rgba(255, 255, 255, 0.04)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter" } }
+                    grid: { color: gridColor },
+                    ticks: { color: tickColor, font: { size: 11, family: "Inter" } }
                 },
                 y: {
                     type: "linear",
                     position: "left",
-                    grid: { color: "rgba(255, 255, 255, 0.04)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter" } },
+                    grid: { color: gridColor },
+                    ticks: { color: tickColor, font: { size: 11, family: "Inter" } },
                     min: 0
                 },
                 y1: {
                     type: "linear",
                     position: "right",
                     grid: { display: false },
-                    ticks: { color: "#c084fc", font: { size: 11, family: "Inter" } },
+                    ticks: { color: "#a855f7", font: { size: 11, family: "Inter" } },
                     min: 0
                 }
             }
@@ -339,6 +360,8 @@ function renderStockHealthChart() {
     const ctx = canvas.getContext("2d");
     if (window.myDoughnutChart) window.myDoughnutChart.destroy();
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+
     window.myDoughnutChart = new Chart(ctx, {
         type: "doughnut",
         data: {
@@ -346,7 +369,8 @@ function renderStockHealthChart() {
             datasets: [{
                 data: dataValues,
                 backgroundColor: ["#34d399", "#fbbf24", "#fb923c", "#f87171"],
-                borderWidth: 0,
+                borderWidth: 2,
+                borderColor: isLight ? "#ffffff" : "#0d1424",
                 hoverOffset: 6
             }]
         },
@@ -357,9 +381,9 @@ function renderStockHealthChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
-                    borderColor: "#1a273e",
+                    backgroundColor: isLight ? "#ffffff" : "#0d1424",
+                    titleColor: isLight ? "#0f172a" : "#ffffff",
+                    borderColor: isLight ? "#cbd5e1" : "#1a273e",
                     borderWidth: 1
                 }
             }

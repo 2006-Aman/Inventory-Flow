@@ -2,6 +2,85 @@
 // Greeting + page title, search, calendar date, live clock, notification
 // bell, theme toggle and a user avatar/name dropdown.
 
+// =========================================================================
+// 1. GLOBAL THEME MANAGER (Works for both static and dynamic topbars)
+// =========================================================================
+
+function getSavedTheme() {
+    return localStorage.getItem('theme') || 'dark';
+}
+
+function syncAllThemeButtons(isLight) {
+    const selector = '#theme-toggle, .theme-toggle, [title*="Theme"], [title*="theme"], [aria-label*="Theme"], [aria-label*="theme"]';
+    document.querySelectorAll(selector).forEach(btn => {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = isLight ? 'ph ph-moon' : 'ph ph-sun';
+        }
+        btn.title = isLight ? 'Switch to Dark Theme' : 'Switch to Light Theme';
+        btn.setAttribute('aria-label', isLight ? 'Switch to Dark Theme' : 'Switch to Light Theme');
+    });
+
+    const themeSelect = document.getElementById('themeSelect') || document.getElementById('systemTheme');
+    if (themeSelect) {
+        themeSelect.value = isLight ? 'light' : 'dark';
+    }
+}
+
+function applyGlobalTheme(theme) {
+    const isLight = theme === 'light';
+    
+    // Toggle theme-light class on documentElement and body
+    if (document.documentElement) {
+        document.documentElement.classList.toggle('theme-light', isLight);
+    }
+    if (document.body) {
+        document.body.classList.toggle('theme-light', isLight);
+    }
+    
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    syncAllThemeButtons(isLight);
+
+    // Notify other components/charts
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: isLight ? 'light' : 'dark', isLight } }));
+}
+
+function toggleGlobalTheme() {
+    const currentTheme = getSavedTheme();
+    const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyGlobalTheme(nextTheme);
+    return nextTheme;
+}
+
+// Global click event delegation for theme buttons
+document.addEventListener('click', (e) => {
+    const themeBtn = e.target.closest('#theme-toggle, .theme-toggle, [title*="Theme"], [title*="theme"], [aria-label*="Theme"], [aria-label*="theme"], button:has(.ph-sun), button:has(.ph-moon)');
+    if (themeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleGlobalTheme();
+    }
+});
+
+// Immediate initial execution & on DOM ready
+(function initTheme() {
+    const theme = getSavedTheme();
+    applyGlobalTheme(theme);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => applyGlobalTheme(getSavedTheme()));
+    }
+})();
+
+// Expose globally
+window.applyGlobalTheme = applyGlobalTheme;
+window.toggleGlobalTheme = toggleGlobalTheme;
+window.getSavedTheme = getSavedTheme;
+
+
+// =========================================================================
+// 2. APP TOPBAR CUSTOM ELEMENT (For components using <app-topbar>)
+// =========================================================================
+
 const topbarHTML = `
 <header class="global-topbar">
     <div class="topbar-left">
@@ -25,7 +104,7 @@ const topbarHTML = `
 
         <div class="time-display" id="time-display">--:--:--</div>
 
-        <button class="icon-btn theme-toggle" id="theme-toggle" title="Toggle theme"><i class="ph ph-sun"></i></button>
+        <button class="icon-btn theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme"><i class="ph ph-sun"></i></button>
 
         <button class="icon-btn" id="bell-btn" title="Notifications">
             <i class="ph ph-bell"></i>
@@ -65,8 +144,7 @@ class AppTopbar extends HTMLElement {
         this.renderGreeting();
         this.renderDate();
         this.startClock();
-        this.applySavedTheme();
-        this.setupThemeToggle();
+        applyGlobalTheme(getSavedTheme());
         this.setupSearch();
         this.setupUserMenu();
         this.setupMobileNav();
@@ -106,28 +184,6 @@ class AppTopbar extends HTMLElement {
         };
         tick();
         setInterval(tick, 1000);
-    }
-
-    // Apply the saved theme (light/dark) stored in LocalStorage
-    applySavedTheme() {
-        const theme = localStorage.getItem('theme') || 'dark';
-        document.body.classList.toggle('theme-light', theme === 'light');
-        this.syncThemeIcon(theme === 'light');
-    }
-
-    setupThemeToggle() {
-        const btn = this.querySelector('#theme-toggle');
-        if (!btn) return;
-        btn.addEventListener('click', () => {
-            const isLight = document.body.classList.toggle('theme-light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            this.syncThemeIcon(isLight);
-        });
-    }
-
-    syncThemeIcon(isLight) {
-        const icon = this.querySelector('#theme-toggle i');
-        if (icon) icon.className = isLight ? 'ph ph-moon' : 'ph ph-sun';
     }
 
     // Topbar search: Enter jumps to the inventory page with the query
@@ -190,10 +246,8 @@ class AppTopbar extends HTMLElement {
     }
 
     refreshBadges() {
-        const badge = this.querySelector('#bell-badge');
-        if (badge) {
-            badge.textContent = "13";
-            badge.style.display = "flex";
+        if (typeof updateGlobalAlertBadges === 'function') {
+            updateGlobalAlertBadges();
         }
     }
 }

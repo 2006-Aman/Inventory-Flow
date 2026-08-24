@@ -25,6 +25,11 @@ async function initReportsPage() {
         setupFilterListeners();
         applyFiltersAndRender();
         setupCsvExport();
+
+        window.addEventListener("themechange", () => {
+            renderDailyRevenueChart();
+            renderCategoryRevenueChart();
+        });
     } catch (error) {
         console.error("Reports Page Init Error:", error);
     }
@@ -265,6 +270,14 @@ function renderDailyRevenueChart() {
     const ctx = canvas.getContext("2d");
     if (window.myDailyChart) window.myDailyChart.destroy();
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.06)';
+    const tickColor = isLight ? '#475569' : '#64748b';
+    const tooltipBg = isLight ? '#ffffff' : '#0d1424';
+    const tooltipTitle = isLight ? '#0f172a' : '#ffffff';
+    const tooltipBody = isLight ? '#0284c7' : '#38bdf8';
+    const tooltipBorder = isLight ? '#cbd5e1' : '#1a273e';
+
     window.myDailyChart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -272,7 +285,7 @@ function renderDailyRevenueChart() {
             datasets: [{
                 label: "Daily Revenue",
                 data: dataValues,
-                backgroundColor: "#38bdf8",
+                backgroundColor: isLight ? "#0284c7" : "#38bdf8",
                 borderRadius: 6,
                 barThickness: 16
             }]
@@ -283,10 +296,10 @@ function renderDailyRevenueChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
-                    bodyColor: "#38bdf8",
-                    borderColor: "#1a273e",
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
+                    bodyColor: tooltipBody,
+                    borderColor: tooltipBorder,
                     borderWidth: 1,
                     callbacks: {
                         label: (ctx) => `Revenue: ₹${ctx.parsed.y.toLocaleString('en-IN')}`
@@ -295,17 +308,17 @@ function renderDailyRevenueChart() {
             },
             scales: {
                 x: {
-                    grid: { display: false },
+                    grid: { display: false, drawBorder: false },
                     ticks: {
-                        color: "#64748b",
+                        color: tickColor,
                         font: { size: 10, family: "Inter" },
                         maxRotation: 45,
                         minRotation: 45
                     }
                 },
                 y: {
-                    grid: { color: "rgba(255, 255, 255, 0.05)" },
-                    ticks: { color: "#64748b", font: { size: 11, family: "Inter" } },
+                    grid: { color: gridColor, drawBorder: false },
+                    ticks: { color: tickColor, font: { size: 11, family: "Inter" } },
                     min: 0
                 }
             }
@@ -337,6 +350,11 @@ function renderCategoryRevenueChart() {
     const ctx = canvas.getContext("2d");
     if (window.myCategoryChart) window.myCategoryChart.destroy();
 
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const tooltipBg = isLight ? '#ffffff' : '#0d1424';
+    const tooltipTitle = isLight ? '#0f172a' : '#ffffff';
+    const tooltipBorder = isLight ? '#cbd5e1' : '#1a273e';
+
     window.myCategoryChart = new Chart(ctx, {
         type: "doughnut",
         data: {
@@ -344,7 +362,8 @@ function renderCategoryRevenueChart() {
             datasets: [{
                 data: dataValues,
                 backgroundColor: catColors.slice(0, labels.length),
-                borderWidth: 0,
+                borderWidth: 2,
+                borderColor: isLight ? '#ffffff' : '#0d1424',
                 hoverOffset: 6
             }]
         },
@@ -355,9 +374,9 @@ function renderCategoryRevenueChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "#0d1424",
-                    titleColor: "#ffffff",
-                    borderColor: "#1a273e",
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
+                    borderColor: tooltipBorder,
                     borderWidth: 1
                 }
             }
@@ -478,36 +497,62 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", () => {
-        if (!filteredSales.length) {
-            alert("No report data available in selected range to export.");
+    btn.onclick = (e) => {
+        if (e) e.preventDefault();
+
+        const dataToExport = (filteredSales && filteredSales.length > 0) ? filteredSales : allSales;
+
+        if (!dataToExport || dataToExport.length === 0) {
+            alert("No report data available to export.");
             return;
         }
 
-        const headers = ["Transaction ID", "Date", "Customer", "Product Name", "Quantity", "Selling Price", "Revenue", "Profit"];
-        const rows = filteredSales.map((s, idx) => [
-            s.id || `TXN-${idx + 1}`,
-            `"${s.date || ""}"`,
-            `"${(s.customer || "Walk-in Customer").replace(/"/g, '""')}"`,
-            `"${(s.productName || "Product").replace(/"/g, '""')}"`,
-            s.quantity,
-            s.sellingPrice || s.price || 0,
-            getSaleRevenue(s),
-            getSaleProfit(s)
-        ]);
+        try {
+            const headers = ["Transaction ID", "Date", "Customer", "Product Name", "Quantity", "Unit Price", "Revenue", "Profit"];
+            const rows = dataToExport.map((s, idx) => {
+                const prod = allProducts.find(p => String(p.id) === String(s.productId));
+                const txnId = s.id || `TXN-${idx + 1}`;
+                const prodName = s.productName || (prod ? prod.name : "Product");
+                const custName = s.customer || "Walk-in Customer";
+                const qty = Number(s.quantity || 0);
+                const price = Number(s.sellingPrice || s.price || (prod ? prod.sellingPrice : 0) || 0);
+                const revenue = getSaleRevenue(s);
+                const profit = getSaleProfit(s);
 
-        const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
+                return [
+                    `"${String(txnId).replace(/"/g, '""')}"`,
+                    `"${String(s.date || "").replace(/"/g, '""')}"`,
+                    `"${String(custName).replace(/"/g, '""')}"`,
+                    `"${String(prodName).replace(/"/g, '""')}"`,
+                    qty,
+                    price.toFixed(2),
+                    revenue.toFixed(2),
+                    profit.toFixed(2)
+                ];
+            });
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Business_Performance_Report_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
+            const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.setAttribute("download", `Business_Performance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                try {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { /* ignore */ }
+            }, 1000);
+        } catch (err) {
+            console.error("CSV Export Error:", err);
+            alert("Failed to export report CSV. Please try again.");
+        }
+    };
 }
 
 // ==========================================

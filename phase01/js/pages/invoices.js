@@ -347,50 +347,54 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", (e) => {
-        e.preventDefault();
+    btn.onclick = (e) => {
+        if (e) e.preventDefault();
 
-        if (filteredInvoices.length === 0) {
+        const dataToExport = (filteredInvoices && filteredInvoices.length > 0) ? filteredInvoices : allSales;
+
+        if (!dataToExport || dataToExport.length === 0) {
             alert("No invoices to export.");
             return;
         }
 
         try {
             const headers = ["Invoice #", "Date", "Customer", "Product", "Quantity", "Total Amount", "Status"];
-            const rows = filteredInvoices.map((s, i) => {
+            const rows = dataToExport.map((s, i) => {
                 const globalIndex = allSales.indexOf(s);
                 const prod = allProducts.find(p => String(p.id) === String(s.productId));
                 return [
-                    generateInvoiceNumber(s, globalIndex >= 0 ? globalIndex : i),
-                    s.date || "",
-                    `"${(s.customer || "Walk-in Customer").replace(/"/g, '""')}"`,
-                    `"${(s.productName || (prod ? prod.name : "Item")).replace(/"/g, '""')}"`,
+                    `"${String(generateInvoiceNumber(s, globalIndex >= 0 ? globalIndex : i)).replace(/"/g, '""')}"`,
+                    `"${String(s.date || "").replace(/"/g, '""')}"`,
+                    `"${String(s.customer || "Walk-in Customer").replace(/"/g, '""')}"`,
+                    `"${String(s.productName || (prod ? prod.name : "Item")).replace(/"/g, '""')}"`,
                     s.quantity || 1,
                     getSaleTotal(s).toFixed(2),
                     "PAID"
                 ];
             });
 
-            const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement("a");
             a.style.display = "none";
             a.href = url;
-            a.download = "Invoices_" + new Date().toISOString().slice(0, 10) + ".csv";
+            a.setAttribute("download", `Invoices_${new Date().toISOString().slice(0, 10)}.csv`);
             document.body.appendChild(a);
             a.click();
 
             setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
+                try {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { /* ignore */ }
+            }, 1000);
         } catch (err) {
             console.error("CSV Export Error:", err);
             alert("Failed to export CSV. Please try again.");
         }
-    });
+    };
 }
 
 

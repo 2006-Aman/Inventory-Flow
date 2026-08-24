@@ -331,47 +331,60 @@ function setupCsvExport() {
     const btn = getDom("exportCsvBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", () => {
-        if (!forecastResults.length) {
+    btn.onclick = (e) => {
+        if (e) e.preventDefault();
+
+        if (!forecastResults || !forecastResults.length) {
             alert("No reorder data available to export.");
             return;
         }
 
-        const headers = ["Product ID", "Product Name", "Current Stock", "Reorder Point", "Avg Daily Demand", "Lead Time", "Safety Stock", "Recommended Order", "Status"];
-        const rows = forecastResults.map(r => {
-            const stock = Number(r.currentStock || 0);
-            const rop = Number(r.reorderPoint || 0);
-            const safety = Number(r.safetyStock || 0);
-            let recOrder = 0;
-            if (stock <= rop) {
-                recOrder = Math.max(1, Math.round((rop + safety) - stock));
-            }
+        try {
+            const headers = ["Product ID", "Product Name", "Current Stock", "Reorder Point", "Avg Daily Demand", "Lead Time", "Safety Stock", "Recommended Order", "Status"];
+            const rows = forecastResults.map(r => {
+                const stock = Number(r.currentStock || 0);
+                const rop = Number(r.reorderPoint || 0);
+                const safety = Number(r.safetyStock || 0);
+                let recOrder = 0;
+                if (stock <= rop) {
+                    recOrder = Math.max(1, Math.round((rop + safety) - stock));
+                }
 
-            return [
-                r.productId,
-                `"${(r.productName || "").replace(/"/g, '""')}"`,
-                stock,
-                rop,
-                r.averageDailyDemand,
-                r.leadTime,
-                safety,
-                recOrder,
-                `"${r.status}"`
-            ];
-        });
+                return [
+                    `"${String(r.productId || "").replace(/"/g, '""')}"`,
+                    `"${String(r.productName || "").replace(/"/g, '""')}"`,
+                    stock,
+                    rop,
+                    r.averageDailyDemand,
+                    r.leadTime,
+                    safety,
+                    recOrder,
+                    `"${String(r.status || "").replace(/"/g, '""')}"`
+                ];
+            });
 
-        const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
+            const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Reorder_Planning_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.setAttribute("download", `Reorder_Planning_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                try {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { /* ignore */ }
+            }, 1000);
+        } catch (err) {
+            console.error("CSV Export Error:", err);
+            alert("Failed to export reorder planning CSV.");
+        }
+    };
 }
 
 // ==========================================
