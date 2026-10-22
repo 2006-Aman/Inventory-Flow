@@ -59,14 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } catch (err) {
             console.error("Error loading product for edit:", err);
-            const localProducts = getLocalProducts();
-            existingProduct = localProducts.find(p => String(p.id) === String(productId));
-            if (existingProduct) {
-                populateProductForm(existingProduct);
-                clearMessage(message);
-            } else {
-                showMessage(message, "Unable to load product details.", "error");
-            }
+            showMessage(message, "Unable to load product details from server.", "error");
         }
     }
 
@@ -90,12 +83,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const product = collectProductFormData();
             validateProduct(product);
 
-            // Check duplicate SKU
             let existingProducts = [];
             try {
                 existingProducts = await getProducts();
             } catch (e) {
-                existingProducts = getLocalProducts() || [];
+                console.warn("Could not fetch existing products:", e);
+                existingProducts = [];
             }
 
             const duplicateSKU = existingProducts.some(existing =>
@@ -122,18 +115,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 try {
                     updatedProduct = await updateProduct(productId, product);
                 } catch (e) {
-                    updatedProduct = product;
+                    throw new Error("Failed to update product on server: " + (e.message || ""));
                 }
-
-                // Update LocalStorage
-                const localProducts = getLocalProducts();
-                const index = localProducts.findIndex(p => String(p.id) === String(productId));
-                if (index !== -1) {
-                    localProducts[index] = { ...localProducts[index], ...updatedProduct };
-                } else {
-                    localProducts.push(updatedProduct);
-                }
-                saveProducts(localProducts);
 
                 showMessage(message, "Product updated successfully. Redirecting...", "success");
                 setTimeout(() => {
@@ -145,13 +128,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 try {
                     createdProduct = await createProduct(product);
                 } catch (e) {
-                    createdProduct = { ...product, id: String(Date.now()) };
+                    throw new Error("Failed to create product on server: " + (e.message || ""));
                 }
-
-                // Update LocalStorage
-                const localProducts = getLocalProducts();
-                localProducts.push(createdProduct);
-                saveProducts(localProducts);
 
                 showMessage(message, "Product added successfully. Redirecting...", "success");
                 setTimeout(() => {
@@ -376,15 +354,8 @@ function generateCategorySku(categoryName) {
         prefix = cleanCat.replace(/[^A-Z0-9]/g, "").slice(0, 4) || "PRD";
     }
 
-    let localProducts = [];
-    if (typeof getLocalProducts === "function") {
-        localProducts = getLocalProducts() || [];
-    }
-
-    const matchingCount = localProducts.filter(p => p.sku && p.sku.toUpperCase().startsWith(prefix)).length;
-    const nextNum = String(matchingCount + 1).padStart(4, "0");
-
-    return `${prefix}-${nextNum}`;
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}-${randomNum}`;
 }
 
 function generateRandomBarcode() {

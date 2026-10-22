@@ -45,8 +45,8 @@ async function loadProductsData() {
         const data = await getProducts();
         allProducts = Array.isArray(data) ? data : [];
     } catch (error) {
-        console.warn("API load products failed, using LocalStorage:", error);
-        allProducts = getLocalProducts() || [];
+        console.error("API load products failed:", error);
+        allProducts = [];
     }
     populateProductDropdown();
 }
@@ -56,8 +56,8 @@ async function loadSalesData() {
         const data = typeof getSales === "function" ? await getSales() : [];
         allSales = Array.isArray(data) ? data : [];
     } catch (error) {
-        console.warn("API load sales failed, using LocalStorage:", error);
-        allSales = getLocalSales() || [];
+        console.error("API load sales failed:", error);
+        allSales = [];
     }
 
     updateTodayPerformance();
@@ -217,65 +217,44 @@ async function handleSaveSale(e) {
         const saleDate = dateVal ? new Date(dateVal) : new Date();
 
         const saleData = {
-            productId: selectedProduct.id,
+            productId: selectedProduct.id || selectedProduct._id,
             productName: selectedProduct.name,
+            productSku: selectedProduct.sku || '',
             quantity: quantity,
             sellingPrice: sellingPrice,
             costPrice: costPrice,
             profit: profit,
             customer: customer,
-            date: formatDateTime(saleDate)
+            customerName: customer,
+            date: saleDate.toISOString()
         };
 
-        // 1. Create Sale Entry
+        // 1. Create Sale Entry (backend deducts stock atomically)
         let createdSale = null;
         try {
             if (typeof createSale === "function") {
                 createdSale = await createSale(saleData);
             }
         } catch (err) {
-            console.warn("API createSale failed, saving to LocalStorage:", err);
-            createdSale = { id: Date.now().toString(), ...saleData };
+            console.warn("API createSale failed:", err);
+            showMessage(err.message || "Sale creation failed.", "error");
+            return;
         }
 
-        // Update LocalStorage Sales
-        const localSales = getLocalSales();
-        localSales.unshift(createdSale || saleData);
-        saveSales(localSales);
-        allSales.unshift(createdSale || saleData);
-
-        // 2. Decrement Product Stock
-        const newStock = currentStock - quantity;
-        const minStock = selectedProduct.minimumStock ?? 5;
-        const reorderPt = selectedProduct.reorderPoint ?? 0;
-        const newStatus = typeof calculateStockStatus === "function" ?
-            calculateStockStatus(newStock, minStock, reorderPt) : (newStock <= minStock ? "Low Stock" : "In Stock");
-
-        const updatedProduct = {
-            ...selectedProduct,
-            stock: newStock,
-            status: newStatus,
-            updatedAt: formatDateTime(new Date())
-        };
-
-        // Update Product API & LocalStorage
+        // 2. Reload products from backend (to reflect updated stock from server)
         try {
-            await updateProduct(selectedProduct.id, updatedProduct);
-        } catch (err) {
-            console.warn("API updateProduct failed, updating LocalStorage:", err);
+            const freshProducts = await getProducts();
+            allProducts = Array.isArray(freshProducts) ? freshProducts : allProducts;
+        } catch (e) {
+            console.warn("Could not refresh products after sale:", e);
         }
 
-        const localProducts = getLocalProducts();
-        const prodIndex = localProducts.findIndex(p => String(p.id) === String(selectedProduct.id));
-        if (prodIndex !== -1) {
-            localProducts[prodIndex] = { ...localProducts[prodIndex], ...updatedProduct };
-        }
-        saveProducts(localProducts);
-
-        // Update in-memory product
-        const memIndex = allProducts.findIndex(p => String(p.id) === String(selectedProduct.id));
-        if (memIndex !== -1) {
-            allProducts[memIndex] = updatedProduct;
+        // 3. Reload sales list
+        try {
+            const freshSales = await getSales();
+            allSales = Array.isArray(freshSales) ? freshSales : allSales;
+        } catch (e) {
+            if (createdSale) allSales.unshift(createdSale);
         }
 
         // Refresh UI
@@ -355,32 +334,15 @@ function renderRecentSalesFeed() {
 }
 
 // ==========================================
-// 6. LOCAL STORAGE HELPERS & UTILITIES
+// 6. UTILITIES
 // ==========================================
-
-function getLocalSales() {
-    try {
-        const stored = localStorage.getItem("inventory_sales");
-        return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function saveSales(sales) {
-    try {
-        localStorage.setItem("inventory_sales", JSON.stringify(sales));
-    } catch (e) {
-        console.error("Save sales error:", e);
-    }
-}
 
 function setDefaultDateTime() {
     const dateInput = getDom("sale-date");
     if (!dateInput) return;
     const now = new Date();
     const pad = (n) => String(n).padStart(2, "0");
-    const localIso = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(dateInput.getMonth ? dateInput.getMonth() : (now.getMonth() + 1))}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const localIso = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     dateInput.value = localIso;
 }
 

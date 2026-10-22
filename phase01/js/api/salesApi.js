@@ -1,36 +1,20 @@
 // ==========================================
-// SALES API
+// SALES API - CONNECTED TO EXPRESS & MONGODB
 // ==========================================
-
 
 // GET ALL SALES
 async function getSales() {
     const rawSales = await apiRequest("/sales");
-    const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
-
-    if (!user || user.id === "1" || user.id === "usr_demo_01" || user.id === "usr_admin_01" || user.email === "demo@inventoryflow.com" || user.email === "admin@inventoryflow.com") {
-        return Array.isArray(rawSales) ? rawSales.filter(s => !s.userId || s.userId === "1" || s.userId === "usr_demo_01" || s.userId === "usr_admin_01" || s.userEmail === "demo@inventoryflow.com" || s.userEmail === "admin@inventoryflow.com") : [];
-    }
-
-    return Array.isArray(rawSales) ? rawSales.filter(s => s.userId === user.id || s.userEmail === user.email) : [];
+    return Array.isArray(rawSales) ? rawSales : (rawSales && rawSales.sales ? rawSales.sales : []);
 }
-
 
 // GET SINGLE SALE
-async function getSaleById(
-    saleId
-) {
-
-    return apiRequest(
-        `/sales/${saleId}`
-    );
+async function getSaleById(saleId) {
+    return apiRequest(`/sales/${saleId}`);
 }
 
-
-// CREATE SALE
-async function createSale(
-    saleData
-) {
+// CREATE SALE (Deducts stock in MongoDB and verifies Anti-Cheat stock availability)
+async function createSale(saleData) {
     const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
     if (user) {
         saleData.userId = user.id;
@@ -41,39 +25,24 @@ async function createSale(
         "/sales",
         {
             method: "POST",
-
-            body: JSON.stringify(
-                saleData
-            )
+            body: JSON.stringify(saleData)
         }
     );
 }
 
-
 // UPDATE SALE
-async function updateSale(
-    saleId,
-    saleData
-) {
-
+async function updateSale(saleId, saleData) {
     return apiRequest(
         `/sales/${saleId}`,
         {
             method: "PUT",
-
-            body: JSON.stringify(
-                saleData
-            )
+            body: JSON.stringify(saleData)
         }
     );
 }
 
-
 // DELETE SALE
-async function deleteSale(
-    saleId
-) {
-
+async function deleteSale(saleId) {
     return apiRequest(
         `/sales/${saleId}`,
         {

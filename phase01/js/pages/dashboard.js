@@ -77,24 +77,18 @@ function setupLiveClock() {
 async function loadDashboardData() {
     try {
         const prodData = typeof getProducts === "function" ? await getProducts() : [];
-        allProducts = Array.isArray(prodData) && prodData.length > 0 ? prodData : [];
+        allProducts = Array.isArray(prodData) ? prodData : [];
     } catch (e) {
+        console.error("Failed to load products:", e);
         allProducts = [];
-    }
-
-    if ((!allProducts || allProducts.length === 0) && typeof getLocalProducts === "function") {
-        allProducts = getLocalProducts() || [];
     }
 
     try {
         const salesData = typeof getSales === "function" ? await getSales() : [];
-        allSales = Array.isArray(salesData) && salesData.length > 0 ? salesData : [];
+        allSales = Array.isArray(salesData) ? salesData : [];
     } catch (e) {
+        console.error("Failed to load sales:", e);
         allSales = [];
-    }
-
-    if ((!allSales || allSales.length === 0) && typeof getLocalSales === "function") {
-        allSales = getLocalSales() || [];
     }
 }
 
@@ -364,7 +358,7 @@ function renderRevenueDemandChart(rangeDays = 14) {
     demandGrad.addColorStop(0, "rgba(52, 211, 153, 0.20)");
     demandGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
     const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.05)';
     const tickColor = isLight ? '#475569' : '#64748b';
     const tooltipBg = isLight ? '#ffffff' : 'rgba(9, 14, 26, 0.96)';
@@ -588,7 +582,7 @@ function renderMonthlySalesBarChart() {
     const canvas = getDom("chart-monthly-sales");
     if (!canvas) return;
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
 
     const ctx = canvas.getContext("2d");
     if (window.myMonthlyBarChart) window.myMonthlyBarChart.destroy();
@@ -724,7 +718,7 @@ function renderCategoryRadarChart() {
     const canvas = getDom("chart-stock-value");
     if (!canvas) return;
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
 
     const ctx = canvas.getContext("2d");
     if (window.myRadarChart) window.myRadarChart.destroy();
@@ -903,7 +897,7 @@ function renderForecastVsActualChart(rangeDays = 14) {
     forecastGrad.addColorStop(0, "rgba(52, 211, 153, 0.22)");
     forecastGrad.addColorStop(1, "rgba(52, 211, 153, 0.0)");
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
 
     window.myForecastvsActualChart = new Chart(ctx, {
         type: "line",
@@ -1102,12 +1096,8 @@ function setupRestockModalEvents() {
                         await updateProduct(prod.id, { stock: newStock });
                     }
                 } catch (e) {
-                    const localProds = getLocalProducts() || [];
-                    const idx = localProds.findIndex(p => String(p.id) === String(prod.id));
-                    if (idx !== -1) {
-                        localProds[idx].stock = newStock;
-                        saveProducts(localProds);
-                    }
+                    console.error("Failed to update product stock on server:", e);
+                    alert("Could not update stock on server: " + (e.message || "Network error"));
                 }
             }
 

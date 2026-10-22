@@ -52,7 +52,8 @@ async function loadDataAndRunEngine() {
         const prodData = await getProducts();
         allProducts = Array.isArray(prodData) ? prodData : [];
     } catch (e) {
-        allProducts = getLocalProducts() || [];
+        console.error("Failed to load products for forecast:", e);
+        allProducts = [];
     }
 
     // 2. Load Sales
@@ -60,15 +61,27 @@ async function loadDataAndRunEngine() {
         const salesData = typeof getSales === "function" ? await getSales() : [];
         allSales = Array.isArray(salesData) ? salesData : [];
     } catch (e) {
-        allSales = getLocalSales() || [];
+        console.error("Failed to load sales for forecast:", e);
+        allSales = [];
     }
 
-    // 3. Execute Forecast Engine
-    if (typeof calculateAllProductForecasts === "function") {
-        forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
-    } else {
-        console.warn("Forecast Engine not found.");
-        forecastResults = [];
+    // 3. Execute AI Demand Forecast Engine (Server-side from Express + MongoDB with fallback)
+    try {
+        const aiForecastRes = await apiRequest("/forecast?forecastDays=7");
+        if (aiForecastRes && Array.isArray(aiForecastRes.forecasts) && aiForecastRes.forecasts.length > 0) {
+            forecastResults = aiForecastRes.forecasts;
+        } else if (Array.isArray(aiForecastRes) && aiForecastRes.length > 0) {
+            forecastResults = aiForecastRes;
+        } else if (typeof calculateAllProductForecasts === "function") {
+            forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
+        }
+    } catch (aiErr) {
+        if (typeof calculateAllProductForecasts === "function") {
+            forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
+        } else {
+            console.warn("Forecast Engine not found.");
+            forecastResults = [];
+        }
     }
 
     // 4. Render All UI Sections
@@ -131,7 +144,7 @@ function renderForecastChart() {
     const canvas = getDom("forecastChart");
     if (!canvas) return;
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
 
     const labels = [];
     const actualData = [];
@@ -454,14 +467,7 @@ function setupCsvExport() {
 // HELPERS
 // ==========================================
 
-function getLocalSales() {
-    try {
-        const stored = localStorage.getItem("inventory_sales");
-        return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        return [];
-    }
-}
+
 
 function escapeHtml(value) {
     return String(value ?? "")

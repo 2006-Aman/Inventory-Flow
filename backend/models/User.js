@@ -3,6 +3,16 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
     {
+        firstName: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        lastName: {
+            type: String,
+            trim: true,
+            default: ''
+        },
         name: {
             type: String,
             trim: true,
@@ -36,8 +46,17 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-// Hash password before saving
+// Pre-save middleware to keep name and firstName/lastName in sync & hash password
 userSchema.pre('save', async function (next) {
+    // Keep name in sync
+    if (this.firstName || this.lastName) {
+        this.name = `${this.firstName || ''} ${this.lastName || ''}`.trim();
+    } else if (this.name && !this.firstName) {
+        const parts = this.name.split(' ');
+        this.firstName = parts[0] || '';
+        this.lastName = parts.slice(1).join(' ') || '';
+    }
+
     if (!this.isModified('password')) {
         return next();
     }

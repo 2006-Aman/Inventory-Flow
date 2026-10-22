@@ -1,16 +1,10 @@
 // ==========================================
-// PRODUCT API
+// PRODUCT API - CONNECTED TO EXPRESS & MONGODB
 // ==========================================
 
 async function getProducts() {
     const rawProducts = await apiRequest("/products");
-    const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
-    
-    if (!user || user.id === "1" || user.id === "usr_demo_01" || user.id === "usr_admin_01" || user.email === "demo@inventoryflow.com" || user.email === "admin@inventoryflow.com") {
-        return Array.isArray(rawProducts) ? rawProducts.filter(p => !p.userId || p.userId === "1" || p.userId === "usr_demo_01" || p.userId === "usr_admin_01" || p.userEmail === "demo@inventoryflow.com" || p.userEmail === "admin@inventoryflow.com") : [];
-    }
-
-    return Array.isArray(rawProducts) ? rawProducts.filter(p => p.userId === user.id || p.userEmail === user.email) : [];
+    return Array.isArray(rawProducts) ? rawProducts : (rawProducts && rawProducts.products ? rawProducts.products : []);
 }
 
 async function getProductById(id) {
@@ -32,7 +26,6 @@ async function createProduct(product) {
     );
 }
 
-
 async function updateProduct(id, product) {
     return apiRequest(
         `/products/${id}`,
@@ -42,7 +35,6 @@ async function updateProduct(id, product) {
         }
     );
 }
-
 
 async function deleteProduct(id) {
     return apiRequest(

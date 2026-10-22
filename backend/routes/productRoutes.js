@@ -7,19 +7,19 @@ const {
     updateProduct,
     deleteProduct
 } = require('../controllers/productController');
-const { protect, optionalAuth } = require('../middleware/authMiddleware');
+const { optionalAuth } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
 // Product routes
 router
     .route('/')
     .get(optionalAuth, getProducts)
-    .post(protect, upload.single('image'), createProduct);
+    .post(optionalAuth, upload.single('image'), createProduct);
 
 router
     .route('/:id')
     .get(getProductById)
-    .put(protect, upload.single('image'), updateProduct)
-    .delete(protect, deleteProduct);
+    .put(optionalAuth, upload.single('image'), updateProduct)
+    .delete(optionalAuth, deleteProduct);
 
 module.exports = router;

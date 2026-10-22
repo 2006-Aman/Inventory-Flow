@@ -14,11 +14,21 @@ const productSchema = new mongoose.Schema(
             trim: true,
             uppercase: true
         },
+        barcode: {
+            type: String,
+            trim: true,
+            default: ''
+        },
         currentStock: {
             type: Number,
             required: [true, 'Current stock level is required'],
             default: 0,
             min: [0, 'Current stock cannot be negative']
+        },
+        minimumStock: {
+            type: Number,
+            default: 5,
+            min: 0
         },
         leadTimeDays: {
             type: Number,
@@ -30,11 +40,20 @@ const productSchema = new mongoose.Schema(
             type: String,
             default: ''
         },
-        // Optional complementary fields matching Phase 1 & Phase 2 inventory needs
         category: {
             type: String,
             trim: true,
             default: 'General'
+        },
+        supplier: {
+            type: String,
+            trim: true,
+            default: 'Global Supplier'
+        },
+        location: {
+            type: String,
+            trim: true,
+            default: 'Warehouse A'
         },
         description: {
             type: String,
@@ -72,15 +91,39 @@ const productSchema = new mongoose.Schema(
     }
 );
 
-// Virtual field for stock status
+// Virtual field for aliases used across Phase 1 and Phase 2
+productSchema.virtual('stock')
+    .get(function () { return this.currentStock; })
+    .set(function (v) { this.currentStock = v; });
+
+productSchema.virtual('sellingPrice')
+    .get(function () { return this.price; })
+    .set(function (v) { this.price = v; });
+
+productSchema.virtual('leadTime')
+    .get(function () { return this.leadTimeDays; })
+    .set(function (v) { this.leadTimeDays = v; });
+
+// Virtual field for dynamic stock status
 productSchema.virtual('status').get(function () {
     if (this.currentStock === 0) return 'Out of Stock';
     if (this.reorderPoint > 0 && this.currentStock <= this.reorderPoint) return 'Reorder Now';
-    if (this.currentStock <= 10) return 'Low Stock';
+    if (this.currentStock <= (this.minimumStock || 10)) return 'Low Stock';
     return 'In Stock';
 });
 
-productSchema.set('toJSON', { virtuals: true });
+// Format toJSON to ensure id, stock, sellingPrice, leadTime are present
+productSchema.set('toJSON', {
+    virtuals: true,
+    transform: (doc, ret) => {
+        ret.id = ret._id ? ret._id.toString() : ret.id;
+        ret.stock = ret.currentStock;
+        ret.sellingPrice = ret.price;
+        ret.leadTime = ret.leadTimeDays;
+        return ret;
+    }
+});
+
 productSchema.set('toObject', { virtuals: true });
 
 const Product = mongoose.model('Product', productSchema);

@@ -57,13 +57,16 @@ async function checkServer() {
 // ==========================================
 
 async function loadProducts() {
-    const products = await getProducts();
-    allProducts = Array.isArray(products) ? products : [];
-
+    try {
+        const products = await getProducts();
+        allProducts = Array.isArray(products) ? products : [];
+    } catch (e) {
+        console.error("Failed to load products from API:", e);
+        allProducts = [];
+    }
     populateCategoryFilter();
     populateSupplierFilter();
     populateCategoryDatalist();
-
     renderProducts(allProducts);
     updateSummary(allProducts);
 }
@@ -458,7 +461,6 @@ function setupModalEvents() {
                 };
 
                 const result = await updateProduct(productId, fullUpdatedProduct);
-                updateLocalStorageProduct(result);
                 await loadProducts();
 
                 setElementMessage("editModalMessage", "Product updated successfully!", "success");
@@ -508,7 +510,6 @@ function setupModalEvents() {
                 };
 
                 const result = await updateProduct(productId, updatedProduct);
-                updateLocalStorageProduct(result);
                 await loadProducts();
 
                 setElementMessage("stockModalMessage", "Stock updated successfully!", "success");
@@ -540,9 +541,6 @@ async function deleteProductHandler(productId) {
         showMessage("Deleting product...", "loading");
         await deleteProduct(productId);
 
-        const localProducts = getLocalProducts().filter(p => String(p.id) !== String(productId));
-        saveProducts(localProducts);
-
         showMessage("Product deleted successfully.", "success");
         await loadProducts();
         setTimeout(hideMessage, 3000);
@@ -553,15 +551,7 @@ async function deleteProductHandler(productId) {
 }
 
 function updateLocalStorageProduct(updatedProduct) {
-    if (!updatedProduct || !updatedProduct.id) return;
-    const localProducts = getLocalProducts();
-    const index = localProducts.findIndex(p => String(p.id) === String(updatedProduct.id));
-    if (index !== -1) {
-        localProducts[index] = { ...localProducts[index], ...updatedProduct };
-    } else {
-        localProducts.push(updatedProduct);
-    }
-    saveProducts(localProducts);
+    // No-op: Data is maintained directly in MongoDB
 }
 
 function setInputValue(id, val) {

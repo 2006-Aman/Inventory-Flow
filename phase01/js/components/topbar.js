@@ -7,7 +7,7 @@
 // =========================================================================
 
 function getSavedTheme() {
-    return localStorage.getItem('theme') || 'dark';
+    return (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('theme') : null) || 'dark';
 }
 
 function syncAllThemeButtons(isLight) {
@@ -38,7 +38,10 @@ function applyGlobalTheme(theme) {
         document.body.classList.toggle('theme-light', isLight);
     }
     
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+    try { localStorage.removeItem('theme'); } catch(e) {}
     syncAllThemeButtons(isLight);
 
     // Notify other components/charts

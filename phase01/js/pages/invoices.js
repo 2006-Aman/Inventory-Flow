@@ -59,22 +59,18 @@ function setupLiveClock() {
 async function loadInvoiceData() {
     try {
         const prodData = typeof getProducts === "function" ? await getProducts() : [];
-        allProducts = Array.isArray(prodData) && prodData.length > 0 ? prodData : [];
+        allProducts = Array.isArray(prodData) ? prodData : [];
     } catch (e) {
+        console.error("Failed to load products:", e);
         allProducts = [];
-    }
-    if ((!allProducts || allProducts.length === 0) && typeof getLocalProducts === "function") {
-        allProducts = getLocalProducts() || [];
     }
 
     try {
         const salesData = typeof getSales === "function" ? await getSales() : [];
-        allSales = Array.isArray(salesData) && salesData.length > 0 ? salesData : [];
+        allSales = Array.isArray(salesData) ? salesData : [];
     } catch (e) {
+        console.error("Failed to load sales:", e);
         allSales = [];
-    }
-    if ((!allSales || allSales.length === 0) && typeof getLocalSales === "function") {
-        allSales = getLocalSales() || [];
     }
 
     // Sort sales descending by date

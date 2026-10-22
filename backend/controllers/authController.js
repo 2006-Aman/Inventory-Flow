@@ -21,7 +21,7 @@ const generateToken = (userId) => {
  */
 const register = async (req, res) => {
     try {
-        const { email, password, name, role } = req.body;
+        const { email, password, name, firstName, lastName, role } = req.body;
 
         // Validation
         if (!email || !password) {
@@ -47,9 +47,15 @@ const register = async (req, res) => {
             });
         }
 
+        const resolvedFirstName = firstName ? firstName.trim() : (name ? name.split(' ')[0] : email.split('@')[0]);
+        const resolvedLastName = lastName ? lastName.trim() : (name ? name.split(' ').slice(1).join(' ') : '');
+        const resolvedName = name ? name.trim() : `${resolvedFirstName} ${resolvedLastName}`.trim();
+
         // Create new user
         const user = await User.create({
-            name: name ? name.trim() : email.split('@')[0],
+            firstName: resolvedFirstName,
+            lastName: resolvedLastName,
+            name: resolvedName,
             email: email.toLowerCase().trim(),
             password: password,
             role: role === 'admin' ? 'admin' : 'user'
@@ -65,6 +71,8 @@ const register = async (req, res) => {
             user: {
                 id: user._id,
                 _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -129,6 +137,8 @@ const login = async (req, res) => {
             user: {
                 id: user._id,
                 _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -165,6 +175,8 @@ const getMe = async (req, res) => {
             user: {
                 id: user._id,
                 _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 name: user.name,
                 email: user.email,
                 role: user.role,

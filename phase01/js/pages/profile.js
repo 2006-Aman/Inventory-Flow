@@ -69,28 +69,17 @@ function loadProfileData() {
         }
     }
 
-    // Real Sales Count from Local Storage / API
+    // Real Sales Count from API
     if (salesCountEl) {
-        try {
-            if (typeof getSales === 'function') {
-                getSales().then(s => {
-                    if (Array.isArray(s)) {
-                        salesCountEl.textContent = s.length;
-                    } else {
-                        const localSales = getLocalSales();
-                        salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
-                    }
-                }).catch(() => {
-                    const localSales = getLocalSales();
-                    salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
-                });
-            } else {
-                const localSales = getLocalSales();
-                salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
-            }
-        } catch (e) {
-            const localSales = getLocalSales();
-            salesCountEl.textContent = Array.isArray(localSales) ? localSales.length : 0;
+        if (typeof getSales === 'function') {
+            getSales().then(s => {
+                salesCountEl.textContent = Array.isArray(s) ? s.length : 0;
+            }).catch(err => {
+                console.warn("Could not load sales count for profile:", err);
+                salesCountEl.textContent = "0";
+            });
+        } else {
+            salesCountEl.textContent = "0";
         }
     }
 

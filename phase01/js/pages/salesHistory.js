@@ -55,7 +55,8 @@ async function loadProductsData() {
         const data = await getProducts();
         allProducts = Array.isArray(data) ? data : [];
     } catch (e) {
-        allProducts = getLocalProducts() || [];
+        console.error("Failed to load products:", e);
+        allProducts = [];
     }
     populateProductFilter();
 }
@@ -65,8 +66,8 @@ async function loadSalesData() {
         const data = typeof getSales === "function" ? await getSales() : [];
         allSales = Array.isArray(data) ? data : [];
     } catch (e) {
-        console.warn("API sales load failed, fallback to LocalStorage:", e);
-        allSales = getLocalSales() || [];
+        console.error("Failed to load sales:", e);
+        allSales = [];
     }
 
     applyFilters();
@@ -348,19 +349,6 @@ function setupCsvExport() {
             alert("Failed to export CSV. Please try again.");
         }
     };
-}
-
-// ==========================================
-// HELPERS
-// ==========================================
-
-function getLocalSales() {
-    try {
-        const stored = localStorage.getItem("inventory_sales");
-        return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        return [];
-    }
 }
 
 function formatDisplayDate(dateStr) {

@@ -54,23 +54,35 @@ async function loadDataAndRunEngine() {
         const prodData = await getProducts();
         allProducts = Array.isArray(prodData) ? prodData : [];
     } catch (e) {
-        allProducts = getLocalProducts() || [];
+        console.error("Failed to load products:", e);
+        allProducts = [];
     }
 
-    // 2. Fetch Sales
     try {
         const salesData = typeof getSales === "function" ? await getSales() : [];
         allSales = Array.isArray(salesData) ? salesData : [];
     } catch (e) {
-        allSales = getLocalSales() || [];
+        console.error("Failed to load sales:", e);
+        allSales = [];
     }
 
-    // 3. Execute Forecast Engine
-    if (typeof calculateAllProductForecasts === "function") {
-        forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
-    } else {
-        console.warn("Forecast Engine not loaded.");
-        forecastResults = [];
+    // 3. Execute AI Demand Forecast Engine (Server-side from Express + MongoDB with fallback)
+    try {
+        const aiForecastRes = await apiRequest("/forecast?forecastDays=7");
+        if (aiForecastRes && Array.isArray(aiForecastRes.forecasts) && aiForecastRes.forecasts.length > 0) {
+            forecastResults = aiForecastRes.forecasts;
+        } else if (Array.isArray(aiForecastRes) && aiForecastRes.length > 0) {
+            forecastResults = aiForecastRes;
+        } else if (typeof calculateAllProductForecasts === "function") {
+            forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
+        }
+    } catch (aiErr) {
+        if (typeof calculateAllProductForecasts === "function") {
+            forecastResults = calculateAllProductForecasts(allProducts, allSales, 7);
+        } else {
+            console.warn("Forecast Engine not loaded.");
+            forecastResults = [];
+        }
     }
 
     // 4. Render UI
@@ -287,25 +299,17 @@ async function handleSaveStockUpdate() {
     try {
         if (saveBtn) saveBtn.disabled = true;
 
-        // 1. Update JSON Server
+        // Update via API
+        await updateProduct(activeRestockProduct.id, updatedProduct);
+
+        // Refresh products from API
         try {
-            await updateProduct(activeRestockProduct.id, updatedProduct);
-        } catch (err) {
-            console.warn("API updateProduct failed, updating LocalStorage:", err);
-        }
-
-        // 2. Update LocalStorage
-        const localProducts = getLocalProducts();
-        const index = localProducts.findIndex(p => String(p.id) === String(activeRestockProduct.id));
-        if (index !== -1) {
-            localProducts[index] = { ...localProducts[index], ...updatedProduct };
-        }
-        saveProducts(localProducts);
-
-        // 3. Update in-memory product
-        const memIndex = allProducts.findIndex(p => String(p.id) === String(activeRestockProduct.id));
-        if (memIndex !== -1) {
-            allProducts[memIndex] = updatedProduct;
+            const fresh = await getProducts();
+            allProducts = Array.isArray(fresh) ? fresh : allProducts;
+        } catch (e) {
+            // Update in-memory if API refresh fails
+            const memIndex = allProducts.findIndex(p => String(p.id) === String(activeRestockProduct.id));
+            if (memIndex !== -1) allProducts[memIndex] = updatedProduct;
         }
 
         closeStockModal();

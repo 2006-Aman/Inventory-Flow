@@ -52,20 +52,20 @@ async function checkServerStatus() {
 }
 
 async function loadData() {
-    // 1. Load Products
     try {
         const prodData = await getProducts();
         allProducts = Array.isArray(prodData) ? prodData : [];
     } catch (e) {
-        allProducts = getLocalProducts() || [];
+        console.error("Failed to load products:", e);
+        allProducts = [];
     }
 
-    // 2. Load Sales
     try {
         const salesData = typeof getSales === "function" ? await getSales() : [];
         allSales = Array.isArray(salesData) ? salesData : [];
     } catch (e) {
-        allSales = getLocalSales() || [];
+        console.error("Failed to load sales:", e);
+        allSales = [];
     }
 }
 
@@ -170,7 +170,7 @@ function renderDayOfWeekChart() {
     const ctx = canvas.getContext("2d");
     if (window.myDayChart) window.myDayChart.destroy();
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
     const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.05)';
     const tickColor = isLight ? '#475569' : '#64748b';
     const tooltipBg = isLight ? '#ffffff' : '#0d1424';
@@ -258,7 +258,7 @@ function renderRevenueOrdersChart() {
     const ctx = canvas.getContext("2d");
     if (window.myComboChart) window.myComboChart.destroy();
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
     const gridColor = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.04)';
     const tickColor = isLight ? '#475569' : '#64748b';
     const tooltipBg = isLight ? '#ffffff' : '#0d1424';
@@ -360,7 +360,7 @@ function renderStockHealthChart() {
     const ctx = canvas.getContext("2d");
     if (window.myDoughnutChart) window.myDoughnutChart.destroy();
 
-    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+    const isLight = document.documentElement.classList.contains('theme-light') || document.body.classList.contains('theme-light') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme') === 'light');
 
     window.myDoughnutChart = new Chart(ctx, {
         type: "doughnut",

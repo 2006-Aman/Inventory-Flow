@@ -21,7 +21,7 @@ const EXCHANGE_RATES_FROM_INR = {
 
 function getSystemSettings() {
     try {
-        const stored = localStorage.getItem("system_settings");
+        const stored = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("system_settings") : null;
         return stored ? { ...DEFAULT_SYSTEM_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SYSTEM_SETTINGS;
     } catch (e) {
         return DEFAULT_SYSTEM_SETTINGS;

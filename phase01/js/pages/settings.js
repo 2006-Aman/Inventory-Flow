@@ -83,7 +83,7 @@ function setupTabSwitching() {
 
 function getSavedSettings() {
     try {
-        const stored = localStorage.getItem("system_settings");
+        const stored = typeof sessionStorage !== "undefined" ? sessionStorage.getItem("system_settings") : null;
         return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
     } catch (e) {
         return DEFAULT_SETTINGS;
@@ -92,7 +92,7 @@ function getSavedSettings() {
 
 function loadSettingsValues() {
     const config = getSavedSettings();
-    const currentTheme = localStorage.getItem('theme') || config.theme || 'dark';
+    const currentTheme = (typeof sessionStorage !== "undefined" ? sessionStorage.getItem('theme') : null) || config.theme || 'dark';
 
     if (getDom("defaultLeadTime")) getDom("defaultLeadTime").value = config.defaultLeadTime;
     if (getDom("safetyStockBuffer")) getDom("safetyStockBuffer").value = config.safetyStockBuffer;
@@ -123,7 +123,7 @@ function setupFormEventHandlers() {
             if (typeof applyGlobalTheme === "function") {
                 applyGlobalTheme(selectedTheme);
             } else {
-                localStorage.setItem('theme', selectedTheme);
+                if (typeof sessionStorage !== "undefined") sessionStorage.setItem('theme', selectedTheme);
                 document.body.classList.toggle('theme-light', selectedTheme === 'light');
                 document.documentElement.classList.toggle('theme-light', selectedTheme === 'light');
             }
@@ -136,7 +136,7 @@ function saveSettingsValues() {
     const storeNameVal = getDom("storeName") ? getDom("storeName").value.trim() : existing.storeName;
     const currencyVal = getDom("currencySymbol") ? getDom("currencySymbol").value : existing.currencySymbol;
     const taxRateVal = getDom("taxRate") ? Number(getDom("taxRate").value) : existing.taxRate;
-    const themeVal = getDom("themeSelect") ? getDom("themeSelect").value : (localStorage.getItem('theme') || 'dark');
+    const themeVal = getDom("themeSelect") ? getDom("themeSelect").value : ((typeof sessionStorage !== "undefined" ? sessionStorage.getItem('theme') : null) || 'dark');
 
     const updated = {
         ...existing,
@@ -155,8 +155,11 @@ function saveSettingsValues() {
     if (getDom("emailAlertToggle")) updated.emailAlertToggle = Boolean(getDom("emailAlertToggle").checked);
     if (getDom("minMarginAlert")) updated.minMarginAlert = Number(getDom("minMarginAlert").value);
 
-    localStorage.setItem("system_settings", JSON.stringify(updated));
-    localStorage.setItem("theme", themeVal);
+    if (typeof sessionStorage !== "undefined") {
+        sessionStorage.setItem("system_settings", JSON.stringify(updated));
+        sessionStorage.setItem("theme", themeVal);
+    }
+    try { localStorage.clear(); } catch(e) {}
     if (typeof applyGlobalTheme === "function") {
         applyGlobalTheme(themeVal);
     }
@@ -167,8 +170,8 @@ function saveSettingsValues() {
         currentUser.organization = updated.storeName;
         if (typeof saveCurrentUser === "function") {
             saveCurrentUser(currentUser);
-        } else {
-            localStorage.setItem("inventory_current_user", JSON.stringify(currentUser));
+        } else if (typeof sessionStorage !== "undefined") {
+            sessionStorage.setItem("inventory_current_user", JSON.stringify(currentUser));
         }
     }
 
@@ -192,8 +195,8 @@ function setupDataBackupHandlers() {
                 let prods = [];
                 let sales = [];
 
-                try { prods = await getProducts(); } catch (e) { prods = getLocalProducts() || []; }
-                try { sales = await getSales(); } catch (e) { sales = getLocalSales() || []; }
+                try { prods = await getProducts(); } catch (e) { prods = []; }
+                try { sales = await getSales(); } catch (e) { sales = []; }
 
                 const backupData = {
                     version: "1.0",
@@ -231,15 +234,10 @@ function setupDataBackupHandlers() {
             reader.onload = (evt) => {
                 try {
                     const parsed = JSON.parse(evt.target.result);
-                    if (parsed.products && Array.isArray(parsed.products)) {
-                        localStorage.setItem("local_products", JSON.stringify(parsed.products));
+                    if (parsed.settings && typeof sessionStorage !== "undefined") {
+                        sessionStorage.setItem("system_settings", JSON.stringify(parsed.settings));
                     }
-                    if (parsed.sales && Array.isArray(parsed.sales)) {
-                        localStorage.setItem("local_sales", JSON.stringify(parsed.sales));
-                    }
-                    if (parsed.settings) {
-                        localStorage.setItem("system_settings", JSON.stringify(parsed.settings));
-                    }
+                    try { localStorage.clear(); } catch(e) {}
                     showToast("📤 Backup Restored Successfully! Reloading...");
                     setTimeout(() => window.location.reload(), 1200);
                 } catch (jsonErr) {
@@ -254,9 +252,8 @@ function setupDataBackupHandlers() {
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
             if (confirm("Are you sure you want to clear system cache & reload default data?")) {
-                localStorage.removeItem("local_products");
-                localStorage.removeItem("local_sales");
-                localStorage.removeItem("system_settings");
+                if (typeof sessionStorage !== "undefined") sessionStorage.clear();
+                try { localStorage.clear(); } catch(e) {}
                 showToast("♻️ Cache Cleared! Reloading page...");
                 setTimeout(() => window.location.reload(), 1000);
             }

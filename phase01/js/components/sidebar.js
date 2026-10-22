@@ -160,9 +160,6 @@ async function updateSidebarEngineCard(container = document) {
                 products = [];
             }
         }
-        if (!products.length && typeof getLocalProducts === 'function') {
-            products = getLocalProducts() || [];
-        }
 
         if (products.length > 0) {
             const inStockCount = products.filter(p => {
@@ -267,7 +264,11 @@ function setupUserProfileDropdown() {
             if (typeof logoutUser === "function") {
                 logoutUser();
             } else {
-                localStorage.removeItem("inventory_current_user");
+                if (typeof sessionStorage !== "undefined") {
+                    sessionStorage.removeItem("inventory_current_user");
+                    sessionStorage.removeItem("inventoryiq_token");
+                }
+                try { localStorage.clear(); } catch(e) {}
                 window.location.href = "login.html";
             }
             return;
@@ -293,10 +294,11 @@ function setupUserProfileDropdown() {
 
 // Global fallback theme runner in case page loaded sidebar before/without topbar
 function initSidebarTheme() {
+    const savedTheme = (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('theme') : null) || 'dark';
     if (typeof applyGlobalTheme === 'function') {
-        applyGlobalTheme(localStorage.getItem('theme') || 'dark');
+        applyGlobalTheme(savedTheme);
     } else {
-        const theme = localStorage.getItem('theme') || 'dark';
+        const theme = savedTheme;
         const isLight = theme === 'light';
         document.documentElement.classList.toggle('theme-light', isLight);
         document.body.classList.toggle('theme-light', isLight);
