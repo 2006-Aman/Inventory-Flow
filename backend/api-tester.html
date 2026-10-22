@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 2 API Tester & LocalStorage Sync | InventoryIQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #121826;
+            --card-bg: rgba(26, 34, 53, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-primary { background: rgba(79, 70, 229, 0.2); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4); }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .token-display {
+            background: #050811;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin-top: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            max-height: 90px;
+            overflow-y: auto;
+        }
+
+        .console-output {
+            background: #050811;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            min-height: 250px;
+            max-height: 450px;
+            overflow-y: auto;
+            color: #38bdf8;
+            white-space: pre-wrap;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .product-img {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>📦 Phase 2 Backend API & LocalStorage Bridge</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 4px;">
+                    Express + MongoDB + JWT Auth + Multer Image Upload Tester
+                </p>
+            </div>
+            <div>
+                <span class="badge badge-primary">Phase 2 Active</span>
+                <span id="serverStatus" class="badge badge-success" style="margin-left: 8px;">Checking Server...</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- 1. AUTH CARD -->
+            <div class="card">
+                <h2>🔐 User Authentication</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="authEmail" value="demo@inventoryflow.com" placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="authPassword" value="admin123" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>User Name (for Register)</label>
+                    <input type="text" id="authName" value="Aman Sharma" placeholder="Full Name">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn" onclick="handleLogin()">Login (JWT)</button>
+                    <button class="btn btn-secondary" onclick="handleRegister()">Register</button>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn btn-secondary" onclick="handleGetMe()">Verify Token (GET /me)</button>
+                    <button class="btn btn-danger" onclick="handleLogout()">Clear Token</button>
+                </div>
+                <div style="margin-top: 14px;">
+                    <label>Stored LocalStorage Token:</label>
+                    <div id="tokenBox" class="token-display">No token found in localStorage</div>
+                </div>
+            </div>
+
+            <!-- 2. CREATE PRODUCT WITH MULTER CARD -->
+            <div class="card">
+                <h2>📸 Create Product (Multer Image Upload)</h2>
+                <form id="productForm" onsubmit="handleCreateProduct(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" id="prodName" required placeholder="Mechanical Keyboard" value="Pro Wireless Mouse">
+                        </div>
+                        <div class="form-group">
+                            <label>SKU (Unique) *</label>
+                            <input type="text" id="prodSku" required placeholder="KB-001" value="MOU-101">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Current Stock *</label>
+                            <input type="number" id="prodStock" required min="0" value="75">
+                        </div>
+                        <div class="form-group">
+                            <label>Lead Time (Days) *</label>
+                            <input type="number" id="prodLeadTime" required min="1" value="6">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" id="prodCategory" value="Electronics">
+                        </div>
+                        <div class="form-group">
+                            <label>Selling Price ($)</label>
+                            <input type="number" id="prodPrice" step="0.01" value="49.99">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Image File (Multer Upload)</label>
+                        <input type="file" id="prodImageFile" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 10px;">🚀 Upload & Save to MongoDB</button>
+                </form>
+            </div>
+
+            <!-- 3. LOCALSTORAGE & MONGODB SYNC -->
+            <div class="card">
+                <h2>🔄 LocalStorage ⇄ MongoDB Sync</h2>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">
+                    Bridge Phase 1 LocalStorage data with Phase 2 MongoDB database.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="fetchAndSyncToLocalStorage()">
+                        📥 Pull Products from MongoDB → Save to LocalStorage
+                    </button>
+                    <button class="btn btn-secondary" onclick="pushLocalStorageToMongoDB()">
+                        📤 Push LocalStorage Products → MongoDB
+                    </button>
+                    <button class="btn" onclick="handleGetProducts()">
+                        📋 View All MongoDB Products
+                    </button>
+                </div>
+                <div style="margin-top: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                    <div>LocalStorage Products Count: <strong id="localCount" style="color: #38bdf8;">0</strong></div>
+                    <div>MongoDB Products Count: <strong id="mongoCount" style="color: #34d399;">0</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS TABLE PREVIEW -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>📦 Products in MongoDB Database</h2>
+            <div class="table-wrap">
+                <table id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>SKU</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Stock</th>
+                            <th>Lead Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr><td colspan="8" style="text-align: center; color: var(--text-secondary);">Click "View All MongoDB Products" or add a new product</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- JSON CONSOLE OUTPUT -->
+        <div class="card">
+            <h2>💻 API Response Console</h2>
+            <div id="consoleOutput" class="console-output">// API responses will appear here in real-time...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
+        const TOKEN_KEY = 'inventory_jwt_token';
+        const USER_KEY = 'inventory_current_user';
+
+        // Check Server Health on Load
+        async function checkServer() {
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                const data = await res.json();
+                if (data.status === 'UP') {
+                    document.getElementById('serverStatus').textContent = '● Backend Connected';
+                    document.getElementById('serverStatus').className = 'badge badge-success';
+                }
+            } catch (err) {
+                document.getElementById('serverStatus').textContent = '● Server Offline';
+                document.getElementById('serverStatus').className = 'badge badge-primary';
+                document.getElementById('serverStatus').style.background = 'rgba(239, 68, 68, 0.2)';
+                document.getElementById('serverStatus').style.color = '#f87171';
+            }
+            updateTokenUI();
+            updateLocalStorageCount();
+            handleGetProducts();
+        }
+
+        function logConsole(title, data) {
+            const out = document.getElementById('consoleOutput');
+            out.textContent = `[${new Date().toLocaleTimeString()}] ${title}\n` + JSON.stringify(data, null, 2);
+        }
+
+        function updateTokenUI() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const box = document.getElementById('tokenBox');
+            if (token) {
+                box.textContent = token;
+                box.style.color = '#34d399';
+            } else {
+                box.textContent = 'No token found in localStorage';
+                box.style.color = '#94a3b8';
+            }
+        }
+
+        function updateLocalStorageCount() {
+            try {
+                const items = JSON.parse(localStorage.getItem('inventory_products') || '[]');
+                document.getElementById('localCount').textContent = items.length;
+            } catch(e) {}
+        }
+
+        // 1. REGISTER
+        async function handleRegister() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, name })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    localStorage.setItem(TOKEN_KEY, data.token);
+                    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+                    updateTokenUI();
+                }
+                logConsole('Register Response', data);
+            } catch (err) {
+                logConsole('Register Error', { error: err.message });
+            }
+        }
+
+        // 2. LOGIN
+        async function handleLogin() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    localStorage.setItem(TOKEN_KEY, data.token);
+                    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+                    updateTokenUI();
+                }
+                logConsole('Login Response', data);
+            } catch (err) {
+                logConsole('Login Error', { error: err.message });
+            }
+        }
+
+        // 3. GET ME (Verify Protected Route)
+        async function handleGetMe() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) {
+                alert('No token in localStorage. Please login or register first!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                logConsole('GET /api/auth/me Response', data);
+            } catch (err) {
+                logConsole('GET /me Error', { error: err.message });
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+            updateTokenUI();
+            logConsole('Logout', { message: 'Token removed from localStorage' });
+        }
+
+        // 4. CREATE PRODUCT (WITH MULTER IMAGE UPLOAD)
+        async function handleCreateProduct(e) {
+            e.preventDefault();
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) {
+                alert('Please Login/Register first! JWT token is required to create a product.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('prodName').value);
+            formData.append('sku', document.getElementById('prodSku').value);
+            formData.append('currentStock', document.getElementById('prodStock').value);
+            formData.append('leadTimeDays', document.getElementById('prodLeadTime').value);
+            formData.append('category', document.getElementById('prodCategory').value);
+            formData.append('price', document.getElementById('prodPrice').value);
+
+            const fileInput = document.getElementById('prodImageFile');
+            if (fileInput.files.length > 0) {
+                formData.append('image', fileInput.files[0]);
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/products`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                logConsole('Create Product (Multer) Response', data);
+
+                if (data.success) {
+                    alert('Product created successfully with image!');
+                    document.getElementById('prodSku').value = 'MOU-' + Math.floor(100 + Math.random() * 900);
+                    handleGetProducts();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (err) {
+                logConsole('Create Product Error', { error: err.message });
+            }
+        }
+
+        // 5. GET ALL PRODUCTS & RENDER TABLE
+        async function handleGetProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/api/products`);
+                const data = await res.json();
+                logConsole('GET /api/products Response', data);
+
+                if (data.products) {
+                    document.getElementById('mongoCount').textContent = data.products.length;
+                    renderProductsTable(data.products);
+                }
+            } catch (err) {
+                logConsole('Get Products Error', { error: err.message });
+            }
+        }
+
+        function renderProductsTable(products) {
+            const tbody = document.getElementById('productsTableBody');
+            if (!products || products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-secondary);">No products in MongoDB yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>
+                        ${p.imageUrl ? `<img src="${p.imageUrl.startsWith('http') ? p.imageUrl : API_BASE + p.imageUrl}" class="product-img" onerror="this.src='https://placehold.co/44?text=📦'"/>` : '📦'}
+                    </td>
+                    <td><strong>${p.sku}</strong></td>
+                    <td>${p.name}</td>
+                    <td>${p.category || 'General'}</td>
+                    <td>${p.currentStock}</td>
+                    <td>${p.leadTimeDays} days</td>
+                    <td><span class="badge ${p.currentStock <= 10 ? 'badge-primary' : 'badge-success'}">${p.status || 'Active'}</span></td>
+                    <td>
+                        <button style="padding: 4px 8px; font-size: 0.75rem;" class="btn btn-danger" onclick="handleDeleteProduct('${p._id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 6. DELETE PRODUCT
+        async function handleDeleteProduct(id) {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) {
+                alert('Please Login/Register first! JWT token is required to delete products.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this product?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/products/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                logConsole('Delete Product Response', data);
+                handleGetProducts();
+            } catch (err) {
+                logConsole('Delete Product Error', { error: err.message });
+            }
+        }
+
+        // 7. PULL MONGO -> LOCALSTORAGE
+        async function fetchAndSyncToLocalStorage() {
+            try {
+                const res = await fetch(`${API_BASE}/api/products`);
+                const data = await res.json();
+                if (data.products) {
+                    localStorage.setItem('inventory_products', JSON.stringify(data.products));
+                    updateLocalStorageCount();
+                    alert(`✅ Successfully synced ${data.products.length} products to LocalStorage key: "inventory_products"`);
+                    logConsole('Synced to LocalStorage', { count: data.products.length, key: 'inventory_products' });
+                }
+            } catch (err) {
+                logConsole('Sync Error', { error: err.message });
+            }
+        }
+
+        // 8. PUSH LOCALSTORAGE -> MONGO
+        async function pushLocalStorageToMongoDB() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) {
+                alert('Please Login/Register first to get JWT token before pushing to MongoDB!');
+                return;
+            }
+
+            const raw = localStorage.getItem('inventory_products');
+            if (!raw) {
+                alert('No "inventory_products" found in LocalStorage.');
+                return;
+            }
+
+            const products = JSON.parse(raw);
+            let added = 0;
+
+            for (const item of products) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/products`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            name: item.name,
+                            sku: item.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
+                            currentStock: item.stock !== undefined ? item.stock : (item.currentStock || 0),
+                            leadTimeDays: item.leadTime || (item.leadTimeDays || 7),
+                            category: item.category || 'General',
+                            price: item.sellingPrice || item.price || 0,
+                            imageUrl: item.imageUrl || ''
+                        })
+                    });
+                    if (res.ok) added++;
+                } catch(e) {}
+            }
+
+            alert(`✅ Pushed ${added} / ${products.length} products to MongoDB!`);
+            handleGetProducts();
+        }
+
+        // Initialize on page load
+        window.onload = checkServer;
+    </script>
+</body>
+</html>
