@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 /**
  * Helper to remove old uploaded image from disk
@@ -103,6 +104,24 @@ const createProduct = async (req, res) => {
             reorderPoint: reorderPoint !== undefined ? Number(reorderPoint) : 0,
             createdBy: req.user ? req.user._id : null
         });
+
+        // Automatically sync new category to categories collection if not present
+        if (category && category.trim()) {
+            try {
+                await Category.findOneAndUpdate(
+                    { name: category.trim() },
+                    { 
+                        name: category.trim(), 
+                        description: `${category.trim()} items and supplies`,
+                        status: 'Active'
+                    },
+                    { upsert: true }
+                );
+            } catch (catErr) {
+                // Non-blocking category creation warning
+                console.warn('Category auto-sync notice:', catErr.message);
+            }
+        }
 
         // If called from Phase 1 without /api prefix, return the object directly
         if (!req.originalUrl.startsWith('/api')) {
