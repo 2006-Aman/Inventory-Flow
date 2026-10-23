@@ -183,8 +183,9 @@ function updateGlobalUserUI(userObj) {
 // ==========================================
 
 function checkAuthGuard() {
-    const currentPath = window.location.pathname.split("/").pop() || "index.html";
-    const isPublicPage = ["login.html", "signup.html", "index.html", ""].includes(currentPath);
+    const rawPath = window.location.pathname.split("/").pop() || "index.html";
+    const currentPath = rawPath.replace(/\.html$/, "").toLowerCase();
+    const isPublicPage = ["login", "signup", "index", ""].includes(currentPath);
     const user = getCurrentUser();
 
     if (!user && !isPublicPage) {
@@ -192,7 +193,7 @@ function checkAuthGuard() {
         return false;
     }
 
-    const isAuthForm = currentPath === "login.html" || currentPath === "signup.html";
+    const isAuthForm = currentPath === "login" || currentPath === "signup";
     if (user && isAuthForm) {
         window.location.href = "dashboard.html";
         return false;
