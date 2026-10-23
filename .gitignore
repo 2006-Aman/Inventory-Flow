@@ -1,0 +1,42 @@
+# Dependency directories
+node_modules/
+*/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Uploads and User Media (keep directory structure)
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/products/
+!backend/uploads/products/.gitkeep
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary & Test Artefacts
+scratch/
+coverage/
+.nyc_output/

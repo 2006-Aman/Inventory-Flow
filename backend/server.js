@@ -28,7 +28,7 @@ const seedInitialData = async () => {
         // 1. Seed Demo Admin & User
         let demoUser = await User.findOne({ email: 'demo@inventoryflow.com' });
         if (!demoUser) {
-            await User.create({
+            demoUser = await User.create({
                 firstName: 'Aman',
                 lastName: 'Sharma',
                 name: 'Aman Sharma',
@@ -40,7 +40,7 @@ const seedInitialData = async () => {
 
         let adminUser = await User.findOne({ email: 'admin@inventoryflow.com' });
         if (!adminUser) {
-            await User.create({
+            adminUser = await User.create({
                 firstName: 'Admin',
                 lastName: 'User',
                 name: 'Admin User',
@@ -249,14 +249,17 @@ app.get('/api', (req, res) => {
     });
 });
 
-// Serve Phase 1 Web Application Directly
-const phase01Path = path.join(__dirname, '..', 'phase01');
-if (fs.existsSync(phase01Path)) {
-    app.use(express.static(phase01Path));
+// Serve Frontend Web Application Directly
+const frontendPath = fs.existsSync(path.join(__dirname, '..', 'frontend'))
+    ? path.join(__dirname, '..', 'frontend')
+    : path.join(__dirname, '..', 'phase01');
+
+if (fs.existsSync(frontendPath)) {
+    app.use(express.static(frontendPath));
 
     // Redirect root to dashboard.html if index.html is requested or root
     app.get('/', (req, res) => {
-        res.sendFile(path.join(phase01Path, 'dashboard.html'));
+        res.sendFile(path.join(frontendPath, 'dashboard.html'));
     });
 }
 
@@ -269,7 +272,11 @@ app.use((req, res, next) => {
         });
     }
     // Fallback to dashboard for client side navigation
-    res.sendFile(path.join(phase01Path, 'dashboard.html'));
+    if (fs.existsSync(frontendPath)) {
+        res.sendFile(path.join(frontendPath, 'dashboard.html'));
+    } else {
+        res.status(404).send('Frontend not found');
+    }
 });
 
 // Central Error Handler Middleware
