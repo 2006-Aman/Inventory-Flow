@@ -40,15 +40,19 @@ function logoutUser() {
 }
 
 // ==========================================
-// BACKEND AUTHENTICATION (MongoDB Atlas)
+// BACKEND AUTHENTICATION (Render Production / Localhost Fallback)
 // ==========================================
+
+const AUTH_BACKEND_URL = (typeof window !== "undefined" && window.location.origin.includes("5000"))
+    ? ""
+    : "https://inventory-backend-y8nj.onrender.com";
 
 async function authenticateUser(email, password) {
     const cleanEmail = (email || "").toLowerCase().trim();
     const cleanPass = password || "";
 
     try {
-        const authRes = await fetch("http://localhost:5000/api/auth/login", {
+        const authRes = await fetch(`${AUTH_BACKEND_URL}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: cleanEmail, password: cleanPass })
@@ -81,7 +85,7 @@ async function authenticateUser(email, password) {
 
 async function registerNewUser(newUserObj) {
     try {
-        const authRes = await fetch("http://localhost:5000/api/auth/register", {
+        const authRes = await fetch(`${AUTH_BACKEND_URL}/api/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -129,7 +133,7 @@ async function updateUserPassword(currentPassword, newPassword) {
     if (!token) return { success: false, message: "Session expired. Please log in again." };
 
     try {
-        const res = await fetch("http://localhost:5000/api/users/me/password", {
+        const res = await fetch(`${AUTH_BACKEND_URL}/api/users/me/password`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

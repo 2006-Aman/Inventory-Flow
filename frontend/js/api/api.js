@@ -1,7 +1,10 @@
-// Automatically resolve Express Backend URL on Port 5000
+// Backend Deployment URL (Render)
+const PROD_BACKEND_URL = "https://inventory-backend-y8nj.onrender.com";
+
+// Resolve API URL (Uses relative path if served directly by backend on port 5000, otherwise Render backend)
 const API_BASE_URL = (typeof window !== "undefined" && window.location.origin.includes("5000"))
     ? ""
-    : "http://localhost:5000";
+    : PROD_BACKEND_URL;
 
 async function apiRequest(endpoint, options = {}) {
     const token = typeof sessionStorage !== "undefined"
