@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 let mongoMemoryServerInstance = null;
-
 const connectDB = async () => {
-    const specifiedUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/inventory_flow_db';
+    const ATLAS_DEFAULT_URI = 'mongodb+srv://amanmangla2006_db_user:aditiaman@cluster0.8qxznyw.mongodb.net/Inventory-Flow?appName=Cluster0';
+    const specifiedUri = process.env.MONGO_URI || ATLAS_DEFAULT_URI;
 
     // 1. First attempt to connect to specified MONGO_URI
     try {

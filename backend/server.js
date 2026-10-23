@@ -201,10 +201,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+    const mongoose = require('mongoose');
     res.status(200).json({
         status: 'UP',
         server: 'InventoryIQ Phase 1 + Phase 2 Backend',
-        database: 'MongoDB Active',
+        database: mongoose.connection.name || 'inventory_flow_db',
+        host: mongoose.connection.host || 'unknown',
         timestamp: new Date().toISOString()
     });
 });
