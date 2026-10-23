@@ -11,11 +11,15 @@ const getUsers = async (req, res) => {
         const formatted = users.map(u => ({
             id: u._id.toString(),
             _id: u._id,
-            firstName: u.firstName,
-            lastName: u.lastName,
-            name: u.name,
+            firstName: u.firstName || '',
+            lastName: u.lastName || '',
+            name: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim(),
             email: u.email,
-            role: u.role,
+            role: u.role || 'user',
+            organization: u.organization || 'InventoryIQ Systems',
+            phone: u.phone || '',
+            avatar: u.avatar || (u.firstName ? u.firstName[0].toUpperCase() : 'U'),
+            status: u.status || 'Active',
             createdAt: u.createdAt
         }));
 
@@ -57,11 +61,15 @@ const getUserById = async (req, res) => {
         const formatted = {
             id: user._id.toString(),
             _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            name: user.name,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
             email: user.email,
-            role: user.role,
+            role: user.role || 'user',
+            organization: user.organization || 'InventoryIQ Systems',
+            phone: user.phone || '',
+            avatar: user.avatar || (user.firstName ? user.firstName[0].toUpperCase() : 'U'),
+            status: user.status || 'Active',
             createdAt: user.createdAt
         };
 
@@ -83,7 +91,7 @@ const getUserById = async (req, res) => {
  */
 const createUser = async (req, res) => {
     try {
-        const { firstName, lastName, name, email, password, role } = req.body;
+        const { firstName, lastName, name, email, password, role, organization, phone } = req.body;
 
         if (!email) {
             return res.status(400).json({ success: false, message: 'Email is required' });
@@ -107,17 +115,23 @@ const createUser = async (req, res) => {
             name: resolvedName,
             email: email.toLowerCase().trim(),
             password: password || 'password123',
-            role: role || 'user'
+            role: role || 'user',
+            organization: organization || 'InventoryIQ Systems',
+            phone: phone || ''
         });
 
         const formatted = {
             id: user._id.toString(),
             _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            name: user.name,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
             email: user.email,
-            role: user.role,
+            role: user.role || 'user',
+            organization: user.organization || 'InventoryIQ Systems',
+            phone: user.phone || '',
+            avatar: user.avatar || (user.firstName ? user.firstName[0].toUpperCase() : 'U'),
+            status: user.status || 'Active',
             createdAt: user.createdAt
         };
 

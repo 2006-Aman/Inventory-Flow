@@ -39,6 +39,24 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ['user', 'admin'],
             default: 'user'
+        },
+        organization: {
+            type: String,
+            trim: true,
+            default: 'InventoryIQ Systems'
+        },
+        phone: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        avatar: {
+            type: String,
+            default: ''
+        },
+        status: {
+            type: String,
+            default: 'Active'
         }
     },
     {

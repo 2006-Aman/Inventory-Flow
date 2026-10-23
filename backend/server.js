@@ -232,6 +232,16 @@ app.use('/categories', categoryRoutes);
 app.use('/forecast', forecastRoutes);
 app.use('/users', userRoutes);
 
+// Singular aliases (supports both /user and /users in Thunder Client / Postman)
+app.use('/api/user', userRoutes);
+app.use('/user', userRoutes);
+app.use('/api/product', productRoutes);
+app.use('/product', productRoutes);
+app.use('/api/sale', saleRoutes);
+app.use('/sale', saleRoutes);
+app.use('/api/category', categoryRoutes);
+app.use('/category', categoryRoutes);
+
 // Root API documentation endpoint
 app.get('/api', (req, res) => {
     res.status(200).json({
